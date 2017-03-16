@@ -77,10 +77,11 @@ gulp.task('env-staging-server', ['server-build', 'env-force', 'env-staging', 'se
   runHttpTestsOrEnd('staging');
 });
 
-gulp.task('wiki-build', ['wiki-clear'], function () {
+gulp.task('wiki-build', function () {
   markdownBuild('src', 'test');
 });
 
+// todo: don't remove .git
 gulp.task('wiki-clear', function () {
   fs.emptyDirSync('wiki');
 });
