@@ -1,0 +1,9 @@
+dir: src
+packageJson: package.json
+files:
+  - gulpfile.js
+  - test/setup/spawnTest.js
+  - test/setup/testCases.js
+  - test/setup/testData.js
+branches:
+  - master

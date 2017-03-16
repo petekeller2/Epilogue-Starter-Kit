@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - "7"
+before-install:
+  - npm install -g gulp
+install:
+  - npm install
+  - gulp build-all
+script:
+  - gulp env-test-server
+  - gulp env-staging-server

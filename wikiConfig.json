@@ -1,0 +1,16 @@
+{
+  "customSidebar": "NO",
+  "mainSections": ["resources", "groups", "auth", "testing"],
+  "sectionFiles": [
+    ["milestones", "epilogueSetup"],
+    [],
+    ["passport", "permissions"]
+  ],
+  "sectionFolders": [
+    ["src/resources"],
+    [],
+    ["src/auth"],
+    ["tests"]
+  ],
+  "ignore": ["todo.md", "todos.md", "placeholder.md", "notes.md"]
+}
