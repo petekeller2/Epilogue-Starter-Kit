@@ -1,10 +1,12 @@
-dir: src
 packageJson: package.json
 files:
   - gulpfile.js
   - test/setup/spawnTest.js
   - test/setup/testCases.js
   - test/setup/testData.js
+  - src/server.js
+  - src/app.js
+  - src/epilogueSetup.js
   - src/auth/endpoints.js
   - src/auth/epilogueAuth.js
   - src/auth/passport.js
