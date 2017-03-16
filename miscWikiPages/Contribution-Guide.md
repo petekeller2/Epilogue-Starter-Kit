@@ -5,7 +5,7 @@ the miscWikiPages folder.
 
 Try to write tests for the updates you made.
 
-Write and maintain JSdoc comments.
+Write and maintain JSDoc comments.
 
 Check if the documentation build (`gulp wiki-build`is good and the tests pass (`env-test-server` and 
  `env-staging-server`) pass. For the tests, you can skip http

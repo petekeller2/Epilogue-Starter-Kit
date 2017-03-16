@@ -5,5 +5,8 @@ files:
   - test/setup/spawnTest.js
   - test/setup/testCases.js
   - test/setup/testData.js
+  - src/auth/endpoints.js
+  - src/auth/epilogueAuth.js
+  - src/auth/passport.js
 branches:
   - master
