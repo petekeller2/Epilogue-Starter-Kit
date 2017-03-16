@@ -1,10 +1,13 @@
-#Epilogue Starter Kit
+# Epilogue Starter Kit
+
 A starter kit using an Express implementation of Epilogue. It handles
 generic functionality like authentication and authorization 
 as well as potentially repetitive tasks like setting up 
 Epilogue resources and milestones. This starter kit is a work 
 in progress and any pull requests are welcome.
-#Getting Started
+
+# Getting Started
+
 Run `gulp env-staging-server` and `gulp env-test-server` to see 
 if Epilogue Starter Kit is working properly locally. If it is not, check 
 that you have babel and gulp installed. Also check if the 

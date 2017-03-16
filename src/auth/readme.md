@@ -1,4 +1,5 @@
-#Authorization and Authentication
+# Authorization and Authentication
+
 Access to operations on resources is enabled and disabled 
 by the code in the epilogueAuth.js file. To learn more about 
 permissions, read 

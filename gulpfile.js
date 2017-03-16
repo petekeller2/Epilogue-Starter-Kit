@@ -126,7 +126,9 @@ const newMarkdownFileName = function(file) {
       // console.log('Line from file:', line);
       if (lineNumber === 0) {
         resolve(line.replace(/^#+/g, '').split(" ").map(i => {
-          return i[0].toUpperCase() + i.substr(1).toLowerCase();
+          return ((i !== '') ? (i[0].toUpperCase() + i.substr(1).toLowerCase()) : '');
+        }).filter(i => {
+          return i !== '';
         }).join("-")+'.md');
       }
       lineNumber += 1;
