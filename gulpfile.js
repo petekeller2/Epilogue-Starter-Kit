@@ -124,7 +124,7 @@ const newMarkdownFileName = function(file) {
       input: fs.createReadStream(file)
     });
     rl.on('line', function (line) {
-      // console.log('Line from file:', line);
+      // todo filter then map
       if (lineNumber === 0) {
         resolve(line.replace(/^#+/g, '').split(" ").map(i => {
           return ((i !== '') ? (i[0].toUpperCase() + i.substr(1).toLowerCase()) : '');

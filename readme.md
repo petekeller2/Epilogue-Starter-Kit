@@ -15,7 +15,7 @@ npm libraries needed were installed (`npm install`).
 
 If everything is working, you can start by editing the files or 
 adding folders to the resources folder. To learn more about resources 
-in Epilogue Starter Kit,[read this.](https://github.com/petekeller2/epilogue-starter-kit/wiki/Resources)You 
+in Epilogue Starter Kit, [read this.](https://github.com/petekeller2/epilogue-starter-kit/wiki/Resources)You 
 should read Epilogue's documentation as well to fully understand resources 
 and milestones.
 
