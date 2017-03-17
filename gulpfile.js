@@ -124,12 +124,11 @@ const newMarkdownFileName = function(file) {
       input: fs.createReadStream(file)
     });
     rl.on('line', function (line) {
-      // todo filter then map
       if (lineNumber === 0) {
-        resolve(line.replace(/^#+/g, '').split(" ").map(i => {
-          return ((i !== '') ? (i[0].toUpperCase() + i.substr(1).toLowerCase()) : '');
-        }).filter(i => {
+        resolve(line.replace(/^#+/g, '').split(" ").filter(i => {
           return i !== '';
+        }).map(i => {
+          return i[0].toUpperCase() + i.substr(1).toLowerCase();
         }).join("-")+'.md');
       }
       lineNumber += 1;
