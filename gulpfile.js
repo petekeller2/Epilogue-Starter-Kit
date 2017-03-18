@@ -77,13 +77,12 @@ gulp.task('env-staging-server', ['server-build', 'env-force', 'env-staging', 'se
   runHttpTestsOrEnd('staging');
 });
 
-gulp.task('wiki-build', function () {
+gulp.task('wiki-build', ['wiki-clear'], function () {
   markdownBuild('src', 'test');
 });
 
-// todo: don't remove .git
 gulp.task('wiki-clear', function () {
-  fs.emptyDirSync('wiki');
+  emptyDirExceptForGit('wiki');
 });
 
 gulp.task('reset-test-config', function () {
@@ -92,6 +91,43 @@ gulp.task('reset-test-config', function () {
     resetTestConfig(testConfig);
   });
 });
+
+/** @function
+ * @name emptyDirExceptForGit
+ * @param {string} dir
+ * @description Creates a temporary folder to store .git into which gets deleted after .git is moved back to its original folder
+ */
+const emptyDirExceptForGit = function(dir) {
+  const tempFolderName = makeTempDir();
+  if ((tempFolderName.length > 0) && (tempFolderName !== 'Safety counter exceeded')) {
+    fs.renameSync(`${dir}/.git`, `${tempFolderName}/.git`);
+    fs.emptyDirSync(dir);
+    fs.renameSync(`${tempFolderName}/.git`, `${dir}/.git`);
+    fs.removeSync(tempFolderName);
+  }
+};
+
+/** @function
+ * @name makeTempDir
+ * @param {number} safetyCounter
+ * @returns {string}
+ * @description Creates a unique temporary folder and returns the folder name or an error message
+ */
+const makeTempDir = function(safetyCounter) {
+  if (!safetyCounter) {
+    safetyCounter = 1;
+  }
+  const folderName = `temp_${+ new Date()}_${Math.random() * (99999 - 10000) + 10000}`;
+  if (safetyCounter >= 20) {
+    gulpErrors.error('Safety counter of makeTempDir was exceeded');
+    return 'Safety counter exceeded';
+  } else if (fs.existsSync(folderName)) {
+    return makeTempDir(safetyCounter+1);
+  } else {
+    fs.ensureDirSync(folderName);
+    return folderName;
+  }
+};
 
 /** @function
  * @name markdownBuild
