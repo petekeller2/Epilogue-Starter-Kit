@@ -1,7 +1,19 @@
 {
   "name": "epilogue-starter-kit",
   "version": "0.01.0",
-  "private": true,
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/petekeller2/Epilogue-Starter-Kit.git"
+  },
+  "keywords": [
+    "epilogue",
+    "sequelize",
+    "javascript",
+    "nodejs"
+  ],
+  "author": "Peter Keller <petekeller2@gmail.com>",
+  "license": "MIT",
   "scripts": {
     "start": "nodemon src/app.js --exec babel-node",
     "start-no-nodemon": "babel-node src/app.js",
@@ -49,6 +61,7 @@
     "jsdoc": "^3.4.3",
     "mocha": "^3.2.0",
     "nodemon": "^1.11.0",
-    "request": "^2.79.0"
+    "request": "^2.79.0",
+    "retire": "^1.2.12"
   }
 }

@@ -3,6 +3,7 @@ import childProcess from 'child_process';
 import http from 'http';
 import https from 'https';
 import fs from 'fs-extra';
+import utilities from './utilities';
 import config from './config';
 import testData from '../test/setup/testData';
 import testCases from '../test/setup/testCases';
@@ -23,7 +24,7 @@ export default {
         key: fs.readFileSync(config.httpsKey, 'utf8'),
         cert: fs.readFileSync(config.httpsCert, 'utf8'),
       };
-      if (config.environment !== 'production' && config.allowBadCertForDev.toUpperCase() === 'YES') {
+      if (config.environment !== 'production' && utilities.yesTrueNoFalse(config.allowBadCertForDev)) {
         options.requestCert = false;
         options.rejectUnauthorized = false;
       }
@@ -47,7 +48,7 @@ export default {
    */
   serve(database, server, resources, groupXrefModel) {
     let force = false;
-    if (config.force.toUpperCase() === 'YES') {
+    if (utilities.yesTrueNoFalse(config.force)) {
       force = true;
     }
     database
@@ -60,10 +61,10 @@ export default {
             winston.loggers.add('testsLog', {
               file: {
                 filename: 'logs/tests.log',
-                tailable: true,
-                maxsize: 50000,
-                maxFiles: 5,
-                zippedArchive: true,
+                tailable: utilities.yesTrueNoFalse(config.winston.tailable),
+                maxsize: utilities.yesTrueNoFalse(config.winston.maxsize),
+                maxFiles: utilities.yesTrueNoFalse(config.winston.maxFiles),
+                zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
               },
             });
 
@@ -82,7 +83,7 @@ export default {
             testData.basicTestData(resources, groupXrefModel).then((val) => {
               if (val === true) {
                 let runTests;
-                if (testConfig.individualHttpTest === true && config.tests && config.tests.httpTests.toUpperCase() === 'YES') {
+                if (testConfig.individualHttpTest === true) {
                   if (testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'aa') {
                     runTests = childProcess.spawn('gulp', ['server-http-just-aa-test']);
                   } else if (testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'access') {
@@ -104,7 +105,7 @@ export default {
                 });
 
                 runTests.on('close', (code) => {
-                  if (config.tests && config.tests.exitOnFinishingTests.toUpperCase() === 'YES') {
+                  if (config.tests && utilities.yesTrueNoFalse(config.tests.exitOnFinishingTests)) {
                     winston.info(`child process exited with code ${code}`);
                     process.exit();
                   } else {

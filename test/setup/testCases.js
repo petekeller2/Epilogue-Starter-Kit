@@ -1,3 +1,12 @@
+let srcOrBuild;
+if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production') {
+  srcOrBuild = 'build';
+} else {
+  srcOrBuild = 'src';
+}
+const config = require(`../../${srcOrBuild}/config`).default;
+const utilities = require(`../../${srcOrBuild}/utilities`).default;
+
 import fs from "fs-extra";
 import winston from "winston";
 import testConfig from "../testConfig.json";
@@ -5,10 +14,10 @@ import testConfig from "../testConfig.json";
 winston.loggers.add('testCaseGeneration', {
   file: {
     filename: 'logs/testCaseGeneration.log',
-    tailable: true,
-    maxsize: 50000,
-    maxFiles: 5,
-    zippedArchive: true,
+    tailable: utilities.yesTrueNoFalse(config.winston.tailable),
+    maxsize: utilities.yesTrueNoFalse(config.winston.maxsize),
+    maxFiles: utilities.yesTrueNoFalse(config.winston.maxFiles),
+    zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
   },
 });
 const testCaseGeneration = winston.loggers.get('testCaseGeneration');

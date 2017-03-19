@@ -87,11 +87,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        989479,
+        960309,
         "User",
-        497082,
+        875761,
         "Neighborhood",
-        534054
+        123449
       ],
       "userID": "12345",
       "aaOrAccess": "access",
@@ -101,11 +101,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        984753,
+        750035,
         "User",
-        801233,
+        652809,
         "Neighborhood",
-        816033
+        777050
       ],
       "userID": "12345",
       "aaOrAccess": "access",
@@ -115,11 +115,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        568647,
+        272694,
         "User",
-        819270,
+        301173,
         "Neighborhood",
-        826995
+        217708
       ],
       "userID": "12345",
       "aaOrAccess": "access",
@@ -185,11 +185,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        593691,
+        806180,
         "User",
-        434191,
+        643319,
         "Neighborhood",
-        1005372
+        578427
       ],
       "userID": "testing",
       "aaOrAccess": "access",
@@ -199,11 +199,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        685149,
+        84414,
         "User",
-        710993,
+        266151,
         "Neighborhood",
-        928127
+        971377
       ],
       "userID": "testing",
       "aaOrAccess": "access",
@@ -213,11 +213,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        447625,
+        789509,
         "User",
-        14404,
+        1006062,
         "Neighborhood",
-        85375
+        508885
       ],
       "userID": "testing",
       "aaOrAccess": "access",
@@ -283,11 +283,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        628814,
+        571118,
         "User",
-        156312,
+        1041148,
         "Neighborhood",
-        944057
+        1022786
       ],
       "userID": "abc123",
       "aaOrAccess": "access",
@@ -297,11 +297,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        56857,
+        929909,
         "User",
-        97815,
+        582476,
         "Neighborhood",
-        1017896
+        438504
       ],
       "userID": "abc123",
       "aaOrAccess": "access",
@@ -311,11 +311,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        307024,
+        304744,
         "User",
-        250158,
+        533312,
         "Neighborhood",
-        883847
+        121577
       ],
       "userID": "abc123",
       "aaOrAccess": "access",
@@ -381,11 +381,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        810137,
+        649466,
         "User",
-        488078,
+        250250,
         "Neighborhood",
-        991377
+        468551
       ],
       "userID": "",
       "aaOrAccess": "access",
@@ -395,11 +395,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        472534,
+        684436,
         "User",
-        37300,
+        162324,
         "Neighborhood",
-        527562
+        624789
       ],
       "userID": "",
       "aaOrAccess": "access",
@@ -409,11 +409,11 @@
       "___comment": "random",
       "permissions": [
         "Todo",
-        970214,
+        297640,
         "User",
-        590185,
+        139698,
         "Neighborhood",
-        71514
+        439215
       ],
       "userID": "",
       "aaOrAccess": "access",

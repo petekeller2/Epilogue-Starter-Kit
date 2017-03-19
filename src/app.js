@@ -7,6 +7,7 @@ import bodyParser from 'body-parser';
 import Sequelize from 'sequelize';
 import expressJwt from 'express-jwt';
 import childProcess from 'child_process';
+import utilities from './utilities';
 import config from './config';
 import Passport from './auth/passport';
 import epilogueSetup from './epilogueSetup';
@@ -18,15 +19,15 @@ import server from './server';
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: utilities.yesTrueNoFalse(config.urlencodedExtended) }));
 app.use(cookieParser());
 
 winston.add(winston.transports.File, {
   filename: 'logs/general.log',
-  tailable: true,
-  maxsize: 50000,
-  maxFiles: 5,
-  zippedArchive: true,
+  tailable: utilities.yesTrueNoFalse(config.winston.tailable),
+  maxsize: utilities.yesTrueNoFalse(config.winston.maxsize),
+  maxFiles: utilities.yesTrueNoFalse(config.winston.maxFiles),
+  zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
 });
 winston.setLevels(winston.config.syslog.levels);
 spawnTest.logging(childProcess);
@@ -39,7 +40,7 @@ const passport = Passport.setup(resources);
 
 app.use(expressJwt({
   secret: config.jwt.secret,
-  credentialsRequired: false,
+  credentialsRequired: utilities.yesTrueNoFalse(config.jwt.credentialsRequired),
   getToken: req => req.cookies.id_token,
 }));
 

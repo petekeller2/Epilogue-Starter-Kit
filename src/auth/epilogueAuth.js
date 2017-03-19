@@ -53,7 +53,7 @@ export default {
               return true;
             } else {
               if (winston.info) {
-                winston.info('Can\'t update/delete/read resource, not owned by current user');
+                winston.info(`Can\'t update/delete/read resource, not owned by current user (current user: ${req.user.id})`);
               }
               return false;
             }
@@ -177,8 +177,10 @@ export default {
    */
   trueForCreateOrList(actionsList, index, req) {
     if ((actionsList[index] === 'create' || actionsList[index] === 'list') && (((req || {}).user || {}).id)) {
+      // console.log('true for trueForCreateOrList');
       return true;
     } else {
+      // console.log('false for trueForCreateOrList');
       return false;
     }
   },
@@ -253,12 +255,16 @@ export default {
             currentUserOwnsResource = await this.isOwnerOfRegularResourceCheck(req, cleanedEndpointsArray, actionsList, resource, i);
           }
           if (permissions[i] === true && currentUserOwnsResource === true) {
+            // console.log('first section passed');
             resolve(context.continue);
           } else if (permissions[i + 5] === true && isGroup === true && memberOfGroup === true) {
+            // console.log('second section passed');
             resolve(context.continue);
           } else if (permissions[i + 10] === true && req && req.user && req.user.id && req.user.id !== '') {
+            // console.log('third section passed');
             resolve(context.continue);
           } else if (permissions[i + 15] === true) {
+            // console.log('fourth section passed');
             resolve(context.continue);
           } else {
             res.status(401).send({ message: 'Unauthorized' });

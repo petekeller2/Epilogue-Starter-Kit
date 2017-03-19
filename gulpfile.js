@@ -4,14 +4,17 @@ const fs = require('fs-extra');
 const winston = require('winston');
 const glob = require("glob");
 const readline = require('readline');
+const spawn = require('child_process').spawn;
+const utilities = require('src/utilities').default;
+const config = require('src/config').default;
 
 winston.loggers.add('gulpError', {
   file: {
     filename: 'logs/gulpErrors.log',
-    tailable: true,
-    maxsize: 50000,
-    maxFiles: 5,
-    zippedArchive: true,
+    tailable: utilities.yesTrueNoFalse(config.winston.tailable),
+    maxsize: utilities.yesTrueNoFalse(config.winston.maxsize),
+    maxFiles: utilities.yesTrueNoFalse(config.winston.maxFiles),
+    zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
   },
 });
 const gulpErrors = winston.loggers.get('gulpError');
@@ -19,10 +22,10 @@ const gulpErrors = winston.loggers.get('gulpError');
 winston.loggers.add('testResults', {
   file: {
     filename: 'logs/testResults.log',
-    tailable: true,
-    maxsize: 50000,
-    maxFiles: 5,
-    zippedArchive: true,
+    tailable: utilities.yesTrueNoFalse(config.winston.tailable),
+    maxsize: utilities.yesTrueNoFalse(config.winston.maxsize),
+    maxFiles: utilities.yesTrueNoFalse(config.winston.maxFiles),
+    zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
   },
 });
 const testResults = winston.loggers.get('testResults');
@@ -89,6 +92,22 @@ gulp.task('reset-test-config', function () {
   fs.readFile('./test/testConfig.json', 'utf8', (testConfigErr, testConfigData) => {
     const testConfig = JSON.parse(testConfigData);
     resetTestConfig(testConfig);
+  });
+});
+
+gulp.task('retire', function() {
+  // Spawn Retire.js as a child process
+  // You can optionally add option parameters to the second argument (array)
+  const child = spawn('retire', [], {cwd: process.cwd()});
+
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', function (data) {
+    winston.info(data);
+  });
+
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', function (data) {
+    gulpErrors.error(data);
   });
 });
 

@@ -8,6 +8,7 @@ const config = require(`../../../${srcOrBuild}/config`).default;
 
 import assert from 'assert';
 import request from 'request';
+import utilities from '../../../src/utilities';
 import testConfig from '../../testConfig.json';
 
 if (config.environment === 'testing' || config.environment === 'staging') {
@@ -15,14 +16,15 @@ if (config.environment === 'testing' || config.environment === 'staging') {
     if (testConfig.testCases[testConfig.testNumber - 1].association.aa === 'hasMany') {
       console.log('hasMany');
       it('user should have todos (hasMany)', done => {
-        // this.timeout(15000);
+        let options = utilities.createRequestOptions('users');
         request.post(
-          `${config.protocol}://${config.host}:${config.port}/users`,
+          options,
           {json: {id: '123', username: 'mac', emailAddress: 'mac@gmail.com'}},
           (error, response, body) => {
             // console.log(response);
+            options = utilities.createRequestOptions('todos');
             request.post(
-              `${config.protocol}://${config.host}:${config.port}/todos`,
+              options,
               {json: {id: '1', task: 'Fix car', dueDate: '12/18/17', UserId: '123'}},
               (error, response, body) => {
                 // console.log(response);
@@ -42,7 +44,7 @@ if (config.environment === 'testing' || config.environment === 'staging') {
             );
           }
         );
-      });
+      }).timeout(0);
     } else if (testConfig.testCases[testConfig.testNumber - 1].association.aa === 'belongsTo') {
       // todo
       it('user should have todos (belongsTo)', done => {
