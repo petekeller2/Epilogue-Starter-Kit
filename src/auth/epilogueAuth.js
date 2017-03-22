@@ -177,10 +177,14 @@ export default {
    */
   trueForCreateOrList(actionsList, index, req) {
     if ((actionsList[index] === 'create' || actionsList[index] === 'list') && (((req || {}).user || {}).id)) {
-      // console.log('true for trueForCreateOrList');
+      if (config.environment === 'testing' || config.environment === 'staging') {
+        winston.info(`true for trueForCreateOrList (${((req || {}).user || {}).id})`);
+      }
       return true;
     } else {
-      // console.log('false for trueForCreateOrList');
+      if (config.environment === 'testing' || config.environment === 'staging') {
+        winston.info(`false for trueForCreateOrList (${((req || {}).user || {}).id})`);
+      }
       return false;
     }
   },
@@ -255,18 +259,29 @@ export default {
             currentUserOwnsResource = await this.isOwnerOfRegularResourceCheck(req, cleanedEndpointsArray, actionsList, resource, i);
           }
           if (permissions[i] === true && currentUserOwnsResource === true) {
-            // console.log('first section passed');
+            if (config.environment === 'testing' || config.environment === 'staging') {
+              winston.info('first section passed');
+            }
             resolve(context.continue);
           } else if (permissions[i + 5] === true && isGroup === true && memberOfGroup === true) {
-            // console.log('second section passed');
+            if (config.environment === 'testing' || config.environment === 'staging') {
+              winston.info('second section passed');
+            }
             resolve(context.continue);
           } else if (permissions[i + 10] === true && req && req.user && req.user.id && req.user.id !== '') {
-            // console.log('third section passed');
+            if (config.environment === 'testing' || config.environment === 'staging') {
+              winston.info('third section passed');
+            }
             resolve(context.continue);
           } else if (permissions[i + 15] === true) {
-            // console.log('fourth section passed');
+            if (config.environment === 'testing' || config.environment === 'staging') {
+              winston.info('fourth section passed');
+            }
             resolve(context.continue);
           } else {
+            if (config.environment === 'testing' || config.environment === 'staging') {
+              winston.info('all permission sections are false');
+            }
             res.status(401).send({ message: 'Unauthorized' });
             resolve(context.stop);
           }

@@ -4,19 +4,19 @@ if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')
 } else {
   srcOrBuild = 'src';
 }
-const config = require(`../${srcOrBuild}/config`).default;
+const config = require(`../${srcOrBuild}/config`);
 
-import fs from 'fs-extra';
-import winston from 'winston';
+const fs = require('fs-extra');
+const winston = require('winston');
 
-export default {
+module.exports = {
   createRequestOptions(query) {
     const options = {
       url: `${config.protocol}://${config.host}:${config.port}/${query}`,
     };
     if (config.protocol === 'https') {
-      options.cert = fs.readFileSync(config.httpsCert);
-      options.key = fs.readFileSync(config.httpsKey);
+      options.cert = fs.readFileSync(config.httpsCert).toString('utf8');
+      options.key = fs.readFileSync(config.httpsKey).toString('utf8');
     }
     if (this.yesTrueNoFalse(config.allowBadCertForDev) && !(process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')) {
       options.rejectUnauthorized = false;

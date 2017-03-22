@@ -4,7 +4,7 @@ if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')
 } else {
   srcOrBuild = 'src';
 }
-const config = require(`../../../${srcOrBuild}/config`).default;
+const config = require(`../../../${srcOrBuild}/config`);
 
 import assert from 'assert';
 import request from 'request';
@@ -22,8 +22,8 @@ if (config.environment === 'testing' || config.environment === 'staging') {
     it('list', done => {
       const options = utilities.createRequestOptions('todos');
       request.get(options, (error, res) => {
-        // console.log('res', res);
-        let matches = res.body.match(/wake up/g);
+        console.log('res.body', res.body);
+        let matches = res.body.match(/wake up/g) || res.body.match(/sleep/g) || res.body.match(/gym/g);
         // console.log(matches);
         if (matches && matches.length > 0) {
           matches = true;
@@ -31,6 +31,8 @@ if (config.environment === 'testing' || config.environment === 'staging') {
           matches = false;
         }
         if (epilogueAuth.convertPermissions(testPermissionsForResource)[15] === false && testConfig.testCases[testConfig.testNumber - 1].userID === '') {
+          shouldBe = false;
+        } else if (epilogueAuth.convertPermissions(testPermissionsForResource)[5] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[10] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[15] === false && testConfig.testCases[testConfig.testNumber - 1].userID !== '12345' && testConfig.testCases[testConfig.testNumber - 1].userID !== 'abc123' && testConfig.testCases[testConfig.testNumber - 1].userID !== '') {
           shouldBe = false;
         } else {
           shouldBe = true;
@@ -41,10 +43,20 @@ if (config.environment === 'testing' || config.environment === 'staging') {
     }).timeout(0);
     it('create', done => {
       let options = utilities.createRequestOptions('todos');
+      options.json = {
+        id: 4,
+        task: 'go to store',
+        dueDate: '12/21/17'
+      };
+      if (testConfig.testCases[testConfig.testNumber - 1].userID.length > 0) {
+        options.json.UserId = testConfig.testCases[testConfig.testNumber - 1].userID;
+      }
+      // console.log('options', options);
       request.post(
         options,
-        {json: { id: 4, task: 'go to store', dueDate: '12/21/17', UserId: testConfig.testCases[testConfig.testNumber - 1].userID }},
         (error, response, body) => {
+          console.log('error', error);
+          console.log('response.body', response.body);
           options = utilities.createRequestOptions('todos/4');
           request.get(options, (error, res) => {
             // console.log('res', res.body);
@@ -56,9 +68,14 @@ if (config.environment === 'testing' || config.environment === 'staging') {
               matches = false;
             }
             console.log('matchesBool', matches);
+            console.log('permissions', epilogueAuth.convertPermissions(testPermissionsForResource));
             // console.log('testConfig.testCases[testConfig.testNumber - 1].userID', testConfig.testCases[testConfig.testNumber - 1].userID);
             if (epilogueAuth.convertPermissions(testPermissionsForResource)[16] === false && testConfig.testCases[testConfig.testNumber - 1].userID === '') {
               shouldBe = false;
+              console.log('should not be able to create without being logged in')
+            } else if (epilogueAuth.convertPermissions(testPermissionsForResource)[16] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[11] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[6] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[1] === false) {
+              shouldBe = false;
+              console.log('no one should be able to create')
             } else {
               shouldBe = true;
             }

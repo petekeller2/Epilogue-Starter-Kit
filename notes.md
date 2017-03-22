@@ -17,3 +17,9 @@ Additions to config.js
 utilities.js
 
 Some fixes to http tests
+
+**3/21/17**
+
+Http bug fixes
+
+module.exports for config and util

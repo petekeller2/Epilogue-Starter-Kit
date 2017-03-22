@@ -4,8 +4,8 @@ if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')
 } else {
   srcOrBuild = 'src';
 }
-const config = require(`../../${srcOrBuild}/config`).default;
-const utilities = require(`../../${srcOrBuild}/utilities`).default;
+const config = require(`../../${srcOrBuild}/config`);
+const utilities = require(`../../${srcOrBuild}/utilities`);
 
 import fs from "fs-extra";
 import winston from "winston";
@@ -15,8 +15,8 @@ winston.loggers.add('testCaseGeneration', {
   file: {
     filename: 'logs/testCaseGeneration.log',
     tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-    maxsize: utilities.yesTrueNoFalse(config.winston.maxsize),
-    maxFiles: utilities.yesTrueNoFalse(config.winston.maxFiles),
+    maxsize: config.winston.maxsize,
+    maxFiles: config.winston.maxFiles,
     zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
   },
 });
@@ -69,7 +69,7 @@ export default {
             for (let i2 = 0; i2 < testConfig.generationConfig.resources.length; i2+=1) {
               //random bits 1048575 (20 bits max in decimal)
               permissionSectionOfTestCase.push(testConfig.generationConfig.resources[i2]);
-              permissionSectionOfTestCase.push(Math.floor(Math.random() * 1048575));
+              permissionSectionOfTestCase.push(Math.floor(Math.random() * 65535));
             }
             testConfig.testCases.push(this.createPermissionsTestObject(permissionSectionOfTestCase, testConfig.generationConfig.userIDs[i], 'random'));
           }

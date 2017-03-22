@@ -62,8 +62,8 @@ export default {
               file: {
                 filename: 'logs/tests.log',
                 tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-                maxsize: utilities.yesTrueNoFalse(config.winston.maxsize),
-                maxFiles: utilities.yesTrueNoFalse(config.winston.maxFiles),
+                maxsize: config.winston.maxsize,
+                maxFiles: config.winston.maxFiles,
                 zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
               },
             });

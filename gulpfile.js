@@ -5,15 +5,15 @@ const winston = require('winston');
 const glob = require("glob");
 const readline = require('readline');
 const spawn = require('child_process').spawn;
-const utilities = require('src/utilities').default;
-const config = require('src/config').default;
+const config = require('./src/config');
+const utilities = require('./src/utilities');
 
 winston.loggers.add('gulpError', {
   file: {
     filename: 'logs/gulpErrors.log',
     tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-    maxsize: utilities.yesTrueNoFalse(config.winston.maxsize),
-    maxFiles: utilities.yesTrueNoFalse(config.winston.maxFiles),
+    maxsize: config.winston.maxsize,
+    maxFiles: config.winston.maxFiles,
     zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
   },
 });
@@ -23,8 +23,8 @@ winston.loggers.add('testResults', {
   file: {
     filename: 'logs/testResults.log',
     tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-    maxsize: utilities.yesTrueNoFalse(config.winston.maxsize),
-    maxFiles: utilities.yesTrueNoFalse(config.winston.maxFiles),
+    maxsize: config.winston.maxsize,
+    maxFiles: config.winston.maxFiles,
     zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
   },
 });

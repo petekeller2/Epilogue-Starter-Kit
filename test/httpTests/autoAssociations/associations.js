@@ -4,7 +4,7 @@ if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')
 } else {
   srcOrBuild = 'src';
 }
-const config = require(`../../../${srcOrBuild}/config`).default;
+const config = require(`../../../${srcOrBuild}/config`);
 
 import assert from 'assert';
 import request from 'request';
@@ -17,18 +17,19 @@ if (config.environment === 'testing' || config.environment === 'staging') {
       console.log('hasMany');
       it('user should have todos (hasMany)', done => {
         let options = utilities.createRequestOptions('users');
+        options.json = {id: '123', username: 'mac', emailAddress: 'mac@gmail.com'};
         request.post(
           options,
-          {json: {id: '123', username: 'mac', emailAddress: 'mac@gmail.com'}},
           (error, response, body) => {
             // console.log(response);
             options = utilities.createRequestOptions('todos');
+            options.json = {id: '1', task: 'Fix car', dueDate: '12/18/17', UserId: '123'};
             request.post(
               options,
-              {json: {id: '1', task: 'Fix car', dueDate: '12/18/17', UserId: '123'}},
               (error, response, body) => {
                 // console.log(response);
-                request.get(`${config.protocol}://${config.host}:${config.port}/users`, (error, res) => {
+                options = utilities.createRequestOptions('users');
+                request.get(options, (error, res) => {
                   // console.log('res', res.body);
                   let matches = res.body.match(/Todos/g);
                   // console.log(matches);
