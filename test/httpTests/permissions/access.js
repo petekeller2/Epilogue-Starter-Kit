@@ -18,6 +18,7 @@ if (config.environment === 'testing' || config.environment === 'staging') {
   const testPermissionsArray = testConfig.testCases[testConfig.testNumber - 1].permissions;
   let shouldBe = true;
   let testPermissionsForResource = testPermissionsArray[testPermissionsArray.indexOf('Todo') + 1];
+  console.log('testPermissionsForResource', testPermissionsForResource);
   describe(`Todo (${testPermissionsForResource}) (${testConfig.testCases[testConfig.testNumber - 1].userID})`, () => {
     it('list', done => {
       const options = utilities.createRequestOptions('todos');
@@ -30,9 +31,11 @@ if (config.environment === 'testing' || config.environment === 'staging') {
         } else {
           matches = false;
         }
-        if (epilogueAuth.convertPermissions(testPermissionsForResource)[15] === false && testConfig.testCases[testConfig.testNumber - 1].userID === '') {
+        if (((epilogueAuth.convertPermissions(testPermissionsForResource))[15] === false) && (testConfig.testCases[testConfig.testNumber - 1].userID.length === 0)) {
           shouldBe = false;
-        } else if (epilogueAuth.convertPermissions(testPermissionsForResource)[5] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[10] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[15] === false && testConfig.testCases[testConfig.testNumber - 1].userID !== '12345' && testConfig.testCases[testConfig.testNumber - 1].userID !== 'abc123' && testConfig.testCases[testConfig.testNumber - 1].userID !== '') {
+        } else if (((epilogueAuth.convertPermissions(testPermissionsForResource))[5] === false) && ((epilogueAuth.convertPermissions(testPermissionsForResource))[10] === false) && ((epilogueAuth.convertPermissions(testPermissionsForResource))[15] === false) && (testConfig.testCases[testConfig.testNumber - 1].userID !== '12345') && (testConfig.testCases[testConfig.testNumber - 1].userID !== 'abc123') && (testConfig.testCases[testConfig.testNumber - 1].userID !== '')) {
+          shouldBe = false;
+        } else if (((epilogueAuth.convertPermissions(testPermissionsForResource))[15] === false) && ((epilogueAuth.convertPermissions(testPermissionsForResource))[10] === false) && ((epilogueAuth.convertPermissions(testPermissionsForResource))[0] === false)) {
           shouldBe = false;
         } else {
           shouldBe = true;
@@ -42,7 +45,7 @@ if (config.environment === 'testing' || config.environment === 'staging') {
       });
     }).timeout(0);
     it('create', done => {
-      let options = utilities.createRequestOptions('todos');
+      const options = utilities.createRequestOptions('todos');
       options.json = {
         id: 4,
         task: 'go to store',
@@ -57,32 +60,24 @@ if (config.environment === 'testing' || config.environment === 'staging') {
         (error, response, body) => {
           console.log('error', error);
           console.log('response.body', response.body);
-          options = utilities.createRequestOptions('todos/4');
-          request.get(options, (error, res) => {
-            // console.log('res', res.body);
-            let matches = res.body.match(/go to store/g);
-            console.log('matches', matches);
-            if (matches && matches.length > 0) {
-              matches = true;
-            } else {
-              matches = false;
-            }
-            console.log('matchesBool', matches);
-            console.log('permissions', epilogueAuth.convertPermissions(testPermissionsForResource));
-            // console.log('testConfig.testCases[testConfig.testNumber - 1].userID', testConfig.testCases[testConfig.testNumber - 1].userID);
-            if (epilogueAuth.convertPermissions(testPermissionsForResource)[16] === false && testConfig.testCases[testConfig.testNumber - 1].userID === '') {
-              shouldBe = false;
-              console.log('should not be able to create without being logged in')
-            } else if (epilogueAuth.convertPermissions(testPermissionsForResource)[16] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[11] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[6] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[1] === false) {
-              shouldBe = false;
-              console.log('no one should be able to create')
-            } else {
-              shouldBe = true;
-            }
-            console.log('shouldBeBool', shouldBe);
-            assert.equal(shouldBe, matches);
-            done();
-          });
+          // console.log('res', res.body);
+          const matches = (response.body.id === 4);
+          console.log('matches', matches);
+          console.log('matchesBool', matches);
+          console.log('permissions', epilogueAuth.convertPermissions(testPermissionsForResource));
+          // console.log('testConfig.testCases[testConfig.testNumber - 1].userID', testConfig.testCases[testConfig.testNumber - 1].userID);
+          if (((epilogueAuth.convertPermissions(testPermissionsForResource))[16] === false) && (testConfig.testCases[testConfig.testNumber - 1].userID.length === 0)) {
+            shouldBe = false;
+            console.log('should not be able to create without being logged in')
+          } else if (((epilogueAuth.convertPermissions(testPermissionsForResource))[16] === false) && ((epilogueAuth.convertPermissions(testPermissionsForResource))[11] === false) && ((epilogueAuth.convertPermissions(testPermissionsForResource))[1] === false)) {
+            shouldBe = false;
+            console.log('no one should be able to create')
+          } else {
+            shouldBe = true;
+          }
+          console.log('shouldBeBool', shouldBe);
+          assert.equal(shouldBe, matches);
+          done();
         }
       );
     }).timeout(0);
@@ -98,13 +93,21 @@ if (config.environment === 'testing' || config.environment === 'staging') {
         } else {
           matches = false;
         }
-        if (epilogueAuth.convertPermissions(testPermissionsForResource)[17] === false && testConfig.testCases[testConfig.testNumber - 1].userID === '') {
+        console.log('read matches', matches);
+        console.log('read user id', testConfig.testCases[testConfig.testNumber - 1].userID);
+        console.log('read user id length', testConfig.testCases[testConfig.testNumber - 1].userID.length);
+        console.log('epilogueAuth.convertPermissions(testPermissionsForResource)[17]', (epilogueAuth.convertPermissions(testPermissionsForResource))[17]);
+
+        if (((epilogueAuth.convertPermissions(testPermissionsForResource))[17] === false) && (testConfig.testCases[testConfig.testNumber - 1].userID.length === 0)) {
           shouldBe = false;
-        } else if (epilogueAuth.convertPermissions(testPermissionsForResource)[17] === false && epilogueAuth.convertPermissions(testPermissionsForResource)[12] === false && testConfig.testCases[testConfig.testNumber - 1].userID !== '12345') {
+        } else if (((epilogueAuth.convertPermissions(testPermissionsForResource))[17] === false) && ((epilogueAuth.convertPermissions(testPermissionsForResource))[12] === false) && (testConfig.testCases[testConfig.testNumber - 1].userID !== '12345')) {
+          shouldBe = false;
+        } else if (((epilogueAuth.convertPermissions(testPermissionsForResource))[17] === false) && ((epilogueAuth.convertPermissions(testPermissionsForResource))[12] === false) && ((epilogueAuth.convertPermissions(testPermissionsForResource))[2] === false)) {
           shouldBe = false;
         } else {
           shouldBe = true;
         }
+        console.log('read shouldBe', shouldBe);
         assert.equal(shouldBe, matches);
         done();
       });

@@ -20,6 +20,10 @@ Some fixes to http tests
 
 **3/21/17**
 
-Http bug fixes
+Http test bug fixes
 
 module.exports for config and util
+
+**3/23/17**
+
+Http test bug fixes

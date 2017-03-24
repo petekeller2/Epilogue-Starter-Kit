@@ -236,6 +236,10 @@ export default {
         authMilestone[actionsList[i]].auth = ((req, res, context) => new Promise(async(resolve) => {
 
           isGroup = resource[6];
+          if (config.environment === 'testing' || config.environment === 'staging') {
+            winston.info('isHttpTest', isHttpTest);
+            winston.info('validTestNumber', validTestNumber);
+          }
           permissions = this.convertRealOrTestPermissions(resource[1], resource[0], isHttpTest, validTestNumber);
 
           cleanedEndpointsArray = [];
@@ -252,23 +256,33 @@ export default {
             req.user.id = testConfig.testCases[testConfig.testNumber - 1].userID;
           }
 
+          if (config.environment === 'testing' || config.environment === 'staging') {
+            winston.info(`first permission section ${i} ${permissions[i]}`);
+            winston.info(`second to last permission section ${((req || {}).user || {}).id} ${i + 10} ${permissions[i + 10]}`);
+            winston.info(`last permission section ${i + 15} ${permissions[i + 15]}`);
+          }
+
           if (isGroup === true) {
             currentUserOwnsResource = await this.isOwnerOfGroupResourceCheck(req, actionsList, resource, i);
             memberOfGroup = await this.isMemberOfGroupCheck(req, actionsList, resource, i, awaitedGroupXrefModel);
           } else {
             currentUserOwnsResource = await this.isOwnerOfRegularResourceCheck(req, cleanedEndpointsArray, actionsList, resource, i);
           }
-          if (permissions[i] === true && currentUserOwnsResource === true) {
+
+          if (config.environment === 'testing' || config.environment === 'staging') {
+            winston.info('currentUserOwnsResource', currentUserOwnsResource);
+          }
+          if ((permissions[i] === true) && (currentUserOwnsResource === true)) {
             if (config.environment === 'testing' || config.environment === 'staging') {
               winston.info('first section passed');
             }
             resolve(context.continue);
-          } else if (permissions[i + 5] === true && isGroup === true && memberOfGroup === true) {
+          } else if ((permissions[i + 5] === true) && (isGroup === true) && (memberOfGroup === true)) {
             if (config.environment === 'testing' || config.environment === 'staging') {
               winston.info('second section passed');
             }
             resolve(context.continue);
-          } else if (permissions[i + 10] === true && req && req.user && req.user.id && req.user.id !== '') {
+          } else if ((permissions[i + 10] === true) && req && req.user && req.user.id && (req.user.id !== '')) {
             if (config.environment === 'testing' || config.environment === 'staging') {
               winston.info('third section passed');
             }
@@ -634,8 +648,14 @@ export default {
     if (isHttpTest && validTestNumber && testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'access') {
       const testPermissionsArray = testConfig.testCases[testConfig.testNumber - 1].permissions;
       if (testPermissionsArray.indexOf(resourceName) >= 0) {
+        if (config.environment === 'testing' || config.environment === 'staging') {
+          winston.info('test permissions being used', testPermissionsArray[testPermissionsArray.indexOf(resourceName) + 1]);
+        }
         return this.convertPermissions(testPermissionsArray[testPermissionsArray.indexOf(resourceName) + 1]);
       }
+    }
+    if (config.environment === 'testing' || config.environment === 'staging') {
+      winston.info('test permissions are NOT being used');
     }
     return this.convertPermissions(permissionsInput);
   },

@@ -290,7 +290,7 @@ const endOfTests = function() {
       throw err;
     }
     // console.log('latestTests data (gulp)', data.toString('utf8'));
-    if (data.toString('utf8').search(/failing/g) != -1) {
+    if (data.toString('utf8').search(/failing/g) !== -1) {
       const failedTests = `Did not pass all tests (${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')})`;
       fs.writeFile('logs/latestTests.log', failedTests, function (err) {
         if (err) return gulpErrors.error(err);
