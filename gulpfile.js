@@ -169,7 +169,7 @@ const markdownBuild = function() {
 /** @function
  * @name newMarkdownFileName
  * @param {string} file
- * @returns {string}
+ * @returns {object}
  * @description Returns a file name generated from the first line of a markdown file
  */
 const newMarkdownFileName = function(file) {

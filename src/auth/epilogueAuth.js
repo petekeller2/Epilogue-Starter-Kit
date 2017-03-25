@@ -257,6 +257,7 @@ export default {
           }
 
           if (config.environment === 'testing' || config.environment === 'staging') {
+            winston.info(`permissions in epilogueAuth ${permissions}`);
             winston.info(`first permission section ${i} ${permissions[i]}`);
             winston.info(`second to last permission section ${((req || {}).user || {}).id} ${i + 10} ${permissions[i + 10]}`);
             winston.info(`last permission section ${i + 15} ${permissions[i + 15]}`);
@@ -323,7 +324,7 @@ export default {
           // eslint-disable-next-line
           authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async(resolve) => {
             permissions = this.convertRealOrTestPermissions(resource[1], resource[0], isHttpTest, validTestNumber);
-            if (permissions[0] === true && permissions[5] === false && permissions[10] === false && permissions[15] === false) {
+            if (permissions[0] === true && permissions[10] === false && permissions[15] === false) {
               if ((((req || {}).user || {}).id)) {
                 if ((resource[0] === 'User') || (userAAs.indexOf(resource[0]) >= 0) || (this.belongsToUserResourceCheck(resource[5]))) {
                   const findAllObj = {
@@ -333,6 +334,9 @@ export default {
                     findAllObj.where = { id: req.user.id };
                   } else {
                     findAllObj.where = { UserId: req.user.id };
+                  }
+                  if (config.environment === 'testing' || config.environment === 'staging') {
+                    winston.info(`findAllObj.where ${findAllObj.where}`);
                   }
                   return resource[2].findAll(findAllObj)
                   .then((result) => {
@@ -385,6 +389,9 @@ export default {
    * @description For number permissions, read being true means list is true as well (list permissions can't be directly set)
    */
   convertNumberPermissions(permissionsInput) {
+    if (config.environment === 'testing' || config.environment === 'staging') {
+      winston.info(`permissionsInput for number conversion`, permissionsInput);
+    }
     const permissionsReturn = [];
     for (let i = 0; i < 20; i += 1) {
       permissionsReturn.push(false);
@@ -418,6 +425,9 @@ export default {
         permissionsReturnIndex += 1;
       }
       permissionsReturnIndex += 1;
+    }
+    if (config.environment === 'testing' || config.environment === 'staging') {
+      winston.info(`permissions output for number conversion (before reverse)`, permissionsReturn);
     }
     return permissionsReturn.reverse();
   },
@@ -650,6 +660,7 @@ export default {
       if (testPermissionsArray.indexOf(resourceName) >= 0) {
         if (config.environment === 'testing' || config.environment === 'staging') {
           winston.info('test permissions being used', testPermissionsArray[testPermissionsArray.indexOf(resourceName) + 1]);
+          winston.info('test number in epilogueAuth.js', testConfig.testNumber - 1);
         }
         return this.convertPermissions(testPermissionsArray[testPermissionsArray.indexOf(resourceName) + 1]);
       }

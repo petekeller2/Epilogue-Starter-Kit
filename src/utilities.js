@@ -18,7 +18,7 @@ module.exports = {
       options.cert = fs.readFileSync(config.httpsCert).toString('utf8');
       options.key = fs.readFileSync(config.httpsKey).toString('utf8');
     }
-    if (this.yesTrueNoFalse(config.allowBadCertForDev) && !(process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')) {
+    if (this.yesTrueNoFalse(config.allowBadCertForDev) && !(process.env.NODE_ENV === 'production')) {
       options.rejectUnauthorized = false;
     }
     return options;

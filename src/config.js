@@ -48,7 +48,7 @@ const config = {
     tailable: process.env.TAILABLE_WINSTON || 'YES',
     maxsize: process.env.MAXSIZE_WINSTON || 50000,
     maxFiles: process.env.MAX_FILES_WINSTON || 5,
-    zippedArchive: process.env.ZIPPED_ARCHIVE_WINSTON || 'YES'
+    zippedArchive: process.env.ZIPPED_ARCHIVE_WINSTON || 'YES',
   }
 };
-export default config;
+module.exports = config;

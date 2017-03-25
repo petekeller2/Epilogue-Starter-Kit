@@ -12,5 +12,5 @@
     ["src/auth"],
     ["tests"]
   ],
-  "ignore": ["todo.md", "todos.md", "placeholder.md", "notes.md"]
+  "ignore": ["todo.md", "todos.md", "placeholder.md", "notes.md", "note.md"]
 }
