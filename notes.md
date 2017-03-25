@@ -27,3 +27,7 @@ module.exports for config and util
 **3/23/17**
 
 Http test bug fixes
+
+**3/25/17**
+
+Http tests working and bug fixes
