@@ -1,7 +1,8 @@
-eslint:
-  enabled: true
-  config:
-    config: src/.eslintrc.js
+engines:
+  eslint:
+    enabled: true
+    config:
+      config: src/.eslintrc.js
 ratings:
   paths:
     - "**.js"
