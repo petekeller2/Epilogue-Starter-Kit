@@ -151,7 +151,7 @@ export default {
           return true;
         } else {
           if (winston.info) {
-            winston.info('Can\'t update/delete/read group resource, not a member');
+            winston.info('Can not update/delete/read group resource, not a member');
           }
           return false;
         }
@@ -177,17 +177,7 @@ export default {
    * @description Returns true for action is create or list and the user is not a guest
    */
   trueForCreateOrList(actionsList, index, req) {
-    if ((actionsList[index] === 'create' || actionsList[index] === 'list') && (((req || {}).user || {}).id)) {
-      if (config.environment === 'testing' || config.environment === 'staging') {
-        winston.info(`true for trueForCreateOrList (${((req || {}).user || {}).id})`);
-      }
-      return true;
-    } else {
-      if (config.environment === 'testing' || config.environment === 'staging') {
-        winston.info(`false for trueForCreateOrList (${((req || {}).user || {}).id})`);
-      }
-      return false;
-    }
+    return Boolean((actionsList[index] === 'create' || actionsList[index] === 'list') && (((req || {}).user || {}).id));
   },
   /** @function
    * @name belongsToUserResourceCheck
@@ -237,10 +227,6 @@ export default {
         authMilestone[actionsList[i]].auth = ((req, res, context) => new Promise(async(resolve) => {
 
           isGroup = resource[6];
-          if (config.environment === 'testing' || config.environment === 'staging') {
-            winston.info('isHttpTest', isHttpTest);
-            winston.info('validTestNumber', validTestNumber);
-          }
           permissions = this.convertRealOrTestPermissions(resource[1], resource[0], isHttpTest, validTestNumber);
 
           cleanedEndpointsArray = [];
@@ -257,13 +243,6 @@ export default {
             req.user.id = testConfig.testCases[testConfig.testNumber - 1].userID;
           }
 
-          if (config.environment === 'testing' || config.environment === 'staging') {
-            winston.info(`permissions in epilogueAuth ${permissions}`);
-            winston.info(`first permission section ${i} ${permissions[i]}`);
-            winston.info(`second to last permission section ${((req || {}).user || {}).id} ${i + 10} ${permissions[i + 10]}`);
-            winston.info(`last permission section ${i + 15} ${permissions[i + 15]}`);
-          }
-
           if (isGroup === true) {
             currentUserOwnsResource = await this.isOwnerOfGroupResourceCheck(req, actionsList, resource, i);
             memberOfGroup = await this.isMemberOfGroupCheck(req, actionsList, resource, i, awaitedGroupXrefModel);
@@ -271,33 +250,15 @@ export default {
             currentUserOwnsResource = await this.isOwnerOfRegularResourceCheck(req, cleanedEndpointsArray, actionsList, resource, i);
           }
 
-          if (config.environment === 'testing' || config.environment === 'staging') {
-            winston.info('currentUserOwnsResource', currentUserOwnsResource);
-          }
           if ((permissions[i] === true) && (currentUserOwnsResource === true)) {
-            if (config.environment === 'testing' || config.environment === 'staging') {
-              winston.info('first section passed');
-            }
             resolve(context.continue);
           } else if ((permissions[i + 5] === true) && (isGroup === true) && (memberOfGroup === true)) {
-            if (config.environment === 'testing' || config.environment === 'staging') {
-              winston.info('second section passed');
-            }
             resolve(context.continue);
           } else if ((permissions[i + 10] === true) && req && req.user && req.user.id && (req.user.id !== '')) {
-            if (config.environment === 'testing' || config.environment === 'staging') {
-              winston.info('third section passed');
-            }
             resolve(context.continue);
           } else if (permissions[i + 15] === true) {
-            if (config.environment === 'testing' || config.environment === 'staging') {
-              winston.info('fourth section passed');
-            }
             resolve(context.continue);
           } else {
-            if (config.environment === 'testing' || config.environment === 'staging') {
-              winston.info('all permission sections are false');
-            }
             res.status(401).send({ message: 'Unauthorized' });
             resolve(context.stop);
           }
@@ -336,9 +297,6 @@ export default {
                   } else {
                     findAllObj.where = { UserId: req.user.id };
                   }
-                  if (config.environment === 'testing' || config.environment === 'staging') {
-                    winston.info(`findAllObj.where ${findAllObj.where}`);
-                  }
                   return resource[2].findAll(findAllObj)
                   .then((result) => {
                     // eslint-disable-next-line
@@ -348,7 +306,7 @@ export default {
                 } else {
                   if (winston.warning) {
                     // eslint-disable-next-line
-                    winston.warning('With these permissions, users can only list resources that belong to them, but this resource can\'t belong to anyone');
+                    winston.warning('With these permissions, users can only list resources that belong to them, but this resource can not belong to anyone');
                   }
                   // eslint-disable-next-line
                   context.include = [];
@@ -390,9 +348,6 @@ export default {
    * @description For number permissions, read being true means list is true as well (list permissions can't be directly set)
    */
   convertNumberPermissions(permissionsInput) {
-    if (config.environment === 'testing' || config.environment === 'staging') {
-      winston.info('permissionsInput for number conversion', permissionsInput);
-    }
     const permissionsReturn = [];
     for (let i = 0; i < 20; i += 1) {
       permissionsReturn.push(false);
@@ -426,9 +381,6 @@ export default {
         permissionsReturnIndex += 1;
       }
       permissionsReturnIndex += 1;
-    }
-    if (config.environment === 'testing' || config.environment === 'staging') {
-      winston.info('permissions output for number conversion (before reverse)', permissionsReturn);
     }
     return permissionsReturn.reverse();
   },
@@ -659,15 +611,8 @@ export default {
     if (isHttpTest && validTestNumber && testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'access') {
       const testPermissionsArray = testConfig.testCases[testConfig.testNumber - 1].permissions;
       if (testPermissionsArray.indexOf(resourceName) >= 0) {
-        if (config.environment === 'testing' || config.environment === 'staging') {
-          winston.info('test permissions being used', testPermissionsArray[testPermissionsArray.indexOf(resourceName) + 1]);
-          winston.info('test number in epilogueAuth.js', testConfig.testNumber - 1);
-        }
         return this.convertPermissions(testPermissionsArray[testPermissionsArray.indexOf(resourceName) + 1]);
       }
-    }
-    if (config.environment === 'testing' || config.environment === 'staging') {
-      winston.info('test permissions are NOT being used');
     }
     return this.convertPermissions(permissionsInput);
   },

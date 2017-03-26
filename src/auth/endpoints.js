@@ -121,7 +121,7 @@ export default {
           } else {
             res.redirect(`https://${config.auth0.domain}/v2/logout?returnTo=${config.protocol}%3A%2F%2F${config.host}:${config.port}/loggedOutScreen`);
           }
-        } else if (config.port === 443 || config.port === 80) {
+        } else if (config.port === 443 || config.port === 80) { // replace with inline if statement
           res.redirect(`${config.protocol}://${config.host}/loggedOutScreen`);
         } else {
           res.redirect(`${config.protocol}://${config.host}:${config.port}/loggedOutScreen`);

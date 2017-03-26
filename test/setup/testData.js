@@ -61,10 +61,6 @@ export default {
       attributes: ['id'],
       where: { id: 2 },
     });
-    if (foundUser && foundTodo && foundNeighborhood && foundUserGroupXref) {
-      return true;
-    } else {
-      return false;
-    }
+    return Boolean(foundUser && foundTodo && foundNeighborhood && foundUserGroupXref);
   }
 }

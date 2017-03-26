@@ -8,25 +8,22 @@ const spawn = require('child_process').spawn;
 const config = require('./src/config');
 const utilities = require('./src/utilities');
 
+const winstonConfig = {
+  tailable: utilities.yesTrueNoFalse(config.winston.tailable),
+  maxsize: config.winston.maxsize,
+  maxFiles: config.winston.maxFiles,
+  zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive)
+};
+
+winstonConfig.filename = 'logs/gulpErrors.log';
 winston.loggers.add('gulpError', {
-  file: {
-    filename: 'logs/gulpErrors.log',
-    tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-    maxsize: config.winston.maxsize,
-    maxFiles: config.winston.maxFiles,
-    zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
-  },
+  file: winstonConfig
 });
 const gulpErrors = winston.loggers.get('gulpError');
 
+winstonConfig.filename = 'logs/testResults.log';
 winston.loggers.add('testResults', {
-  file: {
-    filename: 'logs/testResults.log',
-    tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-    maxsize: config.winston.maxsize,
-    maxFiles: config.winston.maxFiles,
-    zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
-  },
+  file: winstonConfig
 });
 const testResults = winston.loggers.get('testResults');
 
@@ -192,6 +189,18 @@ const newMarkdownFileName = function(file) {
 };
 
 /** @function
+ * @name copyToWikiFolder
+ * @param {string} file
+ * @param {string} wikiFile
+ * @description Used by moveMarkdown
+ */
+const copyToWikiFolder = function(file, wikiFile) {
+  fs.copy(file, `wiki/${wikiFile}`, err => {
+    if (err) return gulpErrors.error(err);
+  })
+};
+
+/** @function
  * @name moveMarkdown
  * @param {string} dir
  * @description Copies markdown files to the wiki directory with file names based on the first line of the file
@@ -210,9 +219,7 @@ const moveMarkdown = function(dir) {
           fileName = fileNameSections.pop().toLowerCase().trim();
           if(file === 'miscWikiPages/Home.md') {
             fileName = fileName.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
-            fs.copy(file, `wiki/${fileName}`, err => {
-              if (err) return gulpErrors.error(err);
-            })
+            copyToWikiFolder(file, fileName);
           } else {
             ignoredFile = false;
             if (Array.isArray(wikiConfig.ignore) && wikiConfig.ignore.length > 0) {
@@ -229,9 +236,7 @@ const moveMarkdown = function(dir) {
                   newFileName = `${newFileName} (${fileNameSections.pop()})`;
                 }
                 usedFileNames.push(newFileName);
-                fs.copy(file, `wiki/${newFileName}`, err => {
-                  if (err) return gulpErrors.error(err);
-                })
+                copyToWikiFolder(file, newFileName);
               });
             }
           }
@@ -289,21 +294,16 @@ const endOfTests = function() {
       gulpErrors.error(err);
       throw err;
     }
-    // console.log('latestTests data (gulp)', data.toString('utf8'));
+    let testResultOverview = '';
     if (data.toString('utf8').search(/failing/g) !== -1) {
-      const failedTests = `Did not pass all tests (${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')})`;
-      fs.writeFile('logs/latestTests.log', failedTests, function (err) {
-        if (err) return gulpErrors.error(err);
-        testResults.error(failedTests);
-      });
-
+      testResultOverview = `Did not pass all tests (${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')})`;
     } else {
-      const passedTests = `Passed all tests (${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')})`;
-      fs.writeFile('logs/latestTests.log', passedTests, function (err) {
-        if (err) return gulpErrors.error(err);
-        testResults.info(passedTests);
-      });
+      testResultOverview = `Passed all tests (${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')})`;
     }
+    fs.writeFile('logs/latestTests.log', testResultOverview, function (err) {
+      if (err) return gulpErrors.error(err);
+      testResults.info(testResultOverview);
+    });
   });
   process.env.NODE_ENV = 'development';
 };

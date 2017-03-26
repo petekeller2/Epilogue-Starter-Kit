@@ -1,0 +1,10 @@
+eslint:
+  enabled: true
+  config:
+    config: src/.eslintrc.js
+ratings:
+  paths:
+    - "**.js"
+exclude_paths:
+  - "test/"
+  - "src/config.js"
