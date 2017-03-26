@@ -4,7 +4,8 @@ import config from '../config';
 import epilogueSetup from '../epilogueSetup';
 import testConfig from '../../test/testConfig.json';
 
-// todo reduce code duplication. Update functions here when the User resource is replaced
+// todo: reduce code duplication. Update functions here when the User resource is replaced with config
+// todo: string that matches a User type resource
 export default {
   /** @function
    * @name isOwnerOfRegularResourceCheck
@@ -53,7 +54,7 @@ export default {
               return true;
             } else {
               if (winston.info) {
-                winston.info(`Can\'t update/delete/read resource, not owned by current user (current user: ${req.user.id})`);
+                winston.info(`Can not update/delete/read resource, not owned by current user (current user: ${req.user.id})`);
               }
               return false;
             }
@@ -107,7 +108,7 @@ export default {
           return true;
         } else {
           if (winston.info) {
-            winston.info('Can\'t update/delete/read group resource, not owned by current user');
+            winston.info('Can not update/delete/read group resource, not owned by current user');
           }
           return false;
         }
@@ -390,7 +391,7 @@ export default {
    */
   convertNumberPermissions(permissionsInput) {
     if (config.environment === 'testing' || config.environment === 'staging') {
-      winston.info(`permissionsInput for number conversion`, permissionsInput);
+      winston.info('permissionsInput for number conversion', permissionsInput);
     }
     const permissionsReturn = [];
     for (let i = 0; i < 20; i += 1) {
@@ -427,7 +428,7 @@ export default {
       permissionsReturnIndex += 1;
     }
     if (config.environment === 'testing' || config.environment === 'staging') {
-      winston.info(`permissions output for number conversion (before reverse)`, permissionsReturn);
+      winston.info('permissions output for number conversion (before reverse)', permissionsReturn);
     }
     return permissionsReturn.reverse();
   },
