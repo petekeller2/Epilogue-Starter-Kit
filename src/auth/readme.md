@@ -9,8 +9,8 @@ If you would like to add a passport strategy that has not been
 implemented, add it to passport.js, update config.js and make 
 it available to the users by updating endpoints.js.
 
-Custom milestones are merged with auth milestones 
-in epilogueAuth.js.
+Custom milestones from the resources folder are merged with 
+auth milestones in epilogueAuth.js.
 
 Twitter is not enabled by default due to it not using 
 OAuth 2.0. This can be changed in config.js.

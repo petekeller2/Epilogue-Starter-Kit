@@ -5,6 +5,8 @@ const winston = require('winston');
 const glob = require("glob");
 const readline = require('readline');
 const spawn = require('child_process').spawn;
+const Transform = require('stream').Transform;
+const util = require('util');
 const config = require('./src/config');
 const utilities = require('./src/utilities');
 
@@ -146,7 +148,46 @@ const makeTempDir = function(safetyCounter) {
 };
 
 /** @function
+ * @name RemoveFirstLine
+ * @param args
+ * @author moka (Max M)
+ * @description RemoveFirstLine of file. See moka's answer https://stackoverflow.com/questions/17363206/node-js-how-to-delete-first-line-in-file/17365494
+ */
+// Transform sctreamer to remove first line
+const RemoveFirstLine = function(args) {
+  if (! (this instanceof RemoveFirstLine)) {
+    return new RemoveFirstLine(args);
+  }
+  Transform.call(this, args);
+  this._buff = '';
+  this._removed = false;
+};
+
+util.inherits(RemoveFirstLine, Transform);
+
+RemoveFirstLine.prototype._transform = function(chunk, encoding, done) {
+  if (this._removed) { // if already removed
+    this.push(chunk); // just push through buffer
+  } else {
+    // collect string into buffer
+    this._buff += chunk.toString();
+
+    // check if string has newline symbol
+    if (this._buff.indexOf('\n') !== -1) {
+      // push to stream skipping first line
+      this.push(this._buff.slice(this._buff.indexOf('\n') + 2));
+      // clear string buffer
+      this._buff = null;
+      // mark as removed
+      this._removed = true;
+    }
+  }
+  done();
+};
+
+/** @function
  * @name markdownBuild
+ * @param {array} arguments
  * @description Runs the moveMarkdown function and the buildCustomSideMenu function if it is enabled in wikiConfig.json
  */
 const markdownBuild = function() {
@@ -156,6 +197,40 @@ const markdownBuild = function() {
       buildCustomSideMenu(arguments);
     }
   });
+
+  moveAllMarkdown.apply(this, arguments);
+};
+
+/** @function
+ * @name removeTitleFromMarkdown
+ * @param {string} file
+ * @description Removes first line from a file
+ */
+const removeTitleFromMarkdown = function(file) {
+  const input = fs.createReadStream(`wiki/${file}`);
+  const output = fs.createWriteStream(`wiki/_${file}`);
+
+  input // take input
+    .pipe(RemoveFirstLine()) // pipe through line remover
+    .pipe(output);
+
+  fs.rename(`wiki/_${file}`, `wiki/${file}`, doneCustom);
+};
+
+/** @function
+ * @name doneCustom
+ * @description Function for callbacks
+ */
+const doneCustom = function() {
+  // console.log('function done');
+};
+
+/** @function
+ * @name moveAllMarkdown
+ * @param {array} arguments
+ * @description Runs moveMarkdown for all the markdown files to be moved
+ */
+const moveAllMarkdown = function() {
   const args = Array.prototype.slice.call(arguments);
   args.forEach(function(arg) {
     moveMarkdown(arg);
@@ -189,14 +264,15 @@ const newMarkdownFileName = function(file) {
 };
 
 /** @function
- * @name copyToWikiFolder
+ * @name createWikiFile
  * @param {string} file
  * @param {string} wikiFile
  * @description Used by moveMarkdown
  */
-const copyToWikiFolder = function(file, wikiFile) {
+const createWikiFile = function(file, wikiFile) {
   fs.copy(file, `wiki/${wikiFile}`, err => {
     if (err) return gulpErrors.error(err);
+    removeTitleFromMarkdown(wikiFile);
   })
 };
 
@@ -219,7 +295,7 @@ const moveMarkdown = function(dir) {
           fileName = fileNameSections.pop().toLowerCase().trim();
           if(file === 'miscWikiPages/Home.md') {
             fileName = fileName.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
-            copyToWikiFolder(file, fileName);
+            createWikiFile(file, fileName);
           } else {
             ignoredFile = false;
             if (Array.isArray(wikiConfig.ignore) && wikiConfig.ignore.length > 0) {
@@ -236,7 +312,7 @@ const moveMarkdown = function(dir) {
                   newFileName = `${newFileName} (${fileNameSections.pop()})`;
                 }
                 usedFileNames.push(newFileName);
-                copyToWikiFolder(file, newFileName);
+                createWikiFile(file, newFileName);
               });
             }
           }

@@ -3,9 +3,15 @@ engines:
     enabled: true
     config:
       config: src/.eslintrc.js
+  duplication:
+      enabled: true
+      config:
+        languages:
+          - javascript:
 ratings:
   paths:
     - "**.js"
 exclude_paths:
   - "test/"
   - "src/config.js"
+  - "gulpfile.js"
