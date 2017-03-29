@@ -1,9 +1,9 @@
 import winston from 'winston';
 import merge from 'deepmerge';
 import config from '../config';
+import utilities from '../utilities';
 import epilogueSetup from '../epilogueSetup';
 import testConfig from '../../test/testConfig.json';
-
 // todo: reduce code duplication. Update functions here when the User resource is replaced with config
 // todo: string that matches a User type resource
 export default {
@@ -215,6 +215,19 @@ export default {
     const isHttpTest = Boolean((config.environment === 'testing' || config.environment === 'staging') && testConfig.individualHttpTest === true);
     const validTestNumber = Boolean(testConfig.testCases[testConfig.testNumber - 1]);
 
+    const winstonConfig = {
+      tailable: utilities.yesTrueNoFalse(config.winston.tailable),
+      maxsize: config.winston.maxsize,
+      maxFiles: config.winston.maxFiles,
+      zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive)
+    };
+
+    winstonConfig.filename = 'logs/unauthorized.log';
+    winston.loggers.add('unauthorized', {
+      file: winstonConfig
+    });
+    const unauthorizedLog = winston.loggers.get('unauthorized');
+
     const actionsList = ['list', 'create', 'read', 'update', 'delete'];
     const awaitedResourcesFromSetup = await resourcesFromSetup;
     let userAAs = awaitedResourcesFromSetup.get('User')[5];
@@ -259,6 +272,11 @@ export default {
           } else if (permissions[i + 15] === true) {
             resolve(context.continue);
           } else {
+            const unauthObj = {
+              userID: ((req || {}).user || {}).id,
+              resource: resource[0]
+            };
+            unauthorizedLog.info(unauthObj);
             res.status(401).send({ message: 'Unauthorized' });
             resolve(context.stop);
           }
