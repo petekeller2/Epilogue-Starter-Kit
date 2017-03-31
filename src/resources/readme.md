@@ -124,7 +124,7 @@ done to make hex format more readable.
 'lcrud|lcrud|lcrud|lcrud' => [true, ..., true]
 'l-rud|lcrud|lcrud|lcrud' => [true, false, true, true, ..., true]
 'lrud|lcrud|lcrud|lcrud' => [true, false, true, true, ..., true]
-{owner: ['l', 'c', 'r']} => [true, true, true, false, false, ...false]
+{owner: ['l', 'c', 'r']} => [true, true, true, false, false, ..., false]
 [true, ..., true] => [true, ..., true]
 // See test/tests/permissions/conversions.js for
 // more examples of valid permissions formats

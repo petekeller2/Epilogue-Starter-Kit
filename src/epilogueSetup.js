@@ -1,4 +1,5 @@
 import epilogue from 'epilogue';
+import merge from 'deepmerge';
 import Resources from './resources';
 import MainError from './custom/errors/';
 import testConfig from '../test/testConfig.json';
@@ -37,7 +38,7 @@ export default {
    * @description Builds the resources from the resources folder and returns a map of the resources.
    *              The creation of the resources will be finished in epilogueAuth.js. The map creation
    *              is finished here
-   * @todo use deep-merge, replace the hard coded 'User' with a config variable matching the User resource's replacement
+   * @todo replace the hard coded 'User' with a config variable
    */
   async setupResources(database, Sequelize, groupXrefModel) {
     const awaitedGroupXrefModel = await groupXrefModel;
@@ -106,7 +107,7 @@ export default {
         model,
         endpoints,
       };
-      resourceParam = { ...resourceParam, ...extension }; // todo: replace with deep-merge (see epilogueAuth.js)
+      resourceParam = merge(resourceParam, extension);
 
       const usableResource = await epilogue.resource(resourceParam);
       if (resource[7]) {

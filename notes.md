@@ -1,3 +1,7 @@
 **3/29/17**
 
-Log attempts to use unauthorized resource actions
+Resources readme fixed
+
+**3/30/17**
+
+???
