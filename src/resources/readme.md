@@ -74,9 +74,9 @@ to a standard Auto Association format.
 
 #### Format
 
-* String, array, object or boolean
-* The preferred format is the array of objects format
-* Array styles can be mixed
+* String, array, object or boolean.
+* The preferred format is the array of objects format.
+* Array styles can be mixed.
 * Though false is acceptable, '' should be used instead if you don't
   want to create an auto-association on that resource. This is because
   an auto-association with that resource could be on another resource,
@@ -109,9 +109,9 @@ used to set them up for a resource.
 
 #### Format
 
-* String, array, number or object
-* The preferred format is the string | deliminator - for 
-disallowed format
+* String, array, number or object.
+* The preferred format is string with | for deliminator and - for 
+disallowed.
 * For numbers, the list and read bit are the same. This was 
 done to make hex format more readable.
 

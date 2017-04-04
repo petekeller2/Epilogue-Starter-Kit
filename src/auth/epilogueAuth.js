@@ -1,5 +1,6 @@
 import winston from 'winston';
 import merge from 'deepmerge';
+import defaultMilestones from './defaultMilestones';
 import config from '../config';
 import utilities from '../utilities';
 import epilogueSetup from '../epilogueSetup';
@@ -281,24 +282,25 @@ export default {
             resolve(context.stop);
           }
         }));
+        authMilestone = defaultMilestones.ownResource(authMilestone, actionsList, i, isGroup, resource[5], resource[0], userAAs);
         if (actionsList[i] === 'create') {
-          authMilestone[actionsList[i]].write = {};
-          // eslint-disable-next-line
-          authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async(resolve) => {
-            if (resource[6] === true) {
-              if (((req || {}).body) && ((req || {}).user || {}).id) {
-                // eslint-disable-next-line
-                req.body.OwnerID = req.user.id;
-              }
-            }
-            if ((userAAs.indexOf(resource[0]) >= 0) || (this.belongsToUserResourceCheck(resource[5]))) {
-              if (((req || {}).body) && ((req || {}).user || {}).id) {
-                // eslint-disable-next-line
-                req.body.UserId = req.user.id;
-              }
-            }
-            resolve(context.continue);
-          }));
+          // authMilestone[actionsList[i]].write = {};
+          // // eslint-disable-next-line
+          // authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async(resolve) => {
+          //   if (resource[6] === true) {
+          //     if (((req || {}).body) && ((req || {}).user || {}).id) {
+          //       // eslint-disable-next-line
+          //       req.body.OwnerID = req.user.id;
+          //     }
+          //   }
+          //   if ((userAAs.indexOf(resource[0]) >= 0) || (this.belongsToUserResourceCheck(resource[5]))) {
+          //     if (((req || {}).body) && ((req || {}).user || {}).id) {
+          //       // eslint-disable-next-line
+          //       req.body.UserId = req.user.id;
+          //     }
+          //   }
+          //   resolve(context.continue);
+          // }));
         } else if ((actionsList[i] === 'list')) {
           authMilestone[actionsList[i]].fetch = {};
           // eslint-disable-next-line
