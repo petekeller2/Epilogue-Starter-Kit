@@ -283,62 +283,7 @@ export default {
           }
         }));
         authMilestone = defaultMilestones.ownResource(authMilestone, actionsList, i, isGroup, resource[5], resource[0], userAAs);
-        if (actionsList[i] === 'create') {
-          // authMilestone[actionsList[i]].write = {};
-          // // eslint-disable-next-line
-          // authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async(resolve) => {
-          //   if (resource[6] === true) {
-          //     if (((req || {}).body) && ((req || {}).user || {}).id) {
-          //       // eslint-disable-next-line
-          //       req.body.OwnerID = req.user.id;
-          //     }
-          //   }
-          //   if ((userAAs.indexOf(resource[0]) >= 0) || (this.belongsToUserResourceCheck(resource[5]))) {
-          //     if (((req || {}).body) && ((req || {}).user || {}).id) {
-          //       // eslint-disable-next-line
-          //       req.body.UserId = req.user.id;
-          //     }
-          //   }
-          //   resolve(context.continue);
-          // }));
-        } else if ((actionsList[i] === 'list')) {
-          authMilestone[actionsList[i]].fetch = {};
-          // eslint-disable-next-line
-          authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async(resolve) => {
-            permissions = this.convertRealOrTestPermissions(resource[1], resource[0], isHttpTest, validTestNumber);
-            if (permissions[0] === true && permissions[10] === false && permissions[15] === false) {
-              if ((((req || {}).user || {}).id)) {
-                if ((resource[0] === 'User') || (userAAs.indexOf(resource[0]) >= 0) || (this.belongsToUserResourceCheck(resource[5]))) {
-                  const findAllObj = {
-                    all: true,
-                  };
-                  if (resource[0] === 'User') {
-                    findAllObj.where = { id: req.user.id };
-                  } else {
-                    findAllObj.where = { UserId: req.user.id };
-                  }
-                  return resource[2].findAll(findAllObj)
-                  .then((result) => {
-                    // eslint-disable-next-line
-                    context.instance = result;
-                  })
-                  .then(() => resolve(context.skip));
-                } else {
-                  if (winston.warning) {
-                    // eslint-disable-next-line
-                    winston.warning('With these permissions, users can only list resources that belong to them, but this resource can not belong to anyone');
-                  }
-                  // eslint-disable-next-line
-                  context.include = [];
-                }
-              } else {
-                // eslint-disable-next-line
-                context.include = null;
-              }
-            }
-            resolve(context.continue);
-          }));
-        }
+        authMilestone = defaultMilestones.listOwned(authMilestone, actionsList, i, resource[5], resource[0], userAAs, isHttpTest, validTestNumber, permissions, resource[1]);
       }
       combinedMilestones = merge(authMilestone, resource[7]);
       resource[8].use(combinedMilestones);
