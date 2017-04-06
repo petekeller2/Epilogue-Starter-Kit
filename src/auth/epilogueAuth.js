@@ -287,7 +287,7 @@ export default {
 
         const milestoneParamObj = {
           ownResource: [isGroup],
-          listOwned: [isHttpTest, validTestNumber, permissions, resource[1]],
+          listOwned: [resource[2], isHttpTest, validTestNumber, permissions, resource[1]],
         };
         const sharedParameters = [actionsList, i, resource[5], resource[0], userAAs];
         const addMilestonesParams = [milestoneParamObj, sharedParameters, authMilestone];

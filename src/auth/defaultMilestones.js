@@ -39,7 +39,7 @@ export default {
     }
     return totalAuthMilestone;
   },
-  listOwned(totalAuthMilestone, actionsList, i, aa, name, userAAs, isHttpTest, validTestNumber, permissions, permissionsInput) {
+  listOwned(totalAuthMilestone, actionsList, i, aa, name, userAAs, model, isHttpTest, validTestNumber, permissions, permissionsInput) {
     if ((actionsList[i] === 'list')) {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
@@ -49,16 +49,16 @@ export default {
         permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
         if (permissions[0] === true && permissions[10] === false && permissions[15] === false) {
           if ((((req || {}).user || {}).id)) {
-            if ((resource[0] === 'User') || (userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
+            if ((name === 'User') || (userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
               const findAllObj = {
                 all: true,
               };
-              if (resource[0] === 'User') {
+              if (name === 'User') {
                 findAllObj.where = { id: req.user.id };
               } else {
                 findAllObj.where = { UserId: req.user.id };
               }
-              return resource[2].findAll(findAllObj)
+              return model.findAll(findAllObj)
                 .then((result) => {
                   // eslint-disable-next-line
                   context.instance = result;
