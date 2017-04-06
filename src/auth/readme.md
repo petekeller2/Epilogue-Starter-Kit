@@ -14,3 +14,6 @@ auth milestones in epilogueAuth.js.
 
 Twitter is not enabled by default due to it not using 
 OAuth 2.0. This can be changed in config.js.
+
+The main programs in the src/auth folder are endpoints.js, 
+epilogueAuth.js and passport.js.

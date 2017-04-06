@@ -13,7 +13,8 @@ const config = {
   urlencodedExtended: process.env.URL_ENCODED_EXTENDED || 'NO',
   force: process.env.FORCE || 'YES', // YES to clear the db on server restart
   sessionSecret: process.env.SESSION_SECRET || '<SESSION_SECRET>',
-  authOptionsDisabled: process.env.AUTH_OPTIONS_DISABLED || ['twitter'], // I prefer OAuth 2.0
+  authOptionsDisabled: process.env.AUTH_OPTIONS_DISABLED || ['twitter'], // OAuth 2.0 preferred
+  defaultMilestonesDisabled: process.env.DEFAULT_MILESTONES_DISABLED || [],
   auth0: {
     id: process.env.AUTH0_CLIENT_ID || '<AUTH0_CLIENT_ID>',
     secret: process.env.AUTH0_CLIENT_SECRET || '<AUTH0_CLIENT_SECRET>',
@@ -42,7 +43,7 @@ const config = {
     credentialsRequired: process.env.CREDENTIALS_REQUIRED || 'NO',
   },
   tests: {
-    exitOnFinishingTests: process.env.EXIT_ON_FINISHING_TEST || 'YES', // YES to kill the test server on completion
+    exitOnFinishingTests: process.env.EXIT_ON_FINISHING_TEST || 'YES',
   },
   winston: {
     tailable: process.env.TAILABLE_WINSTON || 'YES',

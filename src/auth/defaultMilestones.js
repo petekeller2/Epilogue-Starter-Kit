@@ -1,8 +1,20 @@
 import merge from 'deepmerge';
 import epilogueAuth from './epilogueAuth';
+import config from '../config';
 
+// todo: jsdoc
 export default {
-  ownResource(totalAuthMilestone, actionsList, i, isGroup, aa, name, userAAs) {
+  addMilestones(milestoneParamObj, sharedParameters, authMilestone) {
+    let totalParameters = [];
+    Object.entries(milestoneParamObj).forEach(([milestoneParamObjKey, milestoneParamObjVal]) => {
+      if (!(Array.isArray(config.defaultMilestonesDisabled) && config.defaultMilestonesDisabled.indexOf(milestoneParamObjKey) !== -1)) {
+        totalParameters = sharedParameters.concat(milestoneParamObjVal);
+        authMilestone = this[milestoneParamObjKey](authMilestone, ...totalParameters);
+      }
+    });
+    return authMilestone;
+  },
+  ownResource(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup) {
     if (actionsList[i] === 'create') {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};

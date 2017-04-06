@@ -59,7 +59,7 @@ export default {
    * @param {map} resourcesFromSetup
    * @return object
    * @description Sets up passport
-   * @todo Update this function when the User resource is replaced
+   * @todo Update this function when the User resource can be set from config.js
    */
   setup(resourcesFromSetup) {
     let passportConfig = {};

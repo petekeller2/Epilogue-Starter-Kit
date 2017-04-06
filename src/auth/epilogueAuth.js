@@ -1,6 +1,7 @@
 import winston from 'winston';
 import merge from 'deepmerge';
 import defaultMilestones from './defaultMilestones';
+import customMilestones from './customMilestones';
 import config from '../config';
 import utilities from '../utilities';
 import epilogueSetup from '../epilogueSetup';
@@ -272,6 +273,7 @@ export default {
             resolve(context.continue);
           } else if (permissions[i + 15] === true) {
             resolve(context.continue);
+            // VVV --- else if (group stuff) { ---- VVV
           } else {
             const unauthObj = {
               userID: ((req || {}).user || {}).id,
@@ -282,8 +284,17 @@ export default {
             resolve(context.stop);
           }
         }));
-        authMilestone = defaultMilestones.ownResource(authMilestone, actionsList, i, isGroup, resource[5], resource[0], userAAs);
-        authMilestone = defaultMilestones.listOwned(authMilestone, actionsList, i, resource[5], resource[0], userAAs, isHttpTest, validTestNumber, permissions, resource[1]);
+
+        const milestoneParamObj = {
+          ownResource: [isGroup],
+          listOwned: [isHttpTest, validTestNumber, permissions, resource[1]],
+        };
+        const sharedParameters = [actionsList, i, resource[5], resource[0], userAAs];
+        const addMilestonesParams = [milestoneParamObj, sharedParameters, authMilestone];
+        authMilestone = defaultMilestones.addMilestones(...addMilestonesParams);
+
+        const totalParameters = [authMilestone, actionsList, i, resource, isHttpTest, validTestNumber, permissions];
+        authMilestone = customMilestones.addMilestones(...totalParameters);
       }
       combinedMilestones = merge(authMilestone, resource[7]);
       resource[8].use(combinedMilestones);
