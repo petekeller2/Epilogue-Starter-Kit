@@ -2,8 +2,15 @@ import merge from 'deepmerge';
 import epilogueAuth from './epilogueAuth';
 import config from '../config';
 
-// todo: jsdoc
 export default {
+  /** @function
+   * @name addMilestones
+   * @param {object} milestoneParamObj
+   * @param {Array} sharedParameters
+   * @param {object} authMilestone
+   * @return object
+   * @description Returns all of the allowed default milestones plus the milestones the function was given
+   */
   addMilestones(milestoneParamObj, sharedParameters, authMilestone) {
     let totalParameters = [];
     Object.entries(milestoneParamObj).forEach(([milestoneParamObjKey, milestoneParamObjVal]) => {
@@ -14,6 +21,18 @@ export default {
     });
     return authMilestone;
   },
+  /** @function
+   * @name ownResource
+   * @param {object} totalAuthMilestone
+   * @param {Array} actionsList
+   * @param {number} i
+   * @param {*} aa
+   * @param {string} name
+   * @param {Array} userAAs
+   * @param {boolean} isGroup
+   * @return object
+   * @description Returns a possibly modified version of totalAuthMilestone. When an instance of a resource is created, the UserID and/or OwnerID column is updated
+   */
   ownResource(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup) {
     if (actionsList[i] === 'create') {
       const authMilestone = {};
@@ -39,6 +58,22 @@ export default {
     }
     return totalAuthMilestone;
   },
+  /** @function
+   * @name ownResource
+   * @param {object} totalAuthMilestone
+   * @param {Array} actionsList
+   * @param {number} i
+   * @param {*} aa
+   * @param {string} name
+   * @param {Array} userAAs
+   * @param {object} model
+   * @param {boolean} isHttpTest
+   * @param {boolean} validTestNumber
+   * @param {Array} permissions
+   * @param {*} permissionsInput
+   * @return object
+   * @description Returns a possibly modified version of totalAuthMilestone. Only list owned resources under certain permissions
+   */
   listOwned(totalAuthMilestone, actionsList, i, aa, name, userAAs, model, isHttpTest, validTestNumber, permissions, permissionsInput) {
     if ((actionsList[i] === 'list')) {
       const authMilestone = {};

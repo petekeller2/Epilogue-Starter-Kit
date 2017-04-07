@@ -9,3 +9,9 @@ Docs updated
 Config updated
 
 Default and custom milestone helper files updated
+
+**4/6/17**
+
+jsdoc for milestones
+
+Minor fixes

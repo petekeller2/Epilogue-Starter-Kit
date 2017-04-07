@@ -1,11 +1,27 @@
 
 export default {
-  // todo: jsdoc
+  /**
+   @name milestoneParamObj
+   @type Array
+   @description names of allowed custom milestone functions to be used by addMilestones
+   */
   milestoneParamObj: [],
-  addMilestones() {
+  /** @function
+   * @name addMilestones
+   * @param {object} authMilestone
+   * @param {Array} actionsList
+   * @param {number} i
+   * @param {array} resource
+   * @param {boolean} isHttpTest
+   * @param {boolean} validTestNumber
+   * @param {array} permissions
+   * @return object
+   * @description Returns all of the allowed custom milestones plus the milestones the function was given
+   */
+  addMilestones(authMilestone, actionsList, i, resource, isHttpTest, validTestNumber, permissions) {
     this.milestoneParamObj.forEach((milestoneFunctionName) => {
-      arguments[0] = this[milestoneFunctionName](...Array.from(arguments));
+      authMilestone = this[milestoneFunctionName](...Array.from(arguments));
     });
-    return arguments[0];
+    return authMilestone;
   },
 };

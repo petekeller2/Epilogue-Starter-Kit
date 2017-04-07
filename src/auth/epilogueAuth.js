@@ -221,12 +221,12 @@ export default {
       tailable: utilities.yesTrueNoFalse(config.winston.tailable),
       maxsize: config.winston.maxsize,
       maxFiles: config.winston.maxFiles,
-      zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive)
+      zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
     };
 
     winstonConfig.filename = 'logs/unauthorized.log';
     winston.loggers.add('unauthorized', {
-      file: winstonConfig
+      file: winstonConfig,
     });
     const unauthorizedLog = winston.loggers.get('unauthorized');
 
@@ -277,7 +277,7 @@ export default {
           } else {
             const unauthObj = {
               userID: ((req || {}).user || {}).id,
-              resource: resource[0]
+              resource: resource[0],
             };
             unauthorizedLog.info(unauthObj);
             res.status(401).send({ message: 'Unauthorized' });
@@ -578,8 +578,8 @@ export default {
    * @name convertRealOrTestPermissions
    * @param {*} permissionsInput
    * @param {string} resourceName
-   * @param {*} isHttpTest - Should be boolean or something that is clearly truthy or falsy
-   * @param {*} validTestNumber - Should be boolean or something that is clearly truthy or falsy
+   * @param {boolean} isHttpTest - Should be boolean or something that is clearly truthy or falsy
+   * @param {boolean} validTestNumber - Should be boolean or something that is clearly truthy or falsy
    * @return {Array}
    * @description Passes real permissions or test permissions to convertPermissions
    */

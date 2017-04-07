@@ -10,7 +10,11 @@ implemented, add it to passport.js, update config.js and make
 it available to the users by updating endpoints.js.
 
 Custom milestones from the resources folder are merged with 
-auth milestones in epilogueAuth.js.
+auth milestones in epilogueAuth.js. Custom milestones for 
+many resources should be put into customMilestones.js and 
+custom milestones for one resource should be put in the 
+milestones.js file in its folder.
+
 
 Twitter is not enabled by default due to it not using 
 OAuth 2.0. This can be changed in config.js.
