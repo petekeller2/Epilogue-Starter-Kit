@@ -22,6 +22,18 @@ export default {
     return authMilestone;
   },
   /** @function
+   * @name returnUserId
+   * @param {object} req
+   * @return object
+   * @description Helper function that returns a user's id conditionally
+   */
+  returnUserId(req) {
+    if (((req || {}).body) && ((req || {}).user || {}).id) {
+      return req.user.id;
+    }
+    return null;
+  },
+  /** @function
    * @name ownResource
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
@@ -41,16 +53,14 @@ export default {
       // eslint-disable-next-line
       authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async (resolve) => {
         if (isGroup === true) {
-          if (((req || {}).body) && ((req || {}).user || {}).id) {
-            // eslint-disable-next-line
-            req.body.OwnerID = req.user.id;
-          }
+          req.body.OwnerID = this.returnUserId(req);
         }
-        if ((userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
-          if (((req || {}).body) && ((req || {}).user || {}).id) {
-            // eslint-disable-next-line
-            req.body.UserId = req.user.id;
-          }
+        let inUserAA = false;
+        if (userAAs.map(function(obj) { return obj[Object.keys(obj)[0]]; }).indexOf(name) >= 0) {
+          inUserAA = true;
+        }
+        if ((inUserAA === true) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
+          req.body.UserId = this.returnUserId(req);
         }
         resolve(context.continue);
       }));

@@ -28,29 +28,30 @@ export default {
     const returnObj = {};
     returnObj.username = (profile || {}).displayName;
     /* eslint no-underscore-dangle: ["error", { "allow": ["_json"] }]*/
+    const profileJson = ((profile || {})._json || {});
     if (!returnObj.username) {
-      returnObj.username = ((profile || {})._json || {}).first_name;
+      returnObj.username = profileJson.first_name;
       if (returnObj.username) {
         returnObj.username += ' ';
       }
-      returnObj.username += ((profile || {})._json || {}).last_name;
+      returnObj.username += profileJson.last_name;
     }
-    returnObj.emailAddress = ((profile || {})._json || {}).email;
+    returnObj.emailAddress = profileJson.email;
     if (!returnObj.emailAddress) {
-      returnObj.emailAddress = ((profile || {})._json || {}).emails;
+      returnObj.emailAddress = profileJson.emails;
       if (returnObj.emailAddress) {
         returnObj.emailAddress = (returnObj.emailAddress[0] || {}).value;
       }
     }
-    returnObj.profilePicture = ((((profile || {})._json || {}).picture || {}).data || {}).url;
+    returnObj.profilePicture = ((profileJson.picture || {}).data || {}).url;
     if (!returnObj.profilePicture) {
-      returnObj.profilePicture = ((profile || {})._json || {}).profile_image_url_https;
+      returnObj.profilePicture = profileJson.profile_image_url_https;
     }
     if (!returnObj.profilePicture) {
-      returnObj.profilePicture = (((profile || {})._json || {}).image || {}).url;
+      returnObj.profilePicture = (profileJson.image || {}).url;
     }
     if (!returnObj.profilePicture) {
-      returnObj.profilePicture = ((profile || {})._json || {}).picture;
+      returnObj.profilePicture = profileJson.picture;
     }
     return returnObj;
   },

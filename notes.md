@@ -15,3 +15,9 @@ Default and custom milestone helper files updated
 jsdoc for milestones
 
 Minor fixes
+
+**4/7/17**
+
+Default milestone bug fix
+
+Code simplification

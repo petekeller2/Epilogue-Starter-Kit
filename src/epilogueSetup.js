@@ -146,7 +146,6 @@ export default {
    * @param {boolean} getResourcesNames
    * @return {Array}
    * @description Converts aaInput to auto association array. See wiki for detailed overview
-   * @todo Replace MainError throw with winston logging
    */
   convertAutoAssociations(aaInput, getResourcesNames) {
     const aaReturn = [];
@@ -174,23 +173,11 @@ export default {
     } else if ((typeof aaInput) === 'object') {
       if (Array.isArray(aaInput)) {
         aaInput.forEach((aaElement) => {
-          if ((typeof aaElement) === 'string') {
-            if (aaElement) {
-              if (getResourcesNames === true) {
-                aaReturn.push(aaElement);
-              } else {
-                aaReturn.push({ hasMany: aaElement });
-              }
-            } else {
-              throw new MainError('An auto association array element was empty!', 'Warning');
-            }
-          } else if ((typeof aaElement) === 'object') {
-            if (aaElement !== null) {
-              if (getResourcesNames === true) {
-                aaReturn.push(aaElement[Object.keys(aaElement)[0]]);
-              } else {
-                aaReturn.push(aaElement);
-              }
+          if (aaElement) {
+            if ((typeof aaElement) === 'string') {
+              (getResourcesNames === true) ? aaReturn.push(aaElement) : aaReturn.push({hasMany: aaElement});
+            } else if ((typeof aaElement) === 'object') {
+              (getResourcesNames === true) ? aaReturn.push(aaElement[Object.keys(aaElement)[0]]) : aaReturn.push(aaElement);
             }
           }
         });
