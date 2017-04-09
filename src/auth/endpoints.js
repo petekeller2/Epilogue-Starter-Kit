@@ -8,20 +8,15 @@ export default {
    * @param {object} app
    * @param {object} passport
    * @description Creates auth endpoint
-   * @todo Reduce code duplication. Enable and disable endpoints through the config.js file. Set the expiration time in config.js
    */
   setup(app, passport) {
     if (!config.authOptionsDisabled.indexOf('twitter') || config.authOptionsDisabled.indexOf('twitter') === -1) {
       const sessionObj = {
         secret: config.sessionSecret,
-        resave: false,
-        saveUninitialized: true,
+        resave: Boolean(config.sessionResave.toUpperCase() === 'YES'),
+        saveUninitialized: Boolean(config.sessionSaveUninitialized.toUpperCase() === 'YES'),
       };
-      if (config.protocol.toLowerCase() === 'https') {
-        sessionObj.cookie = { secure: true };
-      } else {
-        sessionObj.cookie = { secure: false };
-      }
+      sessionObj.cookie = { secure: Boolean(config.protocol.toLowerCase() === 'https') };
       app.use(session(sessionObj));
       passport.serializeUser((user, done) => {
         done(null, user);
@@ -31,100 +26,54 @@ export default {
         done(null, user);
       });
     }
-    if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf('facebook') !== -1)) {
-      app.get('/login/facebook',
-        passport.authenticate('facebook', { scope: ['email', 'public_profile', 'user_friends'], session: false }),
-      );
-      app.get('/login/facebook/callback',
-        passport.authenticate('facebook', { failureRedirect: '/authFailure', session: false }),
-        (req, res) => {
-          const expiresIn = 60 * 60 * 24 * 180; // 180 days
-          const token = jwt.sign(req.user, config.jwt.secret, { expiresIn });
-          res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-          if (config.environment === 'development' || config.environment === 'testing') {
-            res.redirect('/getUserDataTest');
-          } else {
-            // production and staging
-          }
-        },
-      );
-    }
-    if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf('google') !== -1)) {
-      app.get('/login/google',
-        passport.authenticate('google', { scope: ['email', 'profile'], session: false }),
-      );
-      app.get('/login/google/callback',
-        passport.authenticate('google', { failureRedirect: '/authFailure', session: false }),
-        (req, res) => {
-          const expiresIn = 60 * 60 * 24 * 180; // 180 days
-          const token = jwt.sign(req.user, config.jwt.secret, { expiresIn });
-          res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-          if (config.environment === 'development' || config.environment === 'testing') {
-            res.redirect('/getUserDataTest');
-          } else {
-            // production and staging
-          }
-        },
-      );
-    }
-    if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf('twitter') !== -1)) {
-      app.get('/login/twitter',
-        passport.authenticate('twitter'),
-      );
-      app.get('/login/twitter/callback',
-        passport.authenticate('twitter', { failureRedirect: '/authFailure' }),
-        (req, res) => {
-          const expiresIn = 60 * 60 * 24 * 180; // 180 days
-          const token = jwt.sign(req.user, config.jwt.secret, { expiresIn });
-          res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-          if (config.environment === 'development' || config.environment === 'testing') {
-            res.redirect('/getUserDataTest');
-          } else {
-            // production and staging
-          }
-        },
-      );
-    }
-    if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf('auth0') !== -1)) {
-      app.get('/login/auth0',
-        passport.authenticate('auth0', { scope: ['email'], session: false }),
-      );
-      app.get('/login/auth0/callback',
-        passport.authenticate('auth0', { failureRedirect: '/authFailure', session: false }),
-        (req, res) => {
-          const expiresIn = 60 * 60 * 24 * 180; // 180 days
-          const token = jwt.sign(req.user, config.jwt.secret, { expiresIn });
-          res.cookie('id_token', token, { maxAge: 1000 * expiresIn, httpOnly: true });
-          if (config.environment === 'development' || config.environment === 'testing') {
-            res.redirect('/getUserDataTest');
-          } else {
-            // production and staging
-          }
-        },
-      );
-    }
+    const authMethods = Object.keys(config.authMethods);
+    authMethods.forEach((authMethod) => {
+      if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf(authMethod) !== -1)) {
+        const session = Boolean(config.passportSession.toUpperCase() === 'YES');
+        const failureRedirect = config.authFailureRedirect;
+        const authSuccessRedirect = config.authSuccessRedirect;
+        const authOptionsObj = { failureRedirect };
+        let passportAuthenticate = '';
+        if (authMethod !== 'twitter') {
+          const scope = config.authMethods[authMethod].scope;
+          passportAuthenticate = passport.authenticate(authMethod, {scope, session});
+          authOptionsObj.session = session;
+        } else {
+          passportAuthenticate = passport.authenticate(authMethod);
+        }
+
+        app.get(`/login/${authMethod}`,
+          passportAuthenticate,
+        );
+        app.get(`/login/${authMethod}/callback`,
+          passport.authenticate(authMethod, authOptionsObj),
+          (req, res) => {
+            const expiresIn = parseInt(config.tokenExpiresIn, 10);
+            const maxAge = parseInt(config.cookieMaxAge, 10);
+            const httpOnly = Boolean(config.httpOnlyCookie.toUpperCase() === 'YES');
+            const cookieOptions = {maxAge, httpOnly};
+            const token = jwt.sign(req.user, config.jwt.secret, {expiresIn});
+            res.cookie('id_token', token, cookieOptions);
+            if (config.environment === 'development' || config.environment === 'testing') {
+              res.redirect(authSuccessRedirect);
+            } else {
+              // production and staging
+            }
+          },
+        );
+      }
+    });
     app.get('/logout',
       (req, res) => {
         req.logout();
         res.clearCookie('id_token');
-        let domainCheck = false;
-        let auth0Logout = false;
-        if (config && config.auth0 && config.auth0.domain) {
-          domainCheck = true;
-        }
-        if (config.auth0Logout.toUpperCase() === 'YES') {
-          auth0Logout = true;
-        }
+        const domainCheck = Boolean(config && config.authMethods.auth0 && config.authMethods.auth0.domain);
+        const auth0Logout = Boolean(config.auth0Logout.toUpperCase() === 'YES');
+        const host = ((config.port === 443 || config.port === 80) ? config.host : `${config.host}:${config.port}`);
         if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf('auth0') !== -1) && domainCheck && auth0Logout) {
-          if (config.port === 443 || config.port === 80) {
-            res.redirect(`https://${config.auth0.domain}/v2/logout?returnTo=${config.protocol}%3A%2F%2F${config.host}/loggedOutScreen`);
-          } else {
-            res.redirect(`https://${config.auth0.domain}/v2/logout?returnTo=${config.protocol}%3A%2F%2F${config.host}:${config.port}/loggedOutScreen`);
-          }
-        } else if (config.port === 443 || config.port === 80) { // replace with inline if statement
-          res.redirect(`${config.protocol}://${config.host}/loggedOutScreen`);
+          res.redirect(`https://${config.auth0.domain}/v2/logout?returnTo=${config.protocol}%3A%2F%2F${host}${config.loggedOutScreen}`);
         } else {
-          res.redirect(`${config.protocol}://${config.host}:${config.port}/loggedOutScreen`);
+          res.redirect(`${config.protocol}://${host}${config.loggedOutScreen}`);
         }
       },
     );

@@ -14,7 +14,7 @@ export default {
   addMilestones(milestoneParamObj, sharedParameters, authMilestone) {
     let totalParameters = [];
     Object.entries(milestoneParamObj).forEach(([milestoneParamObjKey, milestoneParamObjVal]) => {
-      if (!(Array.isArray(config.defaultMilestonesDisabled) && config.defaultMilestonesDisabled.indexOf(milestoneParamObjKey) !== -1)) {
+      if (!(Array.isArray(config.disabledDefaultMilestones) && config.disabledDefaultMilestones.indexOf(milestoneParamObjKey) !== -1)) {
         totalParameters = sharedParameters.concat(milestoneParamObjVal);
         authMilestone = this[milestoneParamObjKey](authMilestone, ...totalParameters);
       }

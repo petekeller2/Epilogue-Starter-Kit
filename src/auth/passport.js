@@ -66,28 +66,26 @@ export default {
     let passportConfig = {};
     Object.entries(this.passportOptions).forEach(([passportOptionName, PassportStrategy]) => {
       passportConfig = {
-        callbackURL: config[passportOptionName].callbackURL,
+        callbackURL: config.authMethods[passportOptionName].callbackURL,
         passReqToCallback: true,
       };
       if (passportOptionName === 'twitter') {
-        passportConfig.consumerKey = config[passportOptionName].id;
-        passportConfig.consumerSecret = config[passportOptionName].secret;
+        passportConfig.consumerKey = config.authMethods[passportOptionName].id;
+        passportConfig.consumerSecret = config.authMethods[passportOptionName].secret;
         passportConfig.userProfileURL = 'https://api.twitter.com/1.1/account/verify_credentials.json?include_email=true';
       } else {
-        passportConfig.clientID = config[passportOptionName].id;
-        passportConfig.clientSecret = config[passportOptionName].secret;
+        passportConfig.clientID = config.authMethods[passportOptionName].id;
+        passportConfig.clientSecret = config.authMethods[passportOptionName].secret;
       }
       if (passportOptionName === 'auth0') {
-        passportConfig.domain = config[passportOptionName].domain;
+        passportConfig.domain = config.authMethods[passportOptionName].domain;
       }
       if (passportOptionName === 'facebook') {
-        passportConfig.profileFields = config[passportOptionName].profileFields;
+        passportConfig.profileFields = config.authMethods[passportOptionName].profileFields;
       }
       if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf(passportOptionName) !== -1)) {
         passport.use(new PassportStrategy(passportConfig, (req, accessToken, refreshToken, extraParams, profile, done) => {
           const authAttempt = async () => {
-            // console.log('req.user', req.user);
-            // console.log('profile', profile);
             let id = ((req || {}).user || {}).id;
             if (!id) {
               id = (profile || {}).id;
