@@ -358,26 +358,26 @@ export default {
    * @description Does regex cleaning on the partially cleaned permissions string
    */
   stringPermissionsRegex(permissionsInputCleaned) {
-    permissionsInputCleaned = permissionsInputCleaned.replace(/^\s+/g, '');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/n\/a/g, '|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/na/g, '|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/n/g, '|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/x/g, '|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/\s+\|/g, '|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/\|\s+/g, '|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/\s+/g, '|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/\*/g, 'lcrud');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/list|ls/g, 'l');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/read/g, 'r');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/update|upd/g, 'u');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/destroy|dstr/g, 'd');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/[^lcrud|]/g, '');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/d(?!\|)/g, 'd|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/u(?!\||d)/g, 'u|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/r(?!\||d|u)/g, 'r|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/c(?!\||d|u|r)/g, 'c|');
-    permissionsInputCleaned = permissionsInputCleaned.replace(/l(?!\||d|u|r|c)/g, 'l|');
-    return permissionsInputCleaned;
+    let permissionsInputCleanedReturn = permissionsInputCleaned.replace(/^\s+/g, '');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/n\/a/g, '|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/na/g, '|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/n/g, '|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/x/g, '|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/\s+\|/g, '|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/\|\s+/g, '|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/\s+/g, '|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/\*/g, 'lcrud');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/list|ls/g, 'l');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/read/g, 'r');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/update|upd/g, 'u');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/destroy|dstr/g, 'd');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/[^lcrud|]/g, '');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/d(?!\|)/g, 'd|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/u(?!\||d)/g, 'u|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/r(?!\||d|u)/g, 'r|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/c(?!\||d|u|r)/g, 'c|');
+    permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/l(?!\||d|u|r|c)/g, 'l|');
+    return permissionsInputCleanedReturn;
   },
   /** @function
    * @name numericStringPermissions
