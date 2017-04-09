@@ -91,7 +91,7 @@ export default {
         }
       }
       if (autoAssociations && !(autoAssociationsTest === true)) {
-        autoAssociationsConverted = this.convertAutoAssociations(autoAssociations);
+        autoAssociationsConverted = this.convertAutoAssociations(autoAssociations, false);
         autoAssociationsConverted.forEach((aaConvertedElement) => {
           autoAssociationType = Object.keys(aaConvertedElement)[0];
           autoAssociationsIndex = modelNames.indexOf(aaConvertedElement[autoAssociationType]);

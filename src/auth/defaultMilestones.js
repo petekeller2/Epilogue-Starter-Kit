@@ -52,14 +52,11 @@ export default {
       authMilestone[actionsList[i]].write = {};
       // eslint-disable-next-line
       authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async (resolve) => {
+        console.log('own resource');
         if (isGroup === true) {
           req.body.OwnerID = this.returnUserId(req);
         }
-        let inUserAA = false;
-        if (userAAs.map(function(obj) { return obj[Object.keys(obj)[0]]; }).indexOf(name) >= 0) {
-          inUserAA = true;
-        }
-        if ((inUserAA === true) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
+        if ((userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
           req.body.UserId = this.returnUserId(req);
         }
         resolve(context.continue);

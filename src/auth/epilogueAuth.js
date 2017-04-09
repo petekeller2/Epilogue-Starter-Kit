@@ -6,9 +6,34 @@ import config from '../config';
 import utilities from '../utilities';
 import epilogueSetup from '../epilogueSetup';
 import testConfig from '../../test/testConfig.json';
-// todo: reduce code duplication. Update functions here when the User resource is replaced with config
+// todo: Update functions here when the User resource is replaced with config
 // todo: string that matches a User type resource
 export default {
+  /** @function
+   * @name ownerGroupCheckWrapper
+   * @param {object} req
+   * @param {string} functionName
+   * @return {*} False or Array
+   * @description Helper function for isOwnerOfRegularResourceCheck, isOwnerOfGroupResourceCheck and isMemberOfGroupCheck
+   */
+  ownerGroupCheckWrapper(req, functionName) {
+    let reqUrlArray;
+    if ((req || {}).url && ((req || {}).user || {}).id) {
+      reqUrlArray = req.url.split('/');
+      reqUrlArray = reqUrlArray.filter(entry => entry.trim() !== '');
+      return reqUrlArray;
+    } else if (!(((req || {}).user || {}).id)) {
+      if (winston.info) {
+        winston.info(`req.user.id missing in ${functionName}`);
+      }
+      return false;
+    } else {
+      if (winston.info) {
+        winston.info(`req.url missing in ${functionName}`);
+      }
+      return false;
+    }
+  },
   /** @function
    * @name isOwnerOfRegularResourceCheck
    * @param {object} req
@@ -18,69 +43,57 @@ export default {
    * @param {number} index - index of the action list
    * @return boolean
    * @description Checks if the user is the owner of a resource. Group ownership checking is done in another function
-   * @todo Replace actionsList and index with action. Extract code duplication from this function and similar ones
    */
   async isOwnerOfRegularResourceCheck(req, cleanedEndpointsArray, actionsList, resource, index) {
-    let reqUrlArray;
-    if ((req || {}).url && ((req || {}).user || {}).id) {
-      reqUrlArray = req.url.split('/');
-      reqUrlArray = reqUrlArray.filter(entry => entry.trim() !== '');
-      if (reqUrlArray[0] === 'users' && cleanedEndpointsArray.indexOf(reqUrlArray[2]) >= 0) {
-        if (req.user.id === reqUrlArray[1]) {
-          return true;
-        } else {
-          if (winston.info) {
-            winston.info('Wrong user id using users/... url format');
-          }
-          return false;
-        }
-      } else if (cleanedEndpointsArray.indexOf(reqUrlArray[0]) >= 0) {
-        if (this.trueForCreateOrList(actionsList, index, req)) {
-          return this.trueForCreateOrList(actionsList, index, req);
-        } else if (reqUrlArray[1]) {
-          if (cleanedEndpointsArray.indexOf('users') && reqUrlArray[1] === req.user.id) {
-            return true;
-          } else {
-            const findOneObj = {
-              where: { id: reqUrlArray[1] },
-            };
-            if (resource[0] === 'User') {
-              findOneObj.attributes = ['id'];
-            } else {
-              findOneObj.attributes = ['UserId'];
-            }
-            const foundResource = await resource[2].findOne(findOneObj);
-            if (resource[0] === 'User' && (foundResource || {}).id && foundResource.id === req.user.id) {
-              return true;
-            } else if ((foundResource || {}).UserId && foundResource.UserId === req.user.id) {
-              return true;
-            } else {
-              if (winston.info) {
-                winston.info(`Can not update/delete/read resource, not owned by current user (current user: ${req.user.id})`);
-              }
-              return false;
-            }
-          }
-        } else {
-          if (winston.info) {
-            winston.info('Only one URL level deep for update/delete/read');
-          }
-          return false;
-        }
+    const reqUrlArray = this.ownerGroupCheckWrapper(req, this.name);
+    if (reqUrlArray === false) {
+      return reqUrlArray;
+    }
+    if (reqUrlArray[0] === 'users' && cleanedEndpointsArray.indexOf(reqUrlArray[2]) >= 0) {
+      if (req.user.id === reqUrlArray[1]) {
+        return true;
       } else {
         if (winston.info) {
-          winston.info('URL is not in either users/... or resource/... format');
+          winston.info('Wrong user id using users/... url format');
         }
         return false;
       }
-    } else if (!(((req || {}).user || {}).id)) {
-      if (winston.info) {
-        winston.info('req.user.id missing in isOwnerOfRegularResourceCheck');
+    } else if (cleanedEndpointsArray.indexOf(reqUrlArray[0]) >= 0) {
+      if (this.trueForCreateOrList(actionsList, index, req)) {
+        return this.trueForCreateOrList(actionsList, index, req);
+      } else if (reqUrlArray[1]) {
+        if (cleanedEndpointsArray.indexOf('users') && reqUrlArray[1] === req.user.id) {
+          return true;
+        } else {
+          const findOneObj = {
+            where: { id: reqUrlArray[1] },
+          };
+          if (resource[0] === 'User') {
+            findOneObj.attributes = ['id'];
+          } else {
+            findOneObj.attributes = ['UserId'];
+          }
+          const foundResource = await resource[2].findOne(findOneObj);
+          if (resource[0] === 'User' && (foundResource || {}).id && foundResource.id === req.user.id) {
+            return true;
+          } else if ((foundResource || {}).UserId && foundResource.UserId === req.user.id) {
+            return true;
+          } else {
+            if (winston.info) {
+              winston.info(`Can not update/delete/read resource, not owned by current user (current user: ${req.user.id})`);
+            }
+            return false;
+          }
+        }
+      } else {
+        if (winston.info) {
+          winston.info('Only one URL level deep for update/delete/read');
+        }
+        return false;
       }
-      return false;
     } else {
       if (winston.info) {
-        winston.info('req.url missing in isOwnerOfRegularResourceCheck');
+        winston.info('URL is not in either users/... or resource/... format');
       }
       return false;
     }
@@ -95,36 +108,25 @@ export default {
    * @description Checks if the user is the group owner of a group resource
    */
   async isOwnerOfGroupResourceCheck(req, actionsList, resource, index) {
-    let reqUrlArray;
-    if ((req || {}).url && ((req || {}).user || {}).id) {
-      reqUrlArray = req.url.split('/');
-      reqUrlArray = reqUrlArray.filter(entry => entry.trim() !== '');
-      if (this.trueForCreateOrList(actionsList, index, req)) {
-        return this.trueForCreateOrList(actionsList, index, req);
-      } else {
-        const foundResource = await resource[2].findOne({
-          attributes: ['OwnerID'],
-          where: { id: reqUrlArray[1] },
-        });
-        if ((foundResource || {}).OwnerID && foundResource.OwnerID === req.user.id) {
-          return true;
-        } else {
-          if (winston.info) {
-            winston.info('Can not update/delete/read group resource, not owned by current user');
-          }
-          return false;
-        }
-      }
-    } else if (!(((req || {}).user || {}).id)) {
-      if (winston.info) {
-        winston.info('req.user.id missing in isOwnerOfGroupResourceCheck');
-      }
-      return false;
+    const reqUrlArray = this.ownerGroupCheckWrapper(req, this.name);
+    if (reqUrlArray === false) {
+      return reqUrlArray;
+    }
+    if (this.trueForCreateOrList(actionsList, index, req)) {
+      return this.trueForCreateOrList(actionsList, index, req);
     } else {
-      if (winston.info) {
-        winston.info('req.url missing in isOwnerOfGroupResourceCheck');
+      const foundResource = await resource[2].findOne({
+        attributes: ['OwnerID'],
+        where: { id: reqUrlArray[1] },
+      });
+      if ((foundResource || {}).OwnerID && foundResource.OwnerID === req.user.id) {
+        return true;
+      } else {
+        if (winston.info) {
+          winston.info('Can not update/delete/read group resource, not owned by current user');
+        }
+        return false;
       }
-      return false;
     }
   },
   /** @function
@@ -138,36 +140,25 @@ export default {
    * @description Checks if the user is a group member
    */
   async isMemberOfGroupCheck(req, actionsList, resource, index, awaitedGroupXrefModel) {
-    let reqUrlArray;
-    if ((req || {}).url && ((req || {}).user || {}).id) {
-      reqUrlArray = req.url.split('/');
-      reqUrlArray = reqUrlArray.filter(entry => entry.trim() !== '');
-      if (this.trueForCreateOrList(actionsList, index, req)) {
-        return this.trueForCreateOrList(actionsList, index, req);
-      } else {
-        const foundResource = await awaitedGroupXrefModel.findOne({
-          attributes: ['userID', 'groupID', 'groupResourceName'],
-          where: { userID: req.user.id, groupID: reqUrlArray[1], groupResourceName: resource[0] },
-        });
-        if (foundResource) {
-          return true;
-        } else {
-          if (winston.info) {
-            winston.info('Can not update/delete/read group resource, not a member');
-          }
-          return false;
-        }
-      }
-    } else if (!(((req || {}).user || {}).id)) {
-      if (winston.info) {
-        winston.info('req.user.id missing in isMemberOfGroupCheck');
-      }
-      return false;
+    const reqUrlArray = this.ownerGroupCheckWrapper(req, this.name);
+    if (reqUrlArray === false) {
+      return reqUrlArray;
+    }
+    if (this.trueForCreateOrList(actionsList, index, req)) {
+      return this.trueForCreateOrList(actionsList, index, req);
     } else {
-      if (winston.info) {
-        winston.info('req.url missing in isMemberOfGroupCheck');
+      const foundResource = await awaitedGroupXrefModel.findOne({
+        attributes: ['userID', 'groupID', 'groupResourceName'],
+        where: { userID: req.user.id, groupID: reqUrlArray[1], groupResourceName: resource[0] },
+      });
+      if (foundResource) {
+        return true;
+      } else {
+        if (winston.info) {
+          winston.info('Can not update/delete/read group resource, not a member');
+        }
+        return false;
       }
-      return false;
     }
   },
   /** @function
@@ -199,7 +190,7 @@ export default {
     return belongsToUserReturn;
   },
   /** @function
-   * @name belongsToUserResourceCheck
+   * @name setupAuthCheck
    * @param {map} resourcesFromSetup
    * @param {object} groupXrefModel
    * @description Finishes milestone creation for the resources, with auth milestones being created for every resource
@@ -361,38 +352,12 @@ export default {
     return permissionsReturn.reverse();
   },
   /** @function
-   * @name convertStringPermissions
-   * @param {string} permissionsInput
-   * @return {Array}
-   * @description Sends number strings to convertNumberPermissions, otherwise, string permissions are converted
+   * @name stringPermissionsRegex
+   * @param {string} permissionsInputCleaned
+   * @return {string}
+   * @description Does regex cleaning on the partially cleaned permissions string
    */
-  convertStringPermissions(permissionsInput) {
-    const permissionsReturn = this.createInitPermissionsArray();
-    let permissionsInputCleaned = permissionsInput.toLowerCase();
-
-    let numberSubStringStart;
-    if (!Number.isNaN(Number(permissionsInput))) {
-      return this.convertNumberPermissions(Number(permissionsInput));
-    } else if (permissionsInputCleaned.indexOf('0x') > -1) {
-      numberSubStringStart = permissionsInputCleaned.indexOf('0x');
-    } else if (permissionsInputCleaned.indexOf('0o') > -1) {
-      numberSubStringStart = permissionsInputCleaned.indexOf('0o');
-    } else if (permissionsInputCleaned.indexOf('0b') > -1) {
-      numberSubStringStart = permissionsInputCleaned.indexOf('0b');
-    } else if (/\d/.test(permissionsInputCleaned)) {
-      if (winston.warning) {
-        winston.warning('Can not mix strings and numbers!');
-      }
-      return permissionsReturn;
-    }
-    if (numberSubStringStart || numberSubStringStart === 0) {
-      if (!Number.isNaN(Number(permissionsInputCleaned.substr(numberSubStringStart)))) {
-        return this.convertNumberPermissions(Number(permissionsInputCleaned.substr(numberSubStringStart)));
-      } else if (winston.warning) {
-        winston.warning('NaN, but should be a number!');
-      }
-    }
-
+  stringPermissionsRegex(permissionsInputCleaned) {
     permissionsInputCleaned = permissionsInputCleaned.replace(/^\s+/g, '');
     permissionsInputCleaned = permissionsInputCleaned.replace(/n\/a/g, '|');
     permissionsInputCleaned = permissionsInputCleaned.replace(/na/g, '|');
@@ -412,6 +377,58 @@ export default {
     permissionsInputCleaned = permissionsInputCleaned.replace(/r(?!\||d|u)/g, 'r|');
     permissionsInputCleaned = permissionsInputCleaned.replace(/c(?!\||d|u|r)/g, 'c|');
     permissionsInputCleaned = permissionsInputCleaned.replace(/l(?!\||d|u|r|c)/g, 'l|');
+    return permissionsInputCleaned;
+  },
+  /** @function
+   * @name numericStringPermissions
+   * @param {string} permissionsInput
+   * @param {string} permissionsInputCleaned
+   * @param {Array} permissionsReturn
+   * @return {*} False or Array
+   * @description Returns permissions array if string is numeric. Returns permissionsReturn as is if numbers and strings are mixed
+   */
+  numericStringPermissions(permissionsInput, permissionsInputCleaned, permissionsReturn) {
+    let returnValue = false;
+    let numberSubStringStart = null;
+    if (!Number.isNaN(Number(permissionsInput))) {
+      returnValue = this.convertNumberPermissions(Number(permissionsInput));
+    } else if (permissionsInputCleaned.indexOf('0x') > -1) {
+      numberSubStringStart = permissionsInputCleaned.indexOf('0x');
+    } else if (permissionsInputCleaned.indexOf('0o') > -1) {
+      numberSubStringStart = permissionsInputCleaned.indexOf('0o');
+    } else if (permissionsInputCleaned.indexOf('0b') > -1) {
+      numberSubStringStart = permissionsInputCleaned.indexOf('0b');
+    } else if (/\d/.test(permissionsInputCleaned)) {
+      if (winston.warning) {
+        winston.warning('Can not mix strings and numbers!');
+      }
+      returnValue = permissionsReturn;
+    }
+    if (numberSubStringStart || numberSubStringStart === 0) {
+      if (!Number.isNaN(Number(permissionsInputCleaned.substr(numberSubStringStart)))) {
+        returnValue = this.convertNumberPermissions(Number(permissionsInputCleaned.substr(numberSubStringStart)));
+      } else if (winston.warning) {
+        winston.warning('NaN, but should be a number!');
+      }
+    }
+    return returnValue;
+  },
+  /** @function
+   * @name convertStringPermissions
+   * @param {string} permissionsInput
+   * @return {Array}
+   * @description Sends number strings to convertNumberPermissions, otherwise, string permissions are converted
+   */
+  convertStringPermissions(permissionsInput) {
+    const permissionsReturn = this.createInitPermissionsArray();
+    let permissionsInputCleaned = permissionsInput.toLowerCase();
+
+    const numericReturn = this.numericStringPermissions(permissionsInput, permissionsInputCleaned, permissionsReturn);
+    if (numericReturn !== false) {
+      return numericReturn;
+    }
+
+    permissionsInputCleaned = this.stringPermissionsRegex(permissionsInputCleaned);
 
     let permissionIndex = 0;
     let permissionLetter;

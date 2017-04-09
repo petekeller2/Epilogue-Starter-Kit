@@ -7,8 +7,7 @@
 A starter kit using an Express implementation of Epilogue. It handles
 generic functionality like authentication and authorization 
 as well as potentially repetitive tasks like setting up 
-Epilogue resources and milestones. This starter kit is a work 
-in progress and any pull requests are welcome.
+Epilogue resources and milestones.
 
 # Getting Started
 

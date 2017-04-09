@@ -69,12 +69,12 @@ gulp.task('server-test-all-ignore-config', ['server-http-test', 'server-test']);
 
 gulp.task('build-all', ['server-build', 'wiki-build']);
 
-// main test task
+// main test task for not built code
 gulp.task('env-test-server', ['env-force', 'env-test', 'server-start-no-nodemon'], function () {
   runHttpTestsOrEnd('test');
 });
 
-// main test task
+// main test task for built code
 gulp.task('env-staging-server', ['server-build', 'env-force', 'env-staging', 'server-serve'], function () {
   runHttpTestsOrEnd('staging');
 });
