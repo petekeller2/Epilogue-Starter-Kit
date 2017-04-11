@@ -1,9 +1,7 @@
-**4/9/17**
+**4/10/17**
 
-Code simplification
+Comment and readme updates
 
-Libraries updated
+Utilities usage in endpoints.js
 
-Config updated
-
-Default milestone bug fix
+Wiki bug fixes

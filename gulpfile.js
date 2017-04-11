@@ -210,11 +210,13 @@ const removeTitleFromMarkdown = function(file) {
   const input = fs.createReadStream(`wiki/${file}`);
   const output = fs.createWriteStream(`wiki/_${file}`);
 
-  input // take input
+  input
     .pipe(RemoveFirstLine()) // pipe through line remover
     .pipe(output);
 
-  fs.rename(`wiki/_${file}`, `wiki/${file}`, doneCustom);
+  output.on('finish', function() {
+    fs.rename(`wiki/_${file}`, `wiki/${file}`, doneCustom);
+  });
 };
 
 /** @function

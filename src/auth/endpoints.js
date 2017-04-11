@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import session from 'express-session';
 import config from '../config';
+import utilities from '../utilities';
 
 export default {
   /** @function
@@ -13,8 +14,8 @@ export default {
     if (!config.authOptionsDisabled.indexOf('twitter') || config.authOptionsDisabled.indexOf('twitter') === -1) {
       const sessionObj = {
         secret: config.sessionSecret,
-        resave: Boolean(config.sessionResave.toUpperCase() === 'YES'),
-        saveUninitialized: Boolean(config.sessionSaveUninitialized.toUpperCase() === 'YES'),
+        resave: utilities.yesTrueNoFalse(config.sessionResave),
+        saveUninitialized: utilities.yesTrueNoFalse(config.sessionSaveUninitialized),
       };
       sessionObj.cookie = { secure: Boolean(config.protocol.toLowerCase() === 'https') };
       app.use(session(sessionObj));
@@ -29,7 +30,7 @@ export default {
     const authMethods = Object.keys(config.authMethods);
     authMethods.forEach((authMethod) => {
       if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf(authMethod) !== -1)) {
-        const session = Boolean(config.passportSession.toUpperCase() === 'YES');
+        const session = utilities.yesTrueNoFalse(config.passportSession);
         const failureRedirect = config.authFailureRedirect;
         const authSuccessRedirect = config.authSuccessRedirect;
         const authOptionsObj = { failureRedirect };
@@ -50,7 +51,7 @@ export default {
           (req, res) => {
             const expiresIn = parseInt(config.tokenExpiresIn, 10);
             const maxAge = parseInt(config.cookieMaxAge, 10);
-            const httpOnly = Boolean(config.httpOnlyCookie.toUpperCase() === 'YES');
+            const httpOnly = utilities.yesTrueNoFalse(config.httpOnlyCookie);
             const cookieOptions = {maxAge, httpOnly};
             const token = jwt.sign(req.user, config.jwt.secret, {expiresIn});
             res.cookie('id_token', token, cookieOptions);
@@ -68,7 +69,7 @@ export default {
         req.logout();
         res.clearCookie('id_token');
         const domainCheck = Boolean(config && config.authMethods.auth0 && config.authMethods.auth0.domain);
-        const auth0Logout = Boolean(config.auth0Logout.toUpperCase() === 'YES');
+        const auth0Logout = utilities.yesTrueNoFalse(config.auth0Logout);
         const host = ((config.port === 443 || config.port === 80) ? config.host : `${config.host}:${config.port}`);
         if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf('auth0') !== -1) && domainCheck && auth0Logout) {
           res.redirect(`https://${config.auth0.domain}/v2/logout?returnTo=${config.protocol}%3A%2F%2F${host}${config.loggedOutScreen}`);

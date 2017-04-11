@@ -6,6 +6,7 @@ import config from '../config';
 import utilities from '../utilities';
 import epilogueSetup from '../epilogueSetup';
 import testConfig from '../../test/testConfig.json';
+
 // todo: Update functions here when the User resource is replaced with config
 // todo: string that matches a User type resource
 export default {
@@ -194,7 +195,6 @@ export default {
    * @param {map} resourcesFromSetup
    * @param {object} groupXrefModel
    * @description Finishes milestone creation for the resources, with auth milestones being created for every resource
-   * @todo Move the standard create and list milestones into new functions that will be called conditionally depending on config variables.
    */
   async setupAuthCheck(resourcesFromSetup, groupXrefModel) {
     let permissions;
