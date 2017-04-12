@@ -1,5 +1,6 @@
 import merge from 'deepmerge';
 import epilogueAuth from './epilogueAuth';
+import utilities from '../utilities';
 import config from '../config';
 
 export default {
@@ -13,13 +14,14 @@ export default {
    */
   addMilestones(milestoneParamObj, sharedParameters, authMilestone) {
     let totalParameters = [];
+    let authMilestoneReturn = authMilestone;
     Object.entries(milestoneParamObj).forEach(([milestoneParamObjKey, milestoneParamObjVal]) => {
       if (!(Array.isArray(config.disabledDefaultMilestones) && config.disabledDefaultMilestones.indexOf(milestoneParamObjKey) !== -1)) {
         totalParameters = sharedParameters.concat(milestoneParamObjVal);
-        authMilestone = this[milestoneParamObjKey](authMilestone, ...totalParameters);
+        authMilestoneReturn = this[milestoneParamObjKey](authMilestoneReturn, ...totalParameters);
       }
     });
-    return authMilestone;
+    return authMilestoneReturn;
   },
   /** @function
    * @name returnUserId
@@ -43,7 +45,8 @@ export default {
    * @param {Array} userAAs
    * @param {boolean} isGroup
    * @return object
-   * @description Returns a possibly modified version of totalAuthMilestone. When an instance of a resource is created, the UserID and/or OwnerID column is updated
+   * @description Returns a possibly modified version of totalAuthMilestone. When an instance of a resource is created,
+   *  the UserID and/or OwnerID column is updated
    */
   ownResource(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup) {
     if (actionsList[i] === 'create') {
@@ -52,7 +55,6 @@ export default {
       authMilestone[actionsList[i]].write = {};
       // eslint-disable-next-line
       authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async (resolve) => {
-        console.log('own resource');
         if (isGroup === true) {
           req.body.OwnerID = this.returnUserId(req);
         }
@@ -76,19 +78,18 @@ export default {
    * @param {object} model
    * @param {boolean} isHttpTest
    * @param {boolean} validTestNumber
-   * @param {Array} permissions
    * @param {*} permissionsInput
    * @return object
    * @description Returns a possibly modified version of totalAuthMilestone. Only list owned resources under certain permissions
    */
-  listOwned(totalAuthMilestone, actionsList, i, aa, name, userAAs, model, isHttpTest, validTestNumber, permissions, permissionsInput) {
+  listOwned(totalAuthMilestone, actionsList, i, aa, name, userAAs, model, isHttpTest, validTestNumber, permissionsInput) {
     if ((actionsList[i] === 'list')) {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
       authMilestone[actionsList[i]].fetch = {};
       // eslint-disable-next-line
       authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async(resolve) => {
-        permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
+        const permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
         if (permissions[0] === true && permissions[10] === false && permissions[15] === false) {
           if ((((req || {}).user || {}).id)) {
             if ((name === 'User') || (userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
@@ -107,10 +108,8 @@ export default {
                 })
                 .then(() => resolve(context.skip));
             } else {
-              if (winston.warning) {
-                // eslint-disable-next-line
-                winston.warning('With these permissions, users can only list resources that belong to them, but this resource can not belong to anyone');
-              }
+              // eslint-disable-next-line
+              utilities.winstonWrapper('With these permissions, users can only list resources that belong to them, but this resource can not belong to anyone', 'warning');
               // eslint-disable-next-line
               context.include = [];
             }

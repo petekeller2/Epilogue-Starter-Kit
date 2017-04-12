@@ -4,6 +4,8 @@ if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')
 } else {
   srcOrBuild = 'src';
 }
+
+// eslint-disable-next-line
 const config = require(`../${srcOrBuild}/config`);
 
 const fs = require('fs-extra');
@@ -23,16 +25,27 @@ module.exports = {
     }
     return options;
   },
-  yesTrueNoFalse: function(yesOrNo) {
+  yesTrueNoFalse(yesOrNo) {
     if (yesOrNo && typeof yesOrNo === 'string' && yesOrNo.toUpperCase() === 'YES') {
       return true;
-    } else if(yesOrNo && typeof yesOrNo === 'string' && yesOrNo.toUpperCase() === 'NO') {
+    } else if (yesOrNo && typeof yesOrNo === 'string' && yesOrNo.toUpperCase() === 'NO') {
       return false;
-    } else if(typeof yesOrNo === 'boolean') {
+    } else if (typeof yesOrNo === 'boolean') {
       return yesOrNo;
     } else {
       winston.info('yesTrueNoFalse received invalid input');
       return false;
     }
-  }
+  },
+  winstonWrapper(message, level) {
+    let levelToUse = level.toLowerCase();
+    if (['debug', 'info', 'notice', 'warning', 'error', 'crit', 'alert', 'emerg'].indexOf(levelToUse) < 0) {
+      levelToUse = 'info';
+    }
+    if (winston[levelToUse]) {
+      winston[levelToUse](message);
+    } else {
+      console.log(`${message} [not using winston]`);
+    }
+  },
 };

@@ -1,7 +1,3 @@
-**4/10/17**
+**4/11/17**
 
-Comment and readme updates
-
-Utilities usage in endpoints.js
-
-Wiki bug fixes
+Code simplification

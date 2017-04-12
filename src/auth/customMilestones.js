@@ -14,14 +14,14 @@ export default {
    * @param {array} resource
    * @param {boolean} isHttpTest
    * @param {boolean} validTestNumber
-   * @param {array} permissions
    * @return object
    * @description Returns all of the allowed custom milestones plus the milestones the function was given
    */
-  addMilestones(authMilestone, actionsList, i, resource, isHttpTest, validTestNumber, permissions) {
+  addMilestones(authMilestone, actionsList, i, resource, isHttpTest, validTestNumber) {
+    let authMilestoneReturn = authMilestone;
     this.milestoneParamObj.forEach((milestoneFunctionName) => {
-      authMilestone = this[milestoneFunctionName](...Array.from(arguments));
+      authMilestoneReturn = this[milestoneFunctionName](authMilestoneReturn, actionsList, i, resource, isHttpTest, validTestNumber);
     });
-    return authMilestone;
+    return authMilestoneReturn;
   },
 };

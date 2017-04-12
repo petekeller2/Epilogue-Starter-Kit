@@ -24,14 +24,10 @@ export default {
       reqUrlArray = reqUrlArray.filter(entry => entry.trim() !== '');
       return reqUrlArray;
     } else if (!(((req || {}).user || {}).id)) {
-      if (winston.info) {
-        winston.info(`req.user.id missing in ${functionName}`);
-      }
+      utilities.winstonWrapper(`req.user.id missing in ${functionName}`, 'info');
       return false;
     } else {
-      if (winston.info) {
-        winston.info(`req.url missing in ${functionName}`);
-      }
+      utilities.winstonWrapper(`req.url missing in ${functionName}`, 'info');
       return false;
     }
   },
@@ -54,9 +50,7 @@ export default {
       if (req.user.id === reqUrlArray[1]) {
         return true;
       } else {
-        if (winston.info) {
-          winston.info('Wrong user id using users/... url format');
-        }
+        utilities.winstonWrapper('Wrong user id using users/... url format', 'info');
         return false;
       }
     } else if (cleanedEndpointsArray.indexOf(reqUrlArray[0]) >= 0) {
@@ -80,22 +74,16 @@ export default {
           } else if ((foundResource || {}).UserId && foundResource.UserId === req.user.id) {
             return true;
           } else {
-            if (winston.info) {
-              winston.info(`Can not update/delete/read resource, not owned by current user (current user: ${req.user.id})`);
-            }
+            utilities.winstonWrapper(`Can not update/delete/read resource, not owned by current user (current user: ${req.user.id})`, 'info');
             return false;
           }
         }
       } else {
-        if (winston.info) {
-          winston.info('Only one URL level deep for update/delete/read');
-        }
+        utilities.winstonWrapper('Only one URL level deep for update/delete/read', 'info');
         return false;
       }
     } else {
-      if (winston.info) {
-        winston.info('URL is not in either users/... or resource/... format');
-      }
+      utilities.winstonWrapper('URL is not in either users/... or resource/... format', 'info');
       return false;
     }
   },
@@ -123,9 +111,7 @@ export default {
       if ((foundResource || {}).OwnerID && foundResource.OwnerID === req.user.id) {
         return true;
       } else {
-        if (winston.info) {
-          winston.info('Can not update/delete/read group resource, not owned by current user');
-        }
+        utilities.winstonWrapper('Can not update/delete/read group resource, not owned by current user', 'info');
         return false;
       }
     }
@@ -155,9 +141,7 @@ export default {
       if (foundResource) {
         return true;
       } else {
-        if (winston.info) {
-          winston.info('Can not update/delete/read group resource, not a member');
-        }
+        utilities.winstonWrapper('Can not update/delete/read group resource, not a member', 'info');
         return false;
       }
     }
@@ -278,13 +262,13 @@ export default {
 
         const milestoneParamObj = {
           ownResource: [isGroup],
-          listOwned: [resource[2], isHttpTest, validTestNumber, permissions, resource[1]],
+          listOwned: [resource[2], isHttpTest, validTestNumber, resource[1]],
         };
         const sharedParameters = [actionsList, i, resource[5], resource[0], userAAs];
         const addMilestonesParams = [milestoneParamObj, sharedParameters, authMilestone];
         authMilestone = defaultMilestones.addMilestones(...addMilestonesParams);
 
-        const totalParameters = [authMilestone, actionsList, i, resource, isHttpTest, validTestNumber, permissions];
+        const totalParameters = [authMilestone, actionsList, i, resource, isHttpTest, validTestNumber];
         authMilestone = customMilestones.addMilestones(...totalParameters);
       }
       combinedMilestones = merge(authMilestone, resource[7]);
@@ -315,14 +299,9 @@ export default {
    * @description For number permissions, read being true means list is true as well (list permissions can't be directly set)
    */
   convertNumberPermissions(permissionsInput) {
-    const permissionsReturn = [];
-    for (let i = 0; i < 20; i += 1) {
-      permissionsReturn.push(false);
-    }
+    const permissionsReturn = this.createInitPermissionsArray(false);
     if (!Number.isFinite(permissionsInput)) {
-      if (winston.warning) {
-        winston.warning('Infinite number!');
-      }
+      utilities.winstonWrapper('Infinite number!', 'warning');
       return permissionsReturn;
     }
     const inputInBinary = permissionsInput.toString(2);
@@ -341,8 +320,8 @@ export default {
         }
       } else if (permissionsBit === '0') {
         permissionsReturn[permissionsReturnIndex] = false;
-      } else if (winston.warning) {
-        winston.warning('Permission bit not a one or a zero!');
+      } else {
+        utilities.winstonWrapper('Permission bit not a one or a zero!', 'warning');
       }
       if ((i % 4) === 3) {
         permissionsReturnIndex += 1;
@@ -399,16 +378,14 @@ export default {
     } else if (permissionsInputCleaned.indexOf('0b') > -1) {
       numberSubStringStart = permissionsInputCleaned.indexOf('0b');
     } else if (/\d/.test(permissionsInputCleaned)) {
-      if (winston.warning) {
-        winston.warning('Can not mix strings and numbers!');
-      }
+      utilities.winstonWrapper('Can not mix strings and numbers!', 'warning');
       returnValue = permissionsReturn;
     }
     if (numberSubStringStart || numberSubStringStart === 0) {
       if (!Number.isNaN(Number(permissionsInputCleaned.substr(numberSubStringStart)))) {
         returnValue = this.convertNumberPermissions(Number(permissionsInputCleaned.substr(numberSubStringStart)));
-      } else if (winston.warning) {
-        winston.warning('NaN, but should be a number!');
+      } else {
+        utilities.winstonWrapper('NaN, but should be a number!', 'warning');
       }
     }
     return returnValue;
@@ -457,6 +434,7 @@ export default {
             findSectionLengthSubString = permissionsInputCleaned.substr(nextNonPipeIndex);
           }
         }
+        // todo move to function
         for (let lcrudIndex = 0; lcrudIndex < lengthOfSection; lcrudIndex += 1) {
           permissionLetter = permissionsInputCleaned.charAt(letterIndex);
           if (permissionLetter === 'l') {
@@ -516,6 +494,7 @@ export default {
     const propertiesLength = Object.keys(permissionsInput).length;
     for (let propertyIndex = 0; propertyIndex < propertiesLength; propertyIndex += 1) {
       permissionKey = Object.keys(permissionsInput)[propertyIndex];
+      // todo move to function
       if (permissionKey.toLowerCase() === 'owner') {
         sectionMultiplier = 0;
       } else if (permissionKey.toLowerCase() === 'group') {
@@ -524,8 +503,8 @@ export default {
         sectionMultiplier = 2;
       } else if (permissionKey.toLowerCase() === 'anyuser') {
         sectionMultiplier = 3;
-      } else if (winston.warning) {
-        winston.warning('unhandled permission section!');
+      } else {
+        utilities.winstonWrapper('unhandled permission section!', 'warning');
       }
       if (Array.isArray(permissionsInput[permissionKey])) {
         permissionsSectionArrayLength = permissionsInput[permissionKey].length;
@@ -533,6 +512,7 @@ export default {
           if ((typeof permissionsInput[permissionKey][arrayIndex]) === 'string') {
             permissionArrayElement = (permissionsInput[permissionKey][arrayIndex]).toLowerCase();
             permissionsReturnIndex = (sectionMultiplier * 5);
+            // todo: move to function
             if (permissionArrayElement === 'list' || permissionArrayElement === 'l') {
               permissionsReturn[permissionsReturnIndex] = true;
             } else if (permissionArrayElement === 'create' || permissionArrayElement === 'c') {
@@ -547,15 +527,15 @@ export default {
             } else if (permissionArrayElement === 'destroy' || permissionArrayElement === 'd') {
               permissionsReturnIndex += 4;
               permissionsReturn[permissionsReturnIndex] = true;
-            } else if (winston.warning) {
-              winston.warning('Unhandled resource operation!');
+            } else {
+              utilities.winstonWrapper('Unhandled resource operation!', 'warning');
             }
-          } else if (winston.warning) {
-            winston.warning('permissionsInput[permissionKey][arrayIndex] should be a string!');
+          } else {
+            utilities.winstonWrapper('permissionsInput[permissionKey][arrayIndex] should be a string!', 'warning');
           }
         }
-      } else if (winston.warning) {
-        winston.warning('permissionsInput[permissionKey] should be an array!');
+      } else {
+        utilities.winstonWrapper('permissionsInput[permissionKey] should be an array!', 'warning');
       }
     }
     return permissionsReturn;
@@ -579,15 +559,11 @@ export default {
       } else if ((typeof permissionsInput) === 'number') {
         return this.convertNumberPermissions(permissionsInput);
       } else {
-        if (winston.warning) {
-          winston.warning('permissionsInput not a string, object, number or array!');
-        }
+        utilities.winstonWrapper('permissionsInput not a string, object, number or array!', 'warning');
         return this.createInitPermissionsArray(true);
       }
     } else {
-      if (winston.warning) {
-        winston.warning('no permissionsInput!');
-      }
+      utilities.winstonWrapper('no permissionsInput!', 'warning');
       return this.createInitPermissionsArray(true);
     }
   },
