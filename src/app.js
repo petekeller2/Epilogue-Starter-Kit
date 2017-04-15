@@ -22,13 +22,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: utilities.yesTrueNoFalse(config.urlencodedExtended) }));
 app.use(cookieParser());
 
-winston.add(winston.transports.File, {
-  filename: 'logs/general.log',
-  tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-  maxsize: config.winston.maxsize,
-  maxFiles: config.winston.maxFiles,
-  zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
-});
+const winstonConfig = utilities.setUpWinstonLogger('logs/general.log');
+winston.add(winston.transports.File, winstonConfig);
 winston.setLevels(winston.config.syslog.levels);
 spawnTest.logging(childProcess);
 // --------------------epilogue-----------------------

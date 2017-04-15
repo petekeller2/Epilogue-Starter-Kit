@@ -230,14 +230,7 @@ export default {
     const isHttpTest = Boolean((config.environment === 'testing' || config.environment === 'staging') && testConfig.individualHttpTest === true);
     const validTestNumber = Boolean(testConfig.testCases[testConfig.testNumber - 1]);
 
-    const winstonConfig = {
-      tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-      maxsize: config.winston.maxsize,
-      maxFiles: config.winston.maxFiles,
-      zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
-    };
-
-    winstonConfig.filename = 'logs/unauthorized.log';
+    const winstonConfig = utilities.setUpWinstonLogger('logs/unauthorized.log');
     winston.loggers.add('unauthorized', {
       file: winstonConfig,
     });

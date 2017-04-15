@@ -11,14 +11,9 @@ import fs from "fs-extra";
 import winston from "winston";
 import testConfig from "../testConfig.json";
 
+const winstonConfig = utilities.setUpWinstonLogger('logs/testCaseGeneration.log');
 winston.loggers.add('testCaseGeneration', {
-  file: {
-    filename: 'logs/testCaseGeneration.log',
-    tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-    maxsize: config.winston.maxsize,
-    maxFiles: config.winston.maxFiles,
-    zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
-  },
+  file: winstonConfig,
 });
 const testCaseGeneration = winston.loggers.get('testCaseGeneration');
 

@@ -58,21 +58,17 @@ export default {
           // const host = server.address().address,
           const port = server.address().port;
           if (config.environment === 'testing' || config.environment === 'staging') {
+            let winstonConfig = utilities.setUpWinstonLogger('logs/tests.log');
             winston.loggers.add('testsLog', {
-              file: {
-                filename: 'logs/tests.log',
-                tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-                maxsize: config.winston.maxsize,
-                maxFiles: config.winston.maxFiles,
-                zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive),
-              },
+              file: winstonConfig,
             });
+            const testsLog = winston.loggers.get('testsLog');
 
+            winstonConfig = utilities.setUpWinstonLogger('logs/latestTests.log');
             winston.loggers.add('latestTestsLog', {
-              file: {
-                filename: 'logs/latestTests.log',
-              },
+              file: winstonConfig,
             });
+            const latestTestsLog = winston.loggers.get('latestTestsLog');
 
             if (testConfig.testsCasesHaveBeenGenerated !== true) {
               testCases.generateTestCases().then((generateTestCasesMessage) => {
@@ -94,9 +90,7 @@ export default {
                 }
 
                 runTests.stdout.on('data', (data) => {
-                  const testsLog = winston.loggers.get('testsLog');
                   testsLog.info(data.toString('utf8'));
-                  const latestTestsLog = winston.loggers.get('latestTestsLog');
                   latestTestsLog.info(data.toString('utf8'));
                 });
 

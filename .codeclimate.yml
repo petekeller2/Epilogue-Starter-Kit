@@ -14,4 +14,7 @@ ratings:
 exclude_paths:
   - "test/"
   - "src/config.js"
+  - "src/resources/Neighborhood/"
+  - "src/resources/Todo/"
+  - "src/resources/User/"
   - "gulpfile.js"

@@ -10,20 +10,14 @@ const util = require('util');
 const config = require('./src/config');
 const utilities = require('./src/utilities');
 
-const winstonConfig = {
-  tailable: utilities.yesTrueNoFalse(config.winston.tailable),
-  maxsize: config.winston.maxsize,
-  maxFiles: config.winston.maxFiles,
-  zippedArchive: utilities.yesTrueNoFalse(config.winston.zippedArchive)
-};
+let winstonConfig = utilities.setUpWinstonLogger('logs/gulpErrors.log');
 
-winstonConfig.filename = 'logs/gulpErrors.log';
 winston.loggers.add('gulpError', {
-  file: winstonConfig
+  file: winstonConfig,
 });
 const gulpErrors = winston.loggers.get('gulpError');
 
-winstonConfig.filename = 'logs/testResults.log';
+winstonConfig = utilities.setUpWinstonLogger('logs/testResults.log');
 winston.loggers.add('testResults', {
   file: winstonConfig
 });

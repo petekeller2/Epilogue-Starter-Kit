@@ -68,4 +68,38 @@ module.exports = {
     }
     return returns;
   },
+  /** @function
+   * @name setUpWinstonLogger
+   * @param {string} filename
+   * @param {boolean} tailableInput
+   * @param {number} maxsizeInput
+   * @param {number} maxFilesInput
+   * @param {boolean} zippedArchiveInput
+   * @return {object}
+   */
+  setUpWinstonLogger(filename, tailableInput, maxsizeInput, maxFilesInput, zippedArchiveInput) {
+    let tailable = tailableInput;
+    if (tailableInput === undefined) {
+      tailable = this.yesTrueNoFalse(config.winston.tailable);
+    }
+    let maxsize = maxsizeInput;
+    if (maxsizeInput === undefined) {
+      maxsize = config.winston.maxsize;
+    }
+    let maxFiles = maxFilesInput;
+    if (maxFilesInput === undefined) {
+      maxFiles = config.winston.maxFiles;
+    }
+    let zippedArchive = zippedArchiveInput;
+    if (zippedArchiveInput === undefined) {
+      zippedArchive = this.yesTrueNoFalse(config.winston.zippedArchive);
+    }
+    return {
+      filename,
+      tailable,
+      maxsize,
+      maxFiles,
+      zippedArchive,
+    };
+  },
 };
