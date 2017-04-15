@@ -148,7 +148,7 @@ export default {
    * @description Converts aaInput to auto association array. See wiki for detailed overview
    */
   convertAutoAssociations(aaInput, getResourcesNames) {
-    const aaReturn = [];
+    let aaReturn = [];
     if ((typeof aaInput) === 'string') {
       if (aaInput) {
         let cleanedInput = aaInput.replace(/^\s+/g, '');
@@ -171,22 +171,49 @@ export default {
         }
       }
     } else if ((typeof aaInput) === 'object') {
-      if (Array.isArray(aaInput)) {
-        aaInput.forEach((aaElement) => {
-          if (aaElement) {
-            if ((typeof aaElement) === 'string') {
-              (getResourcesNames === true) ? aaReturn.push(aaElement) : aaReturn.push({hasMany: aaElement});
-            } else if ((typeof aaElement) === 'object') {
-              (getResourcesNames === true) ? aaReturn.push(aaElement[Object.keys(aaElement)[0]]) : aaReturn.push(aaElement);
-            }
-          }
-        });
-      } else if (getResourcesNames === true) {
-        aaReturn.push(aaInput[Object.keys(aaInput)[0]]);
-      } else {
-        aaReturn.push(aaInput);
-      }
+      aaReturn = this.aaBuildFromObject(aaInput, getResourcesNames, aaReturn);
     }
     return aaReturn;
+  },
+  /** @function
+   * @name aaBuildFromObject
+   * @param {*} aaInput
+   * @param {boolean} getResourcesNames
+   * @param {Array} aaReturn
+   * @return {Array}
+   * @description Helper function for convertAutoAssociations
+   */
+  aaBuildFromObject(aaInput, getResourcesNames, aaReturn) {
+    if (Array.isArray(aaInput)) {
+      return this.aaBuildFromArray(aaInput, getResourcesNames, aaReturn);
+    } else if (getResourcesNames === true) {
+      aaReturn.push(aaInput[Object.keys(aaInput)[0]]);
+    } else {
+      aaReturn.push(aaInput);
+    }
+    return aaReturn;
+  },
+  /** @function
+   * @name aaBuildFromArray
+   * @param {*} aaInput
+   * @param {boolean} getResourcesNames
+   * @param {Array} aaReturn
+   * @return {Array}
+   * @description Helper function for aaBuildFromObject
+   */
+  aaBuildFromArray(aaInput, getResourcesNames, aaReturn) {
+    const aaReturnCopy = aaReturn;
+    aaInput.forEach((aaElement) => {
+      if (aaElement) {
+        let eleToPush;
+        if ((typeof aaElement) === 'string') {
+          (getResourcesNames === true) ? eleToPush = aaElement : eleToPush = { hasMany: aaElement };
+        } else if ((typeof aaElement) === 'object') {
+          (getResourcesNames === true) ? eleToPush = aaElement[Object.keys(aaElement)[0]] : eleToPush = aaElement;
+        }
+        aaReturnCopy.push(eleToPush);
+      }
+    });
+    return aaReturnCopy;
   },
 };

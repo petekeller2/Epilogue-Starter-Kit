@@ -12,6 +12,11 @@ const fs = require('fs-extra');
 const winston = require('winston');
 
 module.exports = {
+  /** @function
+   * @name createRequestOptions
+   * @param {object} query
+   * @return {object}
+   */
   createRequestOptions(query) {
     const options = {
       url: `${config.protocol}://${config.host}:${config.port}/${query}`,
@@ -25,6 +30,12 @@ module.exports = {
     }
     return options;
   },
+  /** @function
+   * @name yesTrueNoFalse
+   * @param {*} yesOrNo
+   * @return {boolean}
+   * @description Should yesOrNo should be a string
+   */
   yesTrueNoFalse(yesOrNo) {
     if (yesOrNo && typeof yesOrNo === 'string' && yesOrNo.toUpperCase() === 'YES') {
       return true;
@@ -37,7 +48,15 @@ module.exports = {
       return false;
     }
   },
-  winstonWrapper(message, level) {
+  /** @function
+   * @name winstonWrapper
+   * @param {*} message
+   * @param {string} level
+   * @param {boolean} returns
+   * @return {boolean}
+   * @description Winston wrapper function that returns a boolean for convenience
+   */
+  winstonWrapper(message, level, returns = false) {
     let levelToUse = level.toLowerCase();
     if (['debug', 'info', 'notice', 'warning', 'error', 'crit', 'alert', 'emerg'].indexOf(levelToUse) < 0) {
       levelToUse = 'info';
@@ -47,5 +66,6 @@ module.exports = {
     } else {
       console.log(`${message} [not using winston]`);
     }
+    return returns;
   },
 };

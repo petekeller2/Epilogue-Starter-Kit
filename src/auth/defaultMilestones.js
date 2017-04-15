@@ -108,8 +108,9 @@ export default {
                 })
                 .then(() => resolve(context.skip));
             } else {
-              // eslint-disable-next-line
-              utilities.winstonWrapper('With these permissions, users can only list resources that belong to them, but this resource can not belong to anyone', 'warning');
+              let longMessage = 'With these permissions, users can only list resources that belong to them, ';
+              longMessage += 'but this resource can not belong to anyone';
+              utilities.winstonWrapper(longMessage, 'warning');
               // eslint-disable-next-line
               context.include = [];
             }

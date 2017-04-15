@@ -19,17 +19,25 @@ export default {
    */
   ownerGroupCheckWrapper(req, functionName) {
     let reqUrlArray;
-    if ((req || {}).url && ((req || {}).user || {}).id) {
+    if ((req || {}).url && this.hasUserId(req)) {
       reqUrlArray = req.url.split('/');
       reqUrlArray = reqUrlArray.filter(entry => entry.trim() !== '');
       return reqUrlArray;
-    } else if (!(((req || {}).user || {}).id)) {
+    } else if (!this.hasUserId(req)) {
       utilities.winstonWrapper(`req.user.id missing in ${functionName}`, 'info');
       return false;
     } else {
       utilities.winstonWrapper(`req.url missing in ${functionName}`, 'info');
       return false;
     }
+  },
+  /** @function
+   * @name hasUserId
+   * @param {object} req
+   * @return {boolean}
+   */
+  hasUserId(req) {
+    return (((req || {}).user || {}).id);
   },
   /** @function
    * @name isOwnerOfRegularResourceCheck
@@ -47,44 +55,74 @@ export default {
       return reqUrlArray;
     }
     if (reqUrlArray[0] === 'users' && cleanedEndpointsArray.indexOf(reqUrlArray[2]) >= 0) {
-      if (req.user.id === reqUrlArray[1]) {
-        return true;
-      } else {
-        utilities.winstonWrapper('Wrong user id using users/... url format', 'info');
-        return false;
-      }
+      return this.usersUrlCheckHelper(req, reqUrlArray);
     } else if (cleanedEndpointsArray.indexOf(reqUrlArray[0]) >= 0) {
-      if (this.trueForCreateOrList(actionsList, index, req)) {
-        return this.trueForCreateOrList(actionsList, index, req);
+      const trueForCreateOrListReturn = this.trueForCreateOrList(actionsList, index, req);
+      if (trueForCreateOrListReturn) {
+        return trueForCreateOrListReturn;
       } else if (reqUrlArray[1]) {
         if (cleanedEndpointsArray.indexOf('users') && reqUrlArray[1] === req.user.id) {
           return true;
         } else {
-          const findOneObj = {
-            where: { id: reqUrlArray[1] },
-          };
-          if (resource[0] === 'User') {
-            findOneObj.attributes = ['id'];
-          } else {
-            findOneObj.attributes = ['UserId'];
-          }
+          const findOneObj = this.buildFindOneObj(reqUrlArray, resource);
           const foundResource = await resource[2].findOne(findOneObj);
-          if (resource[0] === 'User' && (foundResource || {}).id && foundResource.id === req.user.id) {
-            return true;
-          } else if ((foundResource || {}).UserId && foundResource.UserId === req.user.id) {
-            return true;
-          } else {
-            utilities.winstonWrapper(`Can not update/delete/read resource, not owned by current user (current user: ${req.user.id})`, 'info');
-            return false;
-          }
+          return this.searchUserResourceCheckHelper(resource, foundResource, req);
         }
       } else {
-        utilities.winstonWrapper('Only one URL level deep for update/delete/read', 'info');
-        return false;
+        return utilities.winstonWrapper('Only one URL level deep for update/delete/read', 'info', false);
       }
     } else {
-      utilities.winstonWrapper('URL is not in either users/... or resource/... format', 'info');
-      return false;
+      return utilities.winstonWrapper('URL is not in either users/... or resource/... format', 'info', false);
+    }
+  },
+  /** @function
+   * @name buildFindOneObj
+   * @param {object} reqUrlArray
+   * @param {Array} resource
+   * @return {object}
+   * @description Helper function for isOwnerOfRegularResourceCheck
+   */
+  buildFindOneObj(reqUrlArray, resource) {
+    const findOneObj = {
+      where: { id: reqUrlArray[1] },
+    };
+    if (resource[0] === 'User') {
+      findOneObj.attributes = ['id'];
+    } else {
+      findOneObj.attributes = ['UserId'];
+    }
+    return findOneObj;
+  },
+  /** @function
+   * @name usersUrlCheckHelper
+   * @param {object} req
+   * @param {object} reqUrlArray
+   * @return {boolean}
+   * @description Helper function for isOwnerOfRegularResourceCheck
+   */
+  usersUrlCheckHelper(req, reqUrlArray) {
+    if (req.user.id === reqUrlArray[1]) {
+      return true;
+    } else {
+      return utilities.winstonWrapper('Wrong user id using users/... url format', 'info', false);
+    }
+  },
+  /** @function
+   * @name searchUserResourceCheckHelper
+   * @param {Array} resource
+   * @param {object} foundResource
+   * @param {object} req
+   * @return {boolean}
+   * @description Helper function for isOwnerOfRegularResourceCheck
+   */
+  searchUserResourceCheckHelper(resource, foundResource, req) {
+    if (resource[0] === 'User' && (foundResource || {}).id && foundResource.id === req.user.id) {
+      return true;
+    } else if ((foundResource || {}).UserId && foundResource.UserId === req.user.id) {
+      return true;
+    } else {
+      const longMessage = `Can not update/delete/read resource, not owned by current user (current user: ${req.user.id})`;
+      return utilities.winstonWrapper(longMessage, 'info', false);
     }
   },
   /** @function
@@ -101,8 +139,9 @@ export default {
     if (reqUrlArray === false) {
       return reqUrlArray;
     }
-    if (this.trueForCreateOrList(actionsList, index, req)) {
-      return this.trueForCreateOrList(actionsList, index, req);
+    const trueForCreateOrListReturn = this.trueForCreateOrList(actionsList, index, req);
+    if (trueForCreateOrListReturn) {
+      return trueForCreateOrListReturn;
     } else {
       const foundResource = await resource[2].findOne({
         attributes: ['OwnerID'],
@@ -111,8 +150,7 @@ export default {
       if ((foundResource || {}).OwnerID && foundResource.OwnerID === req.user.id) {
         return true;
       } else {
-        utilities.winstonWrapper('Can not update/delete/read group resource, not owned by current user', 'info');
-        return false;
+        return utilities.winstonWrapper('Can not update/delete/read group resource, not owned by current user', 'info', false);
       }
     }
   },
@@ -131,8 +169,9 @@ export default {
     if (reqUrlArray === false) {
       return reqUrlArray;
     }
-    if (this.trueForCreateOrList(actionsList, index, req)) {
-      return this.trueForCreateOrList(actionsList, index, req);
+    const trueForCreateOrListReturn = this.trueForCreateOrList(actionsList, index, req);
+    if (trueForCreateOrListReturn) {
+      return trueForCreateOrListReturn;
     } else {
       const foundResource = await awaitedGroupXrefModel.findOne({
         attributes: ['userID', 'groupID', 'groupResourceName'],
@@ -141,8 +180,7 @@ export default {
       if (foundResource) {
         return true;
       } else {
-        utilities.winstonWrapper('Can not update/delete/read group resource, not a member', 'info');
-        return false;
+        return utilities.winstonWrapper('Can not update/delete/read group resource, not a member', 'info', false);
       }
     }
   },
@@ -155,7 +193,7 @@ export default {
    * @description Returns true for action is create or list and the user is not a guest
    */
   trueForCreateOrList(actionsList, index, req) {
-    return Boolean((actionsList[index] === 'create' || actionsList[index] === 'list') && (((req || {}).user || {}).id));
+    return Boolean((actionsList[index] === 'create' || actionsList[index] === 'list') && this.hasUserId(req));
   },
   /** @function
    * @name belongsToUserResourceCheck
@@ -293,6 +331,19 @@ export default {
     return permissionsReturn;
   },
   /** @function
+   * @name reverseInputInBinary
+   * @param {string} inputInBinary
+   * @return {string}
+   * @description Helper function for convertNumberPermissions
+   */
+  reverseInputInBinary(inputInBinary) {
+    let inputInBinaryBackwards = '';
+    for (let i = inputInBinary.length - 1; i >= 0; i -= 1) {
+      inputInBinaryBackwards += inputInBinary[i];
+    }
+    return inputInBinaryBackwards;
+  },
+  /** @function
    * @name convertNumberPermissions
    * @param {number} permissionsInput
    * @return {Array}
@@ -305,10 +356,7 @@ export default {
       return permissionsReturn;
     }
     const inputInBinary = permissionsInput.toString(2);
-    let inputInBinaryBackwards = '';
-    for (let i = inputInBinary.length - 1; i >= 0; i -= 1) {
-      inputInBinaryBackwards += inputInBinary[i];
-    }
+    const inputInBinaryBackwards = this.reverseInputInBinary(inputInBinary);
     let permissionsBit;
     let permissionsReturnIndex = 0;
     for (let i = 0; i < inputInBinaryBackwards.length; i += 1) {
@@ -332,12 +380,12 @@ export default {
   },
   /** @function
    * @name stringPermissionsRegex
-   * @param {string} permissionsInputCleaned
+   * @param {string} permissionsInputPartiallyCleaned
    * @return {string}
-   * @description Does regex cleaning on the partially cleaned permissions string
+   * @description Regex cleaning on the partially cleaned permissions string
    */
-  stringPermissionsRegex(permissionsInputCleaned) {
-    let permissionsInputCleanedReturn = permissionsInputCleaned.replace(/^\s+/g, '');
+  stringPermissionsRegex(permissionsInputPartiallyCleaned) {
+    let permissionsInputCleanedReturn = permissionsInputPartiallyCleaned.replace(/^\s+/g, '');
     permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/n\/a/g, '|');
     permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/na/g, '|');
     permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/n/g, '|');
@@ -359,6 +407,23 @@ export default {
     return permissionsInputCleanedReturn;
   },
   /** @function
+   * @name getNumberSubStringStart
+   * @param {string} permissionsInputCleaned
+   * @return {*}
+   * @description Helper function for numericStringPermissions
+   */
+  getNumberSubStringStart(permissionsInputCleaned) {
+    if (permissionsInputCleaned.indexOf('0x') > -1) {
+      return permissionsInputCleaned.indexOf('0x');
+    } else if (permissionsInputCleaned.indexOf('0o') > -1) {
+      return permissionsInputCleaned.indexOf('0o');
+    } else if (permissionsInputCleaned.indexOf('0b') > -1) {
+      return permissionsInputCleaned.indexOf('0b');
+    } else {
+      return false;
+    }
+  },
+  /** @function
    * @name numericStringPermissions
    * @param {string} permissionsInput
    * @param {string} permissionsInputCleaned
@@ -368,15 +433,9 @@ export default {
    */
   numericStringPermissions(permissionsInput, permissionsInputCleaned, permissionsReturn) {
     let returnValue = false;
-    let numberSubStringStart = null;
+    const numberSubStringStart = this.getNumberSubStringStart(permissionsInputCleaned);
     if (!Number.isNaN(Number(permissionsInput))) {
       returnValue = this.convertNumberPermissions(Number(permissionsInput));
-    } else if (permissionsInputCleaned.indexOf('0x') > -1) {
-      numberSubStringStart = permissionsInputCleaned.indexOf('0x');
-    } else if (permissionsInputCleaned.indexOf('0o') > -1) {
-      numberSubStringStart = permissionsInputCleaned.indexOf('0o');
-    } else if (permissionsInputCleaned.indexOf('0b') > -1) {
-      numberSubStringStart = permissionsInputCleaned.indexOf('0b');
     } else if (/\d/.test(permissionsInputCleaned)) {
       utilities.winstonWrapper('Can not mix strings and numbers!', 'warning');
       returnValue = permissionsReturn;
@@ -391,13 +450,94 @@ export default {
     return returnValue;
   },
   /** @function
+   * @name buildStringPermissionTrueIndex
+   * @param {string} permissionLetter
+   * @param {number} section
+   * @return {*}
+   * @description Helper function for buildStringPermissionReturn
+   */
+  buildStringPermissionTrueIndex(permissionLetter, section) {
+    if (permissionLetter === 'l') {
+      return (section * 5);
+    } else if (permissionLetter === 'c') {
+      return ((section * 5) + 1);
+    } else if (permissionLetter === 'r') {
+      return ((section * 5) + 2);
+    } else if (permissionLetter === 'u') {
+      return ((section * 5) + 3);
+    } else if (permissionLetter === 'd') {
+      return ((section * 5) + 4);
+    } else {
+      return false;
+    }
+  },
+  /** @function
+   * @name buildStringPermissionReturn
+   * @param {number} lengthOfSection
+   * @param {string} permissionsInputCleaned
+   * @param {number} letterIndex
+   * @param {number} section
+   * @param {Array} permissionsReturn
+   * @return {Array}
+   * @description Helper function for convertStringPermissions
+   */
+  buildStringPermissionReturn(lengthOfSection, permissionsInputCleaned, letterIndex, section, permissionsReturn) {
+    let lengthOfSectionCopy = lengthOfSection;
+    let letterIndexCopy = letterIndex;
+    const permissionsReturnCopy = permissionsReturn;
+    for (let lcrudIndex = 0; lcrudIndex < lengthOfSectionCopy; lcrudIndex += 1) {
+      const permissionLetter = permissionsInputCleaned.charAt(letterIndexCopy);
+      const permissionIndex = this.buildStringPermissionTrueIndex(permissionLetter, section);
+      if (permissionIndex !== false) {
+        permissionsReturnCopy[permissionIndex] = true;
+      } else if (permissionLetter) {
+        lengthOfSectionCopy += 1;
+      }
+      letterIndexCopy += 1;
+    }
+    return [permissionsReturnCopy, letterIndexCopy];
+  },
+  /** @function
+   * @name getSectionInfo
+   * @param {boolean} nonPipeIndexFound
+   * @param {number} nextNonPipeIndex
+   * @param {string} permissionsInputCleaned
+   * @param {string} findSectionLengthSubString
+   * @param {number} lengthOfSection
+   * @param {number} section
+   * @return {Array}
+   * @description Helper function for convertStringPermissions
+   */
+  getSectionInfo(nonPipeIndexFound, nextNonPipeIndex, permissionsInputCleaned, findSectionLengthSubString, lengthOfSection, section) {
+    let lengthOfSectionCopy = lengthOfSection;
+    let nonPipeIndexFoundCopy = nonPipeIndexFound;
+    let nextNonPipeIndexCopy = nextNonPipeIndex;
+    let sectionCopy = section;
+    let findSectionLengthSubStringCopy = findSectionLengthSubString;
+    while (nonPipeIndexFoundCopy === false && nextNonPipeIndexCopy < permissionsInputCleaned.length) {
+      if (findSectionLengthSubStringCopy.indexOf('|') > 0) {
+        lengthOfSectionCopy = (findSectionLengthSubStringCopy.substr(0, findSectionLengthSubStringCopy.indexOf('|'))).length;
+        nonPipeIndexFoundCopy = true;
+      } else {
+        if (findSectionLengthSubStringCopy.indexOf('|') === 0 && sectionCopy === 0) {
+          sectionCopy += 1;
+        } else if (findSectionLengthSubStringCopy.indexOf('||') === 0) {
+          sectionCopy += 1;
+        }
+        nextNonPipeIndexCopy += 1;
+        findSectionLengthSubStringCopy = permissionsInputCleaned.substr(nextNonPipeIndexCopy);
+      }
+    }
+    return [lengthOfSectionCopy, sectionCopy];
+  },
+  /** @function
    * @name convertStringPermissions
    * @param {string} permissionsInput
    * @return {Array}
    * @description Sends number strings to convertNumberPermissions, otherwise, string permissions are converted
    */
   convertStringPermissions(permissionsInput) {
-    const permissionsReturn = this.createInitPermissionsArray();
+    let permissionsReturn = this.createInitPermissionsArray();
     let permissionsInputCleaned = permissionsInput.toLowerCase();
 
     const numericReturn = this.numericStringPermissions(permissionsInput, permissionsInputCleaned, permissionsReturn);
@@ -407,8 +547,6 @@ export default {
 
     permissionsInputCleaned = this.stringPermissionsRegex(permissionsInputCleaned);
 
-    let permissionIndex = 0;
-    let permissionLetter;
     let lengthOfSection;
     let letterIndex = 0;
     let findSectionLengthSubString;
@@ -420,43 +558,17 @@ export default {
         nextNonPipeIndex = letterIndex;
         nonPipeIndexFound = false;
         lengthOfSection = findSectionLengthSubString.length;
-        while (nonPipeIndexFound === false && nextNonPipeIndex < permissionsInputCleaned.length) {
-          if (findSectionLengthSubString.indexOf('|') > 0) {
-            lengthOfSection = (findSectionLengthSubString.substr(0, findSectionLengthSubString.indexOf('|'))).length;
-            nonPipeIndexFound = true;
-          } else {
-            if (findSectionLengthSubString.indexOf('|') === 0 && section === 0) {
-              section += 1;
-            } else if (findSectionLengthSubString.indexOf('||') === 0) {
-              section += 1;
-            }
-            nextNonPipeIndex += 1;
-            findSectionLengthSubString = permissionsInputCleaned.substr(nextNonPipeIndex);
-          }
-        }
-        // todo move to function
-        for (let lcrudIndex = 0; lcrudIndex < lengthOfSection; lcrudIndex += 1) {
-          permissionLetter = permissionsInputCleaned.charAt(letterIndex);
-          if (permissionLetter === 'l') {
-            permissionIndex = section * 5;
-            permissionsReturn[permissionIndex] = true;
-          } else if (permissionLetter === 'c') {
-            permissionIndex = (section * 5) + 1;
-            permissionsReturn[permissionIndex] = true;
-          } else if (permissionLetter === 'r') {
-            permissionIndex = (section * 5) + 2;
-            permissionsReturn[permissionIndex] = true;
-          } else if (permissionLetter === 'u') {
-            permissionIndex = (section * 5) + 3;
-            permissionsReturn[permissionIndex] = true;
-          } else if (permissionLetter === 'd') {
-            permissionIndex = (section * 5) + 4;
-            permissionsReturn[permissionIndex] = true;
-          } else if (permissionLetter) {
-            lengthOfSection += 1;
-          }
-          letterIndex += 1;
-        }
+
+        let sectionArguments = [nonPipeIndexFound, nextNonPipeIndex, permissionsInputCleaned];
+        sectionArguments = sectionArguments.concat([findSectionLengthSubString, lengthOfSection, section]);
+        const sectionLengthAndNum = this.getSectionInfo(...sectionArguments);
+        lengthOfSection = sectionLengthAndNum[0];
+        section = sectionLengthAndNum[1];
+
+        const buildArguments = [lengthOfSection, permissionsInputCleaned, letterIndex, section, permissionsReturn];
+        const permissionsReturnAndLetterIndex = this.buildStringPermissionReturn(...buildArguments);
+        permissionsReturn = permissionsReturnAndLetterIndex[0];
+        letterIndex = permissionsReturnAndLetterIndex[1];
       }
     }
     return permissionsReturn;
@@ -479,6 +591,56 @@ export default {
     return permissionsReturn;
   },
   /** @function
+   * @name getSectionMultiplier
+   * @param {string} permissionKey
+   * @return {*}
+   * @description Helper function for convertObjectPermissions
+   */
+  getSectionMultiplier(permissionKey) {
+    if (permissionKey.toLowerCase() === 'owner') {
+      return 0;
+    } else if (permissionKey.toLowerCase() === 'group') {
+      return 1;
+    } else if (permissionKey.toLowerCase() === 'loggedinuser') {
+      return 2;
+    } else if (permissionKey.toLowerCase() === 'anyuser') {
+      return 3;
+    } else {
+      utilities.winstonWrapper('unhandled permission section!', 'warning');
+      return null;
+    }
+  },
+  /** @function
+   * @name buildObjectPermissionsReturn
+   * @param {Array} permissionsReturn
+   * @param {string} permissionArrayElement
+   * @param {number} permissionsReturnIndex
+   * @return {Array}
+   * @description Used in convertObjectPermissions
+   */
+  buildObjectPermissionsReturn(permissionsReturn, permissionArrayElement, permissionsReturnIndex) {
+    const permissionsReturnCopy = permissionsReturn;
+    let permissionsReturnIndexCopy = permissionsReturnIndex;
+    if (permissionArrayElement === 'list' || permissionArrayElement === 'l') {
+      permissionsReturnCopy[permissionsReturnIndexCopy] = true;
+    } else if (permissionArrayElement[0] === 'c') { // create or c
+      permissionsReturnIndexCopy += 1;
+      permissionsReturnCopy[permissionsReturnIndexCopy] = true;
+    } else if (permissionArrayElement[0] === 'r') { // read or r
+      permissionsReturnIndexCopy += 2;
+      permissionsReturnCopy[permissionsReturnIndexCopy] = true;
+    } else if (permissionArrayElement[0] === 'u') { // update or u
+      permissionsReturnIndexCopy += 3;
+      permissionsReturnCopy[permissionsReturnIndexCopy] = true;
+    } else if (permissionArrayElement[0] === 'd') { // delete or d
+      permissionsReturnIndexCopy += 4;
+      permissionsReturnCopy[permissionsReturnIndexCopy] = true;
+    } else {
+      utilities.winstonWrapper('Unhandled resource operation!', 'warning');
+    }
+    return permissionsReturnCopy;
+  },
+  /** @function
    * @name convertObjectPermissions
    * @param {object} permissionsInput
    * @return {Array}
@@ -490,46 +652,18 @@ export default {
     let permissionArrayElement;
     let permissionsReturnIndex;
     let permissionsSectionArrayLength;
-    const permissionsReturn = this.createInitPermissionsArray();
+    let permissionsReturn = this.createInitPermissionsArray();
     const propertiesLength = Object.keys(permissionsInput).length;
     for (let propertyIndex = 0; propertyIndex < propertiesLength; propertyIndex += 1) {
       permissionKey = Object.keys(permissionsInput)[propertyIndex];
-      // todo move to function
-      if (permissionKey.toLowerCase() === 'owner') {
-        sectionMultiplier = 0;
-      } else if (permissionKey.toLowerCase() === 'group') {
-        sectionMultiplier = 1;
-      } else if (permissionKey.toLowerCase() === 'loggedinuser') {
-        sectionMultiplier = 2;
-      } else if (permissionKey.toLowerCase() === 'anyuser') {
-        sectionMultiplier = 3;
-      } else {
-        utilities.winstonWrapper('unhandled permission section!', 'warning');
-      }
+      sectionMultiplier = this.getSectionMultiplier(permissionKey);
       if (Array.isArray(permissionsInput[permissionKey])) {
         permissionsSectionArrayLength = permissionsInput[permissionKey].length;
         for (let arrayIndex = 0; arrayIndex < permissionsSectionArrayLength; arrayIndex += 1) {
           if ((typeof permissionsInput[permissionKey][arrayIndex]) === 'string') {
             permissionArrayElement = (permissionsInput[permissionKey][arrayIndex]).toLowerCase();
             permissionsReturnIndex = (sectionMultiplier * 5);
-            // todo: move to function
-            if (permissionArrayElement === 'list' || permissionArrayElement === 'l') {
-              permissionsReturn[permissionsReturnIndex] = true;
-            } else if (permissionArrayElement === 'create' || permissionArrayElement === 'c') {
-              permissionsReturnIndex += 1;
-              permissionsReturn[permissionsReturnIndex] = true;
-            } else if (permissionArrayElement === 'read' || permissionArrayElement === 'r') {
-              permissionsReturnIndex += 2;
-              permissionsReturn[permissionsReturnIndex] = true;
-            } else if (permissionArrayElement === 'update' || permissionArrayElement === 'u') {
-              permissionsReturnIndex += 3;
-              permissionsReturn[permissionsReturnIndex] = true;
-            } else if (permissionArrayElement === 'destroy' || permissionArrayElement === 'd') {
-              permissionsReturnIndex += 4;
-              permissionsReturn[permissionsReturnIndex] = true;
-            } else {
-              utilities.winstonWrapper('Unhandled resource operation!', 'warning');
-            }
+            permissionsReturn = this.buildObjectPermissionsReturn(permissionsReturn, permissionArrayElement, permissionsReturnIndex);
           } else {
             utilities.winstonWrapper('permissionsInput[permissionKey][arrayIndex] should be a string!', 'warning');
           }

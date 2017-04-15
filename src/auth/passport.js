@@ -26,34 +26,89 @@ export default {
    */
   getFromProfile(profile) {
     const returnObj = {};
-    returnObj.username = (profile || {}).displayName;
     /* eslint no-underscore-dangle: ["error", { "allow": ["_json"] }]*/
     const profileJson = ((profile || {})._json || {});
-    if (!returnObj.username) {
-      returnObj.username = profileJson.first_name;
-      if (returnObj.username) {
-        returnObj.username += ' ';
-      }
-      returnObj.username += profileJson.last_name;
-    }
-    returnObj.emailAddress = profileJson.email;
-    if (!returnObj.emailAddress) {
-      returnObj.emailAddress = profileJson.emails;
-      if (returnObj.emailAddress) {
-        returnObj.emailAddress = (returnObj.emailAddress[0] || {}).value;
-      }
-    }
-    returnObj.profilePicture = ((profileJson.picture || {}).data || {}).url;
-    if (!returnObj.profilePicture) {
-      returnObj.profilePicture = profileJson.profile_image_url_https;
-    }
-    if (!returnObj.profilePicture) {
-      returnObj.profilePicture = (profileJson.image || {}).url;
-    }
-    if (!returnObj.profilePicture) {
-      returnObj.profilePicture = profileJson.picture;
-    }
+    returnObj.username = this.getUsername(profile, profileJson);
+    returnObj.emailAddress = this.getEmailAddress(profileJson);
+    returnObj.profilePicture = this.getProfilePicture(profileJson);
     return returnObj;
+  },
+  /** @function
+   * @name getUsername
+   * @param {object} profile
+   * @param {object} profileJson
+   * @return string
+   * @description Helper function for getFromProfile
+   */
+  getUsername(profile, profileJson) {
+    let username = (profile || {}).displayName;
+    if (!username) {
+      username = profileJson.first_name;
+      if (username) {
+        username += ' ';
+      }
+      username += profileJson.last_name;
+    }
+    return username;
+  },
+  /** @function
+   * @name getEmailAddress
+   * @param {object} profileJson
+   * @return string
+   * @description Helper function for getFromProfile
+   */
+  getEmailAddress(profileJson) {
+    let emailAddress = profileJson.email;
+    if (!emailAddress) {
+      emailAddress = profileJson.emails;
+      if (emailAddress) {
+        emailAddress = (emailAddress[0] || {}).value;
+      }
+    }
+    return emailAddress;
+  },
+  /** @function
+   * @name getProfilePicture
+   * @param {object} profileJson
+   * @return string
+   * @description Helper function for getFromProfile
+   */
+  getProfilePicture(profileJson) {
+    let profilePicture = ((profileJson.picture || {}).data || {}).url;
+    if (!profilePicture) {
+      profilePicture = profileJson.profile_image_url_https;
+    }
+    if (!profilePicture) {
+      profilePicture = (profileJson.image || {}).url;
+    }
+    if (!profilePicture) {
+      profilePicture = profileJson.picture;
+    }
+    return profilePicture;
+  },
+  /** @function
+   * @name getId
+   * @param {object} req
+   * @param {object} profile
+   * @return string
+   * @description Helper function for setup
+   */
+  getId(req, profile) {
+    let id = ((req || {}).user || {}).id;
+    if (!id) {
+      id = (profile || {}).id;
+    }
+    return id;
+  },
+  /** @function
+   * @name userResourceCheck
+   * @param {object} userResource
+   * @description Helper function for setup
+   */
+  userResourceCheck(userResource) {
+    if (!userResource) {
+      throw new MainError('The User resource was not found during an auth attempt!', 'Error');
+    }
   },
   /** @function
    * @name setup
@@ -86,15 +141,10 @@ export default {
       if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf(passportOptionName) !== -1)) {
         passport.use(new PassportStrategy(passportConfig, (req, accessToken, refreshToken, extraParams, profile, done) => {
           const authAttempt = async () => {
-            let id = ((req || {}).user || {}).id;
-            if (!id) {
-              id = (profile || {}).id;
-            }
+            const id = this.getId(req, profile);
             const awaitedResourcesFromSetup = await resourcesFromSetup;
             const userResource = awaitedResourcesFromSetup.get('User')[2];
-            if (!userResource) {
-              throw new MainError('The User resource was not found during an auth attempt!', 'Error');
-            }
+            this.userResourceCheck(userResource);
             const foundUser = await userResource.findOne({
               attributes: ['id', 'username', 'emailAddress', 'profilePicture'],
               where: { id },
