@@ -1,7 +1,5 @@
 packageJson: package.json
-dir:
-  - src
-  - test
+dir: src
 files:
   - gulpfile.js
   - test/setup/spawnTest.js
