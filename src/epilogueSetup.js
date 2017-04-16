@@ -1,7 +1,7 @@
 import epilogue from 'epilogue';
 import merge from 'deepmerge';
+import utilities from './utilities';
 import Resources from './resources';
-import MainError from './custom/errors/';
 import testConfig from '../test/testConfig.json';
 
 export default {
@@ -61,9 +61,7 @@ export default {
       modelNames.push(tempResource[0]);
       return tempResource;
     });
-    if (!hasUser) {
-      throw new MainError('The User resource is required!', 'Error');
-    }
+    utilities.throwErrorConditionally(hasUser, 'The User resource is required!');
 
     // the next step (see: build all models for next step)
     let model;

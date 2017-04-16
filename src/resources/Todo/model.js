@@ -1,12 +1,12 @@
+import modelFields from '../modelFields';
+
 export default {
   setup(database, sequelize, name, isGroup) {
-    const fields = {
+    let fields = {
       task: sequelize.STRING,
       dueDate: sequelize.DATE,
     };
-    if (isGroup) {
-      fields.OwnerID = sequelize.STRING;
-    }
+    fields = modelFields.addDefaultFields(fields, sequelize, isGroup);
     return database.define(name, fields);
   },
 };

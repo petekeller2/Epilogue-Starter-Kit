@@ -1,6 +1,6 @@
-import config from '../../config';
+const config = require('../../config');
 
-export default class MainError extends Error {
+module.exports = class MainError extends Error {
   constructor(message, severity, status) {
     // Calling parent constructor of base Error class.
     super(message);
@@ -60,4 +60,4 @@ export default class MainError extends Error {
     }
     this.status = status || 500;
   }
-}
+};

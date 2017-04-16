@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/petekeller2/Epilogue-Starter-Kit.svg?branch=master)](https://travis-ci.org/petekeller2/Epilogue-Starter-Kit) 
 [![Dependency Status](https://david-dm.org/petekeller2/Epilogue-Starter-Kit.svg)](https://david-dm.org/petekeller2/Epilogue-Starter-Kit) 
-[![Code Climate](https://codeclimate.com/github/petekeller2/Epilogue-Starter-Kit/badges/gpa.svg)](https://codeclimate.com/github/petekeller2/Epilogue-Starter-Kit) 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/petekeller2/epilogue-starter-kit/LICENSE)
 
 A starter kit using an Express implementation of Epilogue. It handles

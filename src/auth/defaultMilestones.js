@@ -26,12 +26,15 @@ export default {
   /** @function
    * @name returnUserId
    * @param {object} req
+   * @param {boolean} guestIfNoUser
    * @return object
-   * @description Helper function that returns a user's id conditionally
+   * @description Helper function that returns a user's id conditionally. Note that if guest is returned, a guest user must exist
    */
-  returnUserId(req) {
+  returnUserId(req, guestIfNoUser) {
     if (((req || {}).body) && ((req || {}).user || {}).id) {
       return req.user.id;
+    } else if (guestIfNoUser === true) {
+      return 'guest';
     }
     return null;
   },
@@ -55,12 +58,14 @@ export default {
       authMilestone[actionsList[i]].write = {};
       // eslint-disable-next-line
       authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async (resolve) => {
+        const userId = this.returnUserId(req, false);
         if (isGroup === true) {
-          req.body.OwnerID = this.returnUserId(req);
+          req.body.OwnerID = userId;
         }
         if ((userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
-          req.body.UserId = this.returnUserId(req);
+          req.body.UserId = userId;
         }
+        req.body.updatedBy = userId;
         resolve(context.continue);
       }));
       return merge(authMilestone, totalAuthMilestone);
@@ -119,6 +124,60 @@ export default {
             context.include = null;
           }
         }
+        resolve(context.continue);
+      }));
+      return merge(authMilestone, totalAuthMilestone);
+    }
+    return totalAuthMilestone;
+  },
+  /** @function
+   * @name deleteGroup
+   * @param {object} totalAuthMilestone
+   * @param {Array} actionsList
+   * @param {number} i
+   * @param {*} aa
+   * @param {string} name
+   * @param {Array} userAAs
+   * @param {object} awaitedGroupXrefModel
+   * @param {boolean} isGroup
+   * @return object
+   * @description Returns a possibly modified version of totalAuthMilestone. Deletes GroupXref rows
+   */
+  deleteGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, awaitedGroupXrefModel, isGroup) {
+    if ((actionsList[i] === 'delete') && (isGroup === true)) {
+      const authMilestone = {};
+      authMilestone[actionsList[i]] = {};
+      authMilestone[actionsList[i]].delete = {};
+      // eslint-disable-next-line
+      authMilestone[actionsList[i]].delete.before = ((req, res, context) => new Promise(async (resolve) => {
+        awaitedGroupXrefModel.destroy({
+          where: {
+            groupId: req.body.id,
+            groupResourceName: name,
+          },
+        });
+        resolve(context.continue);
+      }));
+      return merge(authMilestone, totalAuthMilestone);
+    }
+    return totalAuthMilestone;
+  },
+  /** @function
+   * @name deleteGroup
+   * @param {object} totalAuthMilestone
+   * @param {Array} actionsList
+   * @param {number} i
+   * @return object
+   * @description Returns a possibly modified version of totalAuthMilestone. Adds updatedBy to body
+   */
+  updateAsLoggedInUser(totalAuthMilestone, actionsList, i) { //  aa, name, userAAs
+    if ((actionsList[i] === 'update')) {
+      const authMilestone = {};
+      authMilestone[actionsList[i]] = {};
+      authMilestone[actionsList[i]].update = {};
+      // eslint-disable-next-line
+      authMilestone[actionsList[i]].update.before = ((req, res, context) => new Promise(async (resolve) => {
+        req.body.updatedBy = this.returnUserId(req, false);
         resolve(context.continue);
       }));
       return merge(authMilestone, totalAuthMilestone);

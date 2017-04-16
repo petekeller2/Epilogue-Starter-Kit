@@ -13,3 +13,5 @@ files:
   - src/auth/passport.js
 branches:
   - master
+articles:
+  - Resources: src/resources/readme.md

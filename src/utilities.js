@@ -10,6 +10,7 @@ const config = require(`../${srcOrBuild}/config`);
 
 const fs = require('fs-extra');
 const winston = require('winston');
+const MainError = require('./custom/errors/');
 
 module.exports = {
   /** @function
@@ -101,5 +102,17 @@ module.exports = {
       maxFiles,
       zippedArchive,
     };
+  },
+  /** @function
+   * @name throwErrorConditionally
+   * @param {*} truthyOrFalsy
+   * @param {string} message
+   * @param {string} severity
+   * @param {number} status
+   */
+  throwErrorConditionally(truthyOrFalsy, message, severity = 'Error', status = 500) {
+    if (!truthyOrFalsy) {
+      throw new MainError(message, severity, status);
+    }
   },
 };

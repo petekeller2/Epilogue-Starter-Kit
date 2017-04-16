@@ -4,7 +4,7 @@ import FacebookStrategy from 'passport-facebook';
 import GoogleStrategy from 'passport-google-oauth20';
 import TwitterStrategy from 'passport-twitter';
 import config from '../config';
-import MainError from '../custom/errors/';
+import utilities from '../utilities';
 
 export default {
   /**
@@ -101,16 +101,6 @@ export default {
     return id;
   },
   /** @function
-   * @name userResourceCheck
-   * @param {object} userResource
-   * @description Helper function for setup
-   */
-  userResourceCheck(userResource) {
-    if (!userResource) {
-      throw new MainError('The User resource was not found during an auth attempt!', 'Error');
-    }
-  },
-  /** @function
    * @name setup
    * @param {map} resourcesFromSetup
    * @return object
@@ -144,7 +134,7 @@ export default {
             const id = this.getId(req, profile);
             const awaitedResourcesFromSetup = await resourcesFromSetup;
             const userResource = awaitedResourcesFromSetup.get('User')[2];
-            this.userResourceCheck(userResource);
+            utilities.throwErrorConditionally(userResource, 'The User resource was not found during an auth attempt!');
             const foundUser = await userResource.findOne({
               attributes: ['id', 'username', 'emailAddress', 'profilePicture'],
               where: { id },
