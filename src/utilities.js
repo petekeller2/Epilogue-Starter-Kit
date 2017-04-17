@@ -57,7 +57,7 @@ module.exports = {
    * @return {boolean}
    * @description Winston wrapper function that returns a boolean for convenience
    */
-  winstonWrapper(message, level, returns = false) {
+  winstonWrapper(message, level = 'info', returns = false) {
     let levelToUse = level.toLowerCase();
     if (['debug', 'info', 'notice', 'warning', 'error', 'crit', 'alert', 'emerg'].indexOf(levelToUse) < 0) {
       levelToUse = 'info';

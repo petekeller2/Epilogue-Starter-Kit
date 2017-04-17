@@ -47,11 +47,15 @@ export default {
    * @param {string} name
    * @param {Array} userAAs
    * @param {boolean} isGroup
+   * @param {boolean} isHttpTest
+   * @param {boolean} validTestNumber
+   * @param {*} permissionsInput
+   * @param {object} sequelize
    * @return object
    * @description Returns a possibly modified version of totalAuthMilestone. When an instance of a resource is created,
    *  the UserID and/or OwnerID column is updated
    */
-  ownResource(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup) {
+  ownResource(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, isHttpTest, validTestNumber, permissionsInput, sequelize) {
     if (actionsList[i] === 'create') {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
@@ -59,18 +63,46 @@ export default {
       // eslint-disable-next-line
       authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async (resolve) => {
         const userId = this.returnUserId(req, false);
-        if (isGroup === true) {
-          req.body.OwnerID = userId;
+        const permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
+        const isAdminResult = await this.isAdmin(userId, sequelize);
+        if ((isAdminResult === true) || (this.adminsOnly(permissions) === false)) {
+          if (isGroup === true) {
+            req.body.OwnerID = userId;
+          }
+          if ((userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
+            req.body.UserId = userId;
+          }
+          req.body.updatedBy = userId;
+          resolve(context.continue);
+        } else {
+          res.status(401).send({ message: 'Unauthorized' });
+          resolve(context.stop);
         }
-        if ((userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
-          req.body.UserId = userId;
-        }
-        req.body.updatedBy = userId;
-        resolve(context.continue);
       }));
       return merge(authMilestone, totalAuthMilestone);
     }
     return totalAuthMilestone;
+  },
+  /** @function
+   * @name isAdmin
+   * @param {string} userId
+   * @param {object} sequelize
+   * @return promise
+   */
+  isAdmin(userId, sequelize) {
+    return sequelize.query(`SELECT * FROM "Admins" where "AdminId" = '${userId}'`, { type: sequelize.QueryTypes.SELECT })
+      .then((adminResults) => {
+        utilities.winstonWrapper(`admin user check: ${adminResults}`);
+        return Boolean(adminResults.length);
+      });
+  },
+  /** @function
+   * @name adminsOnly
+   * @param {Array} permissions
+   * @return boolean
+   */
+  adminsOnly(permissions) {
+    return Boolean((permissions[1] === true) && (permissions[6] === false) && (permissions[11] === false) && (permissions[16] === false));
   },
   /** @function
    * @name ownResource

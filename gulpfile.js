@@ -2,7 +2,7 @@ const gulp = require('gulp');
 const shell = require('gulp-shell');
 const fs = require('fs-extra');
 const winston = require('winston');
-const glob = require("glob");
+const glob = require('glob');
 const readline = require('readline');
 const spawn = require('child_process').spawn;
 const Transform = require('stream').Transform;
@@ -59,6 +59,10 @@ gulp.task('server-http-just-access-test', shell.task('npm run http-just-access-t
 
 gulp.task('server-test', shell.task('npm run test'));
 
+gulp.task('append-stats', shell.task('git diff --stat `git hash-object -t tree /dev/null` > miscWikiPages/Stats.md'));
+
+gulp.task('build-stats', ['stats-clear', 'append-stats', 'stats-clean']);
+
 gulp.task('server-test-all-ignore-config', ['server-http-test', 'server-test']);
 
 gulp.task('build-all', ['server-build', 'wiki-build']);
@@ -73,12 +77,17 @@ gulp.task('env-staging-server', ['server-build', 'env-force', 'env-staging', 'se
   runHttpTestsOrEnd('staging');
 });
 
-gulp.task('wiki-build', ['wiki-clear'], function () {
+gulp.task('wiki-build', ['wiki-clear', 'build-stats'], function () {
   markdownBuild('src', 'test');
 });
 
 gulp.task('wiki-clear', function () {
   emptyDirExceptForGit('wiki');
+});
+
+gulp.task('stats-clear', function() {
+  fs.removeSync('./miscWikiPages/_Stats.md');
+  fs.removeSync('./miscWikiPages/Stats.md');
 });
 
 gulp.task('reset-test-config', function () {
@@ -103,6 +112,100 @@ gulp.task('retire', function() {
     gulpErrors.error(data);
   });
 });
+
+gulp.task('stats-clean', function() {
+  fs.removeSync('./miscWikiPages/_Stats.md');
+  waitForFileWriteToFinish('./miscWikiPages/Stats.md', buildStats, 1);
+});
+
+/** @function
+ * @name buildStats
+ * @description Passed to waitForFileWriteToFinish
+ */
+const buildStats = function() {
+  fs.renameSync('./miscWikiPages/Stats.md', './miscWikiPages/_Stats.md');
+  fs.removeSync('./miscWikiPages/Stats.md');
+  fs.ensureFileSync('./miscWikiPages/Stats.md');
+  const file = fs.readFileSync('./miscWikiPages/Stats.md').toString().split("\n");
+  file.splice(0, 0, "# Stats");
+  const newFile = file.join("\n\n");
+
+  fs.writeFile('./miscWikiPages/Stats.md', newFile, function (err) {
+    if (err) return err;
+    fs.readFileSync('./miscWikiPages/_Stats.md').toString().split('\n').forEach(function (line, index, array) {
+      if (index === array.length - 2) {
+        const lineCopy = line.toString();
+        const numbers = lineCopy.match(/\d+/g);
+        const replacementLine = `Files: ${numbers[0]}\n\nTotal Lines of Code: ${numbers[1]}`;
+        fs.appendFileSync('./miscWikiPages/Stats.md', replacementLine);
+      } else if(index === array.length - 1) {
+
+      } else {
+        fs.appendFileSync('./miscWikiPages/Stats.md', line.toString() + '\n\n');
+      }
+    });
+    deleteFileWhenItExists('./miscWikiPages/_Stats.md', 1);
+  });
+};
+
+/** @function
+ * @name deleteFileWhenItExists
+ * @param {string} filePath
+ * @param {number} safetyCounter
+ */
+const deleteFileWhenItExists = function(filePath, safetyCounter = 1) {
+  if (safetyCounter > 10000) {
+    gulpErrors.error('Safety counter of deleteFileWhenItExists was exceeded');
+  }
+  const newSafetyCounter = safetyCounter + 1;
+  fs.stat(filePath, function(err, stats) {
+    if (err) {
+      if (err.errno === -2) {
+        deleteFileWhenItExists(filePath, newSafetyCounter);
+      } else {
+        gulpErrors.error('Unhandled error: ', err);
+      }
+    } else if (stats.isFile()) {
+      fs.removeSync(filePath);
+    }
+  });
+};
+
+/** @function
+ * @name waitForFileWriteToFinish
+ * @param {string} filePath
+ * @param {function} functionToRun
+ * @param {number} safetyCounter
+ * @param {number} previousSize
+ * @param {number} sameSizeCount
+ */
+const waitForFileWriteToFinish = function(filePath, functionToRun, safetyCounter = 1, previousSize, sameSizeCount = 0) {
+  if (safetyCounter > 10000) {
+    gulpErrors.error('Safety counter of waitForFileWriteToFinish was exceeded');
+  }
+  const newSafetyCounter = safetyCounter + 1;
+  fs.stat(filePath, function(err, stats) {
+    if (err) {
+      if (err.errno === -2) {
+        waitForFileWriteToFinish(filePath, functionToRun, newSafetyCounter);
+      } else {
+        gulpErrors.error('Unhandled error: ', err);
+      }
+    } else if (stats.isFile()) {
+      let sameSizeCountCopy = sameSizeCount;
+      if ((stats.size > 0) && stats.size && previousSize && (stats.size === previousSize)) {
+        sameSizeCountCopy+=1;
+      }
+      if (sameSizeCountCopy > 25) {
+        functionToRun();
+      } else {
+        waitForFileWriteToFinish(filePath, functionToRun, newSafetyCounter, stats.size, sameSizeCountCopy);
+      }
+    } else {
+      gulpErrors.error('Not a file', stats);
+    }
+  });
+};
 
 /** @function
  * @name emptyDirExceptForGit
@@ -187,7 +290,7 @@ RemoveFirstLine.prototype._transform = function(chunk, encoding, done) {
 const markdownBuild = function() {
   fs.readFile('wikiConfig.json', 'utf8', (wikiConfigErr, wikiConfigData) => {
     const wikiConfig = JSON.parse(wikiConfigData);
-    if(wikiConfig.customSidebar.toUpperCase() === "YES") {
+    if(wikiConfig.customSidebar.toUpperCase() === 'YES') {
       buildCustomSideMenu(arguments);
     }
   });
@@ -248,11 +351,11 @@ const newMarkdownFileName = function(file) {
     });
     rl.on('line', function (line) {
       if (lineNumber === 0) {
-        resolve(line.replace(/^#+/g, '').split(" ").filter(i => {
+        resolve(line.replace(/^#+/g, '').split(' ').filter(i => {
           return i !== '';
         }).map(i => {
           return i[0].toUpperCase() + i.substr(1).toLowerCase();
-        }).join("-")+'.md');
+        }).join('-')+'.md');
       }
       lineNumber += 1;
     });
@@ -292,6 +395,8 @@ const moveMarkdown = function(dir) {
           if(file === 'miscWikiPages/Home.md') {
             fileName = fileName.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
             createWikiFile(file, fileName);
+          } else if(file === 'miscWikiPages/Stats.md') {
+            createWikiFile(file, 'Stats.md');
           } else {
             ignoredFile = false;
             if (Array.isArray(wikiConfig.ignore) && wikiConfig.ignore.length > 0) {

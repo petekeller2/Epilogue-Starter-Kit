@@ -216,9 +216,10 @@ export default {
    * @name setupAuthCheck
    * @param {map} resourcesFromSetup
    * @param {object} groupXrefModel
+   * @param {object} database
    * @description Finishes milestone creation for the resources, with auth milestones being created for every resource
    */
-  async setupAuthCheck(resourcesFromSetup, groupXrefModel) {
+  async setupAuthCheck(resourcesFromSetup, groupXrefModel, database) {
     let permissions;
     let cleanedEndpointsArray;
     let currentUserOwnsResource;
@@ -292,7 +293,7 @@ export default {
         }));
 
         const milestoneParamObj = {
-          ownResource: [isGroup],
+          ownResource: [isGroup, isHttpTest, validTestNumber, resource[1], database],
           listOwned: [resource[2], isHttpTest, validTestNumber, resource[1]],
           deleteGroup: [awaitedGroupXrefModel, isGroup],
         };

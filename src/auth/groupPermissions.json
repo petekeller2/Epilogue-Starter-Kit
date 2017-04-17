@@ -1,3 +1,5 @@
 {
-
+  "resourceName": [
+    ["groupResourceName", "permissionString", "groupName (optional)", "groupId (optional)"]
+  ]
 }

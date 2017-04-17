@@ -41,7 +41,7 @@ app.use(expressJwt({
 
 app.use(passport.initialize());
 
-epilogueAuth.setupAuthCheck(resources, groupXrefModel);
+epilogueAuth.setupAuthCheck(resources, groupXrefModel, database);
 
 authEndpoints.setup(app, passport);
 // ------------------server---------------------------

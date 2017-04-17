@@ -132,15 +132,19 @@ done to make hex format more readable.
 
 #### Note
 
-The enabled bits in `-c---|-c---|----|-----` currently do not 
-have a purpose. They will be given a purpose in a future version.
+The enabled bit in `-----|-c---|----|-----` currently does not 
+have a purpose. It will be given a purpose in a future version.
+
+## Admins
+
+The enabled bit in `-c---|-----|----|-----` means that admins 
+can create a resource. Admins are found in the Admins table, with 
+AdminId being a user's user id.
 
 ## Groups
 
 Groups are a work in progress. Groups and users are linked 
-through the userGroupXrefs resource. Setting group permissions 
-on a non group resource can be done, but should not affect
-the resource. Users can have many groups through group xrefs.
+through the userGroupXrefs resource. Users can have many groups through group xrefs.
 
 ## Creating New Resources
 

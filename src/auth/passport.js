@@ -150,6 +150,7 @@ export default {
                   username: foundUsername,
                   emailAddress: foundEmailAddress,
                   profilePicture: foundProfilePicture,
+                  updatedBy: foundId,
                 });
               } else if (foundId) {
                 const userData = this.getFromProfile(profile);
@@ -158,6 +159,7 @@ export default {
                   username: userData.username,
                   emailAddress: userData.emailAddress,
                   profilePicture: userData.profilePicture,
+                  updatedBy: foundId,
                 });
               } else {
                 done();
@@ -169,12 +171,14 @@ export default {
                 username: userData.username,
                 emailAddress: userData.emailAddress,
                 profilePicture: userData.profilePicture,
+                updatedBy: id,
               });
               done(null, {
                 id: user.id,
                 username: user.username,
                 emailAddress: user.emailAddress,
                 profilePicture: user.profilePicture,
+                updatedBy: id,
               });
             }
           };

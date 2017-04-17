@@ -11,10 +11,11 @@ export default {
    * @param {object} database
    * @param {object} Sequelize
    * @return {object}
-   * @description Does initEpilogue and createGroupXrefTable. Returns the results from createGroupXrefTable
+   * @description Does initEpilogue, createAdminsTable and createGroupXrefTable. Returns the results from createGroupXrefTable
    */
   setupEpilogue(app, database, Sequelize) {
     this.initEpilogue(app, database);
+    this.createAdminsTable(database, Sequelize);
     return this.createGroupXrefTable(database, Sequelize);
   },
   /** @function
@@ -129,6 +130,7 @@ export default {
   async createGroupXrefTable(database, sequelize) {
     const groupXref = await database.define('UserGroupXref', {
       groupID: sequelize.STRING,
+      groupName: sequelize.STRING,
       groupResourceName: sequelize.STRING,
     });
     const XrefResourceParam = {
@@ -137,6 +139,24 @@ export default {
     };
     await epilogue.resource(XrefResourceParam);
     return groupXref;
+  },
+  /** @function
+   * @name createAdminsTable
+   * @param {object} database
+   * @param {object} sequelize
+   * @return {object}
+   * @description Returns the admins model. Admin Id is the admin user's user id
+   */
+  async createAdminsTable(database, sequelize) {
+    const admins = await database.define('Admins', {
+      AdminId: sequelize.STRING,
+    });
+    const AdminsParam = {
+      model: admins,
+      endpoints: ['/admins', '/admins/:id'],
+    };
+    await epilogue.resource(AdminsParam);
+    return admins;
   },
   /** @function
    * @name convertAutoAssociations
