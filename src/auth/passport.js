@@ -101,6 +101,32 @@ export default {
     return id;
   },
   /** @function
+   * @name buildUserObj
+   * @param {object} user
+   * @param {*} id
+   * @return object
+   * @description Helper function for setup
+   */
+  buildUserObj(user, id) {
+    const userCopy = user;
+    if (typeof id === 'string') {
+      userCopy.id = id;
+    }
+    if (!userCopy.id) {
+      utilities.winstonWrapper('Invalid user id in buildUserObj');
+    }
+    if (!userCopy.username) {
+      userCopy.username = userCopy.id;
+    }
+    return {
+      id: userCopy.id,
+      username: userCopy.username,
+      emailAddress: userCopy.emailAddress,
+      profilePicture: userCopy.profilePicture,
+      updatedBy: userCopy.id,
+    };
+  },
+  /** @function
    * @name setup
    * @param {map} resourcesFromSetup
    * @return object
@@ -140,46 +166,18 @@ export default {
               where: { id },
             });
             if (foundUser) {
-              const foundId = foundUser.id;
-              const foundUsername = foundUser.username;
-              const foundEmailAddress = foundUser.emailAddress;
-              const foundProfilePicture = foundUser.profilePicture;
-              if (foundEmailAddress && foundId && foundUsername && foundProfilePicture) {
-                done(null, {
-                  id: foundId,
-                  username: foundUsername,
-                  emailAddress: foundEmailAddress,
-                  profilePicture: foundProfilePicture,
-                  updatedBy: foundId,
-                });
-              } else if (foundId) {
+              if (foundUser.id && foundUser.username && foundUser.emailAddress && foundUser.profilePicture) {
+                done(null, this.buildUserObj(foundUser, false));
+              } else if (foundUser.id) {
                 const userData = this.getFromProfile(profile);
-                done(null, {
-                  id: foundId,
-                  username: userData.username,
-                  emailAddress: userData.emailAddress,
-                  profilePicture: userData.profilePicture,
-                  updatedBy: foundId,
-                });
+                done(null, this.buildUserObj(userData, foundUser.id));
               } else {
                 done();
               }
             } else {
               const userData = this.getFromProfile(profile);
-              const user = await userResource.create({
-                id,
-                username: userData.username,
-                emailAddress: userData.emailAddress,
-                profilePicture: userData.profilePicture,
-                updatedBy: id,
-              });
-              done(null, {
-                id: user.id,
-                username: user.username,
-                emailAddress: user.emailAddress,
-                profilePicture: user.profilePicture,
-                updatedBy: id,
-              });
+              const user = await userResource.create(this.buildUserObj(userData, id));
+              done(null, this.buildUserObj(user, false));
             }
           };
           authAttempt().catch(done);

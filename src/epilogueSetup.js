@@ -225,9 +225,9 @@ export default {
       if (aaElement) {
         let eleToPush;
         if ((typeof aaElement) === 'string') {
-          (getResourcesNames === true) ? eleToPush = aaElement : eleToPush = { hasMany: aaElement };
+          eleToPush = (getResourcesNames === true) ? aaElement : { hasMany: aaElement };
         } else if ((typeof aaElement) === 'object') {
-          (getResourcesNames === true) ? eleToPush = aaElement[Object.keys(aaElement)[0]] : eleToPush = aaElement;
+          eleToPush = (getResourcesNames === true) ? aaElement[Object.keys(aaElement)[0]] : aaElement;
         }
         aaReturnCopy.push(eleToPush);
       }

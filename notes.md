@@ -1,7 +1,4 @@
-**4/17/17**
+**4/18/17**
 
-Admins and admin permission bit
+Code simplification
 
-Bug fixes
-
-Wiki stats
