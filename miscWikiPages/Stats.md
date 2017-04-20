@@ -14,7 +14,7 @@
 
  LICENSE                                            |  21 +
 
- gulpfile.js                                        | 514 +++++++++++++++
+ gulpfile.js                                        | 538 ++++++++++++++++
 
  miscWikiPages/Contribution-Guide.md                |  19 +
 
@@ -22,7 +22,9 @@
 
  miscWikiPages/Stats.md                             |   0
 
- notes.md                                           |   7 +
+ miscWikiPages/readme.md                            |   7 +
+
+ notes.md                                           |   3 +
 
  package.json                                       |  67 ++
 
@@ -40,11 +42,11 @@
 
  src/auth/epilogueAuth.js                           | 717 +++++++++++++++++++++
 
- src/auth/groupPermissions.json                     |   3 +
+ src/auth/groupPermissions.json                     |   5 +
 
  src/auth/groups.js                                 |   0
 
- src/auth/passport.js                               | 191 ++++++
+ src/auth/passport.js                               | 189 ++++++
 
  src/auth/readme.md                                 |  23 +
 
@@ -58,7 +60,7 @@
 
  src/custom/sql/storedFunctions/placeholder.md      |   1 +
 
- src/epilogueSetup.js                               | 236 +++++++
+ src/epilogueSetup.js                               | 237 +++++++
 
  src/resources/Neighborhood/extension.js            |   4 +
 
@@ -142,6 +144,8 @@
 
  test/testConfig.json                               |  87 +++
 
+ test/testGroupPermissions.json                     |   5 +
+
  test/tests/autoAssociations/conversions.js         | 142 ++++
 
  test/tests/autoAssociations/getResourceNames.js    | 142 ++++
@@ -150,8 +154,8 @@
 
  wiki                                               |   1 +
 
- wikiConfig.json                                    |  16 +
+ wikiConfig.json                                    |  17 +
 
-Files: 76
+Files: 78
 
-Total Lines of Code: 4555
+Total Lines of Code: 4589

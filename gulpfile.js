@@ -388,6 +388,11 @@ const moveMarkdown = function(dir) {
   glob(`${dir}/**/*.md`, function (er, files) {
     fs.readFile('wikiConfig.json', 'utf8', (wikiConfigErr, wikiConfigData) => {
       const wikiConfig = JSON.parse(wikiConfigData);
+      const titlesToIgnoreArray = wikiConfig.titlesToIgnore.filter(title => {
+        return (typeof title === 'string');
+      }).map(title => {
+        return `${title.replace(/\s+/g, '-').toLocaleLowerCase()}.md`;
+      });
       if(Array.isArray(files) && files.length > 0) {
         files.forEach(function(file) {
           fileNameSections = file.split('/');
@@ -399,21 +404,23 @@ const moveMarkdown = function(dir) {
             createWikiFile(file, 'Stats.md');
           } else {
             ignoredFile = false;
-            if (Array.isArray(wikiConfig.ignore) && wikiConfig.ignore.length > 0) {
+            if (Array.isArray(wikiConfig.filesToIgnore) && wikiConfig.filesToIgnore.length > 0) {
               // console.log('filename', fileName);
-              // console.log('wikiConfig.ignore', wikiConfig.ignore);
-              if (wikiConfig.ignore.indexOf(fileName) >= 0) {
+              // console.log('wikiConfig.filesToIgnore', wikiConfig.filesToIgnore);
+              if (wikiConfig.filesToIgnore.indexOf(fileName) >= 0) {
                 ignoredFile = true;
               }
             }
             if (ignoredFile === false) {
               newMarkdownFileName(file).then(function (newFileName) {
                 // console.log('newFileName', newFileName);
-                if (usedFileNames.indexOf(newFileName) >= 0) {
-                  newFileName = `${newFileName} (${fileNameSections.pop()})`;
-                }
-                usedFileNames.push(newFileName);
-                createWikiFile(file, newFileName);
+                if (titlesToIgnoreArray.indexOf(newFileName.toLocaleLowerCase()) < 0) {
+                  if (usedFileNames.indexOf(newFileName) >= 0) {
+                    newFileName = `${newFileName} (${fileNameSections.pop()})`;
+                  }
+                  usedFileNames.push(newFileName);
+                  createWikiFile(file, newFileName);
+               }
               });
             }
           }
