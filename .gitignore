@@ -9,6 +9,7 @@ node_modules
 build
 logs
 .idea/
+npm-debug.log
 
 # from https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore
 # User-specific stuff:

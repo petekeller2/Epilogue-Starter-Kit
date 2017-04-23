@@ -12,6 +12,6 @@
     ["src/auth"],
     ["tests"]
   ],
-  "filesToIgnore": ["todo.md", "todos.md", "placeholder.md", "notes.md", "note.md"],
-  "titlesToIgnore": ["Miscellaneous Wiki Pages"]
+  "filesToIgnore": ["todo.md", "todos.md", "placeholder.md", "notes.md", "note.md", "changelog.md"],
+  "titlesToIgnore": ["Miscellaneous Wiki Pages", "Custom Code", "Resources Builder"]
 }

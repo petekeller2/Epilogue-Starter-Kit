@@ -62,11 +62,17 @@ gulp.task('server-test', shell.task('npm run test'));
 
 gulp.task('append-stats', shell.task('git diff --stat `git hash-object -t tree /dev/null` > miscWikiPages/Stats.md'));
 
+gulp.task('generate-changelog', shell.task('github_changelog_generator'));
+
+gulp.task('build-dup-report', shell.task('jscpd'));
+
 gulp.task('build-stats', ['stats-clear', 'append-stats', 'stats-clean']);
 
 gulp.task('server-test-all-ignore-config', ['server-http-test', 'server-test']);
 
-gulp.task('build-all', ['server-build', 'wiki-build']);
+gulp.task('pre-commit-build', ['build-dup-report', 'generate-changelog', 'wiki-build']);
+
+gulp.task('build-all', ['server-build', 'pre-commit-build']);
 
 // main test task for not built code
 gulp.task('env-test-server', ['env-force', 'env-test', 'server-start-no-nodemon'], function () {
@@ -170,8 +176,6 @@ const buildAnotherFieldOrEnd = function(userInput, resourceName, modelFile) {
   const yesAnswers = ['y', 'yes', 'surewhynot'];
   const noAnswers = ['n', 'no', 'q', 'quit'];
   const userInputLowerCase = userInput.toLowerCase().trim();
-  console.log('userInputLowerCase', userInputLowerCase);
-  console.log('yesAnswers.indexOf(userInputLowerCase) < 0', yesAnswers.indexOf(userInputLowerCase));
   if ((userInput.trim().length === 0) || ((yesAnswers.indexOf(userInputLowerCase) < 0) && (noAnswers.indexOf(userInputLowerCase) < 0))) {
     askNextQuestionModel(resourceName, 'Valid answer is required.\nAdd Another Field? (y/n): ', 'Valid answer is required.\nAdd Another Field? (y/n): ', false);
   } else if (noAnswers.indexOf(userInputLowerCase) !== -1) {
@@ -241,11 +245,6 @@ const buildFieldName = function(userInput, resourceName, modelFile) {
   }
 };
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
 /** @function
  * @name rlInput
  * @param {string} prompt
@@ -253,14 +252,19 @@ const rl = readline.createInterface({
  * @param {boolean} end
  */
 const rlInput = function(prompt, callback, end = false) {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+  });
   if ((prompt === '') && (end === false)) {
     setTimeout(process.stdout.write.bind(process.stdout), 500, 'Resource Name: ');
   }
   if (end === true) {
-    rl.close();
+    process.exit();
   } else {
     rl.question(prompt, function (x) {
       callback(x);
+      rl.close();
     });
   }
 };
@@ -666,8 +670,6 @@ const moveMarkdown = function(dir) {
           } else {
             ignoredFile = false;
             if (Array.isArray(wikiConfig.filesToIgnore) && wikiConfig.filesToIgnore.length > 0) {
-              // console.log('filename', fileName);
-              // console.log('wikiConfig.filesToIgnore', wikiConfig.filesToIgnore);
               if (wikiConfig.filesToIgnore.indexOf(fileName) >= 0) {
                 ignoredFile = true;
               }

@@ -1,3 +1,9 @@
 **4/23/17**
 
-Resource generation
+Changelog
+
+Readme updates
+
+Build fix
+
+Resource build fix

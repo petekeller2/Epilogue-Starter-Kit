@@ -1,0 +1,10 @@
+languages:
+  - javascript
+files:
+  - "src/**/*"
+  - "test/httpTests/*"
+  - "gulpfile.js"
+exclude:
+  - "src/resources/**/*"
+reporter: json
+output: duplicationReport.json
