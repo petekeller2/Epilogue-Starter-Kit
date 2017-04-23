@@ -2,19 +2,31 @@
 
  .babelrc                                           |   4 +
 
+ .bithoundrc                                        |   3 +
+
  .codeclimate.yml                                   |  20 +
+
+ .cpd.yaml                                          |  10 +
 
  .doclets.yml                                       |  17 +
 
- .gitignore                                         |  52 ++
+ .gitignore                                         |  53 ++
 
  .gitmodules                                        |   3 +
 
  .travis.yml                                        |  10 +
 
+ CHANGELOG.md                                       |   5 +
+
+ Gemfile                                            |   5 +
+
+ Gemfile.lock                                       |  49 ++
+
  LICENSE                                            |  21 +
 
- gulpfile.js                                        | 799 +++++++++++++++++++++
+ duplicationReport.json                             |   1 +
+
+ gulpfile.js                                        | 801 +++++++++++++++++++++
 
  miscWikiPages/Contribution-Guide.md                |  19 +
 
@@ -24,9 +36,9 @@
 
  miscWikiPages/readme.md                            |   7 +
 
- notes.md                                           |   3 +
+ notes.md                                           |   9 +
 
- package.json                                       |  68 ++
+ package.json                                       |  69 ++
 
  readme.md                                          |  25 +
 
@@ -55,6 +67,8 @@
  src/custom/endpoints/placeholder.md                |   1 +
 
  src/custom/errors/index.js                         |  63 ++
+
+ src/custom/readme.md                               |   3 +
 
  src/custom/sql/queries/placeholder.md              |   1 +
 
@@ -86,7 +100,7 @@
 
  src/resources/User/model.js                        |  14 +
 
- src/resources/index.js                             |   6 +
+ src/resources/index.js                             |   5 +
 
  src/resources/libraries/todo.md                    |   1 +
 
@@ -105,6 +119,8 @@
  src/resources/template/milestones.js               |  24 +
 
  src/resources/template/model.js                    |  11 +
+
+ src/resourcesBuilder/readme.md                     |   1 +
 
  src/server.js                                      | 116 +++
 
@@ -140,7 +156,7 @@
 
  test/manualTests/tests/4-16-17/resources/sheet.css |   1 +
 
- test/readme.md                                     |   6 +
+ test/readme.md                                     |   5 +
 
  test/setup/readme.md                               |   8 +
 
@@ -164,6 +180,6 @@
 
  wikiConfig.json                                    |  17 +
 
-Files: 82
+Files: 90
 
-Total Lines of Code: 4896
+Total Lines of Code: 4981
