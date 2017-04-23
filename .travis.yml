@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - "7"
 rvm:
-  - 2.2
+  - "2.2.2"
 before-install:
   - npm install -g gulp
 install:
