@@ -14,7 +14,7 @@
 
  LICENSE                                            |  21 +
 
- gulpfile.js                                        | 538 ++++++++++++++++
+ gulpfile.js                                        | 799 +++++++++++++++++++++
 
  miscWikiPages/Contribution-Guide.md                |  19 +
 
@@ -26,7 +26,7 @@
 
  notes.md                                           |   3 +
 
- package.json                                       |  67 ++
+ package.json                                       |  68 ++
 
  readme.md                                          |  25 +
 
@@ -36,17 +36,17 @@
 
  src/auth/customMilestones.js                       |  27 +
 
- src/auth/defaultMilestones.js                      | 219 +++++++
+ src/auth/defaultMilestones.js                      | 219 ++++++
 
- src/auth/endpoints.js                              | 108 ++++
+ src/auth/endpoints.js                              | 108 +++
 
- src/auth/epilogueAuth.js                           | 717 +++++++++++++++++++++
+ src/auth/epilogueAuth.js                           | 717 ++++++++++++++++++
 
  src/auth/groupPermissions.json                     |   5 +
 
  src/auth/groups.js                                 |   0
 
- src/auth/passport.js                               | 189 ++++++
+ src/auth/passport.js                               | 189 +++++
 
  src/auth/readme.md                                 |  23 +
 
@@ -60,7 +60,7 @@
 
  src/custom/sql/storedFunctions/placeholder.md      |   1 +
 
- src/epilogueSetup.js                               | 237 +++++++
+ src/epilogueSetup.js                               | 237 ++++++
 
  src/resources/Neighborhood/extension.js            |   4 +
 
@@ -86,23 +86,31 @@
 
  src/resources/User/model.js                        |  14 +
 
- src/resources/index.js                             |   9 +
+ src/resources/index.js                             |   6 +
 
  src/resources/libraries/todo.md                    |   1 +
 
  src/resources/modelFields.js                       |  17 +
 
- src/resources/readme.md                            | 156 +++++
+ src/resources/readme.md                            | 153 ++++
 
  src/resources/resourceGenerator.js                 |   1 +
 
  src/resources/resources.json                       |   3 +
 
- src/server.js                                      | 116 ++++
+ src/resources/template/extension.js                |   4 +
+
+ src/resources/template/index.js                    |  12 +
+
+ src/resources/template/milestones.js               |  24 +
+
+ src/resources/template/model.js                    |  11 +
+
+ src/server.js                                      | 116 +++
 
  src/socket.io/todo.md                              |   1 +
 
- src/utilities.js                                   | 118 ++++
+ src/utilities.js                                   | 118 +++
 
  test/httpTests/autoAssociations/associations.js    |  46 ++
 
@@ -118,7 +126,7 @@
 
  .../manualTests/tests/3-4-17/Manual Test Cases.csv |  87 +++
 
- .../tests/3-4-17/Manual Test Cases.html            |  39 ++
+ .../tests/3-4-17/Manual Test Cases.html            |  39 +
 
  test/manualTests/tests/3-4-17/notes.md             |   3 +
 
@@ -126,7 +134,7 @@
 
  .../tests/4-16-17/Manual Test Cases.csv            |  16 +
 
- .../tests/4-16-17/Manual Test Cases.html           |  39 ++
+ .../tests/4-16-17/Manual Test Cases.html           |  39 +
 
  test/manualTests/tests/4-16-17/notes.md            |   3 +
 
@@ -138,7 +146,7 @@
 
  test/setup/spawnTest.js                            |  16 +
 
- test/setup/testCases.js                            | 158 +++++
+ test/setup/testCases.js                            | 158 ++++
 
  test/setup/testData.js                             |  66 ++
 
@@ -150,12 +158,12 @@
 
  test/tests/autoAssociations/getResourceNames.js    | 142 ++++
 
- test/tests/permissions/conversions.js              | 393 +++++++++++
+ test/tests/permissions/conversions.js              | 393 ++++++++++
 
  wiki                                               |   1 +
 
  wikiConfig.json                                    |  17 +
 
-Files: 78
+Files: 82
 
-Total Lines of Code: 4589
+Total Lines of Code: 4896

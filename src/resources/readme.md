@@ -148,9 +148,6 @@ through the userGroupXrefs resource. Users can have many groups through group xr
 
 ## Creating New Resources
 
-Currently, the way to create more resources is by creating a new 
-folder with the required files in the resources folder and adding 
-the relevant information to the resources folder's index.js 
-file. The best way of doing this would be to copy an existing 
-resources folder. A better method for creating new resources 
-will be implemented in a future version.
+gulp new-resource will give you prompt for building a new 
+resource. If you want to create on manually, make sure to 
+update the resource folder's index.js
