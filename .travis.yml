@@ -1,10 +1,11 @@
 language: node_js
 node_js:
   - "7"
+rvm:
+  - 2.2
 before-install:
   - npm install -g gulp
 install:
-  - gem install activesupport -v 4.2.6
   - gem install github_changelog_generator
   - npm install
   - gulp build-all
