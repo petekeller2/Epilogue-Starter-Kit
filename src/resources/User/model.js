@@ -1,4 +1,4 @@
-import modelFields from '../modelFields';
+import modelFields from '../../resourcesBuilder/modelFields';
 
 export default {
   setup(database, sequelize, name, isGroup) {

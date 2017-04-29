@@ -1,9 +1,3 @@
-**4/23/17**
+**4/29/17**
 
-Changelog
-
-Readme updates
-
-Build fix
-
-Resource build fix
+New reosurces folder

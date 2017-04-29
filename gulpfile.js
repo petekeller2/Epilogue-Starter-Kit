@@ -309,7 +309,7 @@ const getCleanedResourcePath = function(cleanedResourceName, fileName) {
 const buildResourceFile = function(resourceName, fileName) {
   return new Promise((resolve, reject) => {
     const copiedPath = getCleanedResourcePath(resourceName, fileName);
-    fs.copy(`src/resources/template/${fileName}`, copiedPath, err => {
+    fs.copy(`src/resourcesBuilder/template/${fileName}`, copiedPath, err => {
       if (err) gulpErrors.info(err);
       if (fileName === 'index.js') {
         fs.readFile(copiedPath, 'utf8', function (err, data) {
@@ -355,7 +355,7 @@ const buildResourceFolder = function(resourceName) {
  */
 const buildNonModelResourceFiles = function(resourceName) {
   return new Promise((resolve, reject) => {
-    fs.readdir('src/resources/template', function (err, files) {
+    fs.readdir('src/resourcesBuilder/template', function (err, files) {
       if (err) gulpErrors.error(err);
       Promise.all(files.map(function (file) {
         if (file.slice(-3) === '.js') {
