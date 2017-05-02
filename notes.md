@@ -1,3 +1,3 @@
-**4/29/17**
+**5/01/17**
 
-New reosurces folder
+New resources documentation

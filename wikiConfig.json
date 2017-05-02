@@ -13,5 +13,5 @@
     ["tests"]
   ],
   "filesToIgnore": ["todo.md", "todos.md", "placeholder.md", "notes.md", "note.md", "changelog.md"],
-  "titlesToIgnore": ["Miscellaneous Wiki Pages", "Custom Code", "Resources Builder"]
+  "titlesToIgnore": ["Miscellaneous Wiki Pages", "Custom Code"]
 }

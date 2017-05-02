@@ -1,5 +1,5 @@
 {
   "resourceName": [
-    ["groupResourceName", "permissionString", "fullOrPartialPermissions", "groupName (optional)", "groupId (optional)"]
+    ["groupResourceName", "permissionString", "groupName (optional)", "groupId (optional)"]
   ]
 }

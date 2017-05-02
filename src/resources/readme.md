@@ -148,6 +148,4 @@ through the userGroupXrefs resource. Users can have many groups through group xr
 
 ## Creating New Resources
 
-gulp new-resource will give you prompt for building a new 
-resource. If you want to create on manually, make sure to 
-update the resource folder's index.js
+gulp new-resource
