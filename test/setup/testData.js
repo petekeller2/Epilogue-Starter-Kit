@@ -36,9 +36,9 @@ export default {
     neighborhoodModel.bulkCreate(neighborhoodList);
 
     const userGroupXrefList = [
-      { id: 1, UserId: 'abc123', groupID: 1, groupResourceName: 'Neighborhood' },
-      { id: 2, UserId: 'testing', groupID: 1, groupResourceName: 'Neighborhood' },
-      { id: 3, UserId: 'testing', groupID: 2, groupResourceName: 'Neighborhood' },
+      { id: 1, UserId: 'abc123', groupID: 1, groupResourceName: 'Neighborhood', groupName: 'NYC' },
+      { id: 2, UserId: 'testing', groupID: 1, groupResourceName: 'Neighborhood', groupName: 'NYC' },
+      { id: 3, UserId: 'testing', groupID: 2, groupResourceName: 'Neighborhood', groupName: 'Philadelphia' },
     ];
 
     const userGroupXrefModel = await groupXrefModel;

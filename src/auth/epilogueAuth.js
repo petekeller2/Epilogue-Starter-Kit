@@ -2,6 +2,7 @@ import winston from 'winston';
 import merge from 'deepmerge';
 import defaultMilestones from './defaultMilestones';
 import customMilestones from './customMilestones';
+import groups from './groups';
 import config from '../config';
 import utilities from '../utilities';
 import epilogueSetup from '../epilogueSetup';
@@ -200,7 +201,6 @@ export default {
    * @param {*} resourceAAs - Non-converted AAs
    * @return boolean
    * @description Returns true if the resource belongs to the User resource
-   * @todo Update this documentation when the User resource is replaced
    */
   belongsToUserResourceCheck(resourceAAs) {
     let belongsToUserReturn = false;
@@ -280,7 +280,8 @@ export default {
             resolve(context.continue);
           } else if (permissions[i + 15] === true) {
             resolve(context.continue);
-            // VVV --- else if (group stuff) { ---- VVV
+          } else if ((permissions[6] === true) && (groups.accessCheck(false, req, database, resource[0], i) === true)) {
+            resolve(context.continue);
           } else {
             const unauthObj = {
               userID: ((req || {}).user || {}).id,

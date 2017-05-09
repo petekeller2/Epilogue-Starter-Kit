@@ -16,6 +16,7 @@ export default {
   setupEpilogue(app, database, Sequelize) {
     this.initEpilogue(app, database);
     this.createAdminsTable(database, Sequelize);
+    this.createGroupPermissionTable(database, Sequelize);
     return this.createGroupXrefTable(database, Sequelize);
   },
   /** @function
@@ -125,7 +126,6 @@ export default {
    * @param {object} sequelize
    * @return {object}
    * @description Returns the UserGroupXref model. This resource is owned by the User resource
-   * @todo When the User Resource is replaced, change the documentation
    */
   async createGroupXrefTable(database, sequelize) {
     const groupXref = await database.define('UserGroupXref', {
@@ -139,6 +139,28 @@ export default {
     };
     await epilogue.resource(XrefResourceParam);
     return groupXref;
+  },
+  /** @function
+   * @name createGroupPermissionTable
+   * @param {object} database
+   * @param {object} sequelize
+   * @return {object}
+   * @description Used in auth/groups.js
+   */
+  async createGroupPermissionTable(database, sequelize) {
+    const groupPermissions = await database.define('GroupPermission', {
+      groupID: sequelize.STRING,
+      groupName: sequelize.STRING,
+      groupResourceName: sequelize.STRING,
+      resource: sequelize.STRING,
+      permission: sequelize.STRING,
+    });
+    const GroupPermissionResourceParam = {
+      model: groupPermissions,
+      endpoints: ['/groupPermissions', '/groupPermissions/:id'],
+    };
+    await epilogue.resource(GroupPermissionResourceParam);
+    return groupPermissions;
   },
   /** @function
    * @name createAdminsTable
