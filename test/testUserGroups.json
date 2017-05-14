@@ -1,0 +1,9 @@
+{
+  "testing": [
+    {
+      "groupResourceName": "Neighborhood",
+      "groupName": "NYC",
+      "groupId": 1
+    }
+  ]
+}

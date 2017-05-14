@@ -1,5 +1,5 @@
 {
-  "resourceName": [
-    ["groupResourceName", "permissionString", "groupName (optional)", "groupId (optional)"]
+  "Todo": [
+    ["Neighborhood", "lcrud|lcrud|lcrud|lcrud", "NYC", "1"]
   ]
 }
