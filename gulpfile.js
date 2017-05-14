@@ -60,11 +60,17 @@ gulp.task('server-http-just-access-test', shell.task('npm run http-just-access-t
 
 gulp.task('server-test', shell.task('npm run test'));
 
+gulp.task('test-autoAssociations', shell.task('npm run test-autoAssociations'));
+
+gulp.task('test-permissions', shell.task('npm run test-permissions'));
+
 gulp.task('append-stats', shell.task('git diff --stat `git hash-object -t tree /dev/null` > miscWikiPages/Stats.md'));
 
 gulp.task('generate-changelog', shell.task('github_changelog_generator'));
 
 gulp.task('build-dup-report', shell.task('jscpd'));
+
+gulp.task('travis-test', ['test-permissions', 'test-autoAssociations']);
 
 gulp.task('build-stats', ['stats-clear', 'append-stats', 'stats-clean']);
 

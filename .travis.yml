@@ -6,4 +6,4 @@ before-install:
 install:
   - npm install
 script:
-  - gulp server-test
+  - gulp travis-test

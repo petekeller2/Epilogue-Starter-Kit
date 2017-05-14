@@ -20,6 +20,8 @@
     "build": "babel src -d build",
     "serve": "node build/app.js",
     "test": "mocha test/tests --recursive --compilers js:babel-register",
+    "test-autoAssociations": "mocha test/tests/autoAssociations --recursive --compilers js:babel-register",
+    "test-permissions": "mocha test/tests/permissions --recursive --compilers js:babel-register",
     "http-test": "mocha test/httpTests --recursive --compilers js:babel-register",
     "http-just-aa-test": "mocha test/httpTests/autoAssociations/associations.js --compilers js:babel-register",
     "http-just-access-test": "mocha test/httpTests/permissions/access.js --compilers js:babel-register"
