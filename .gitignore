@@ -6,10 +6,12 @@
 ehthumbs.db
 Thumbs.db
 node_modules
-build
-logs
 .idea/
 npm-debug.log
+yarn.lock
+
+build
+logs
 duplicationReport.json
 
 # from https://github.com/github/gitignore/blob/master/Global/JetBrains.gitignore

@@ -12,80 +12,80 @@ import Sequelize from 'sequelize';
 const database = new Sequelize(config.dbString);
 
 describe('Should have access to', () => {
-  it('resource X, permission #', done => {
+  it('resource Todo, permission 5', done => {
     groups.accessCheck('testing', false, database, 'Todo', 5).then(accessResult => {
       assert.deepEqual(accessResult, true);
       done();
     });
   }).timeout(0);
-  it('resource X, permission #', done => {
+  it('resource Todo, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource X, permission #', done => {
+  it('resource Todo, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Y, permission #', done => {
+  it('resource Neighborhood, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Y, permission #', done => {
+  it('resource Neighborhood, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Y, permission #', done => {
+  it('resource Neighborhood, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Z, permission #', done => {
+  it('resource User, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Z, permission #', done => {
+  it('resource User, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Z, permission #', done => {
+  it('resource User, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
 });
 
 describe('Should not have access to', () => {
-  it('resource X, permission #', done => {
+  it('resource Todo, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource X, permission #', done => {
+  it('resource Todo, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource X, permission #', done => {
+  it('resource Todo, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Y, permission #', done => {
+  it('resource Neighborhood, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Y, permission #', done => {
+  it('resource Neighborhood, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Y, permission #', done => {
+  it('resource Neighborhood, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Z, permission #', done => {
+  it('resource User, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Z, permission #', done => {
+  it('resource User, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
-  it('resource Z, permission #', done => {
+  it('resource User, permission #', done => {
     assert.deepEqual(false, false);
     done();
   });
