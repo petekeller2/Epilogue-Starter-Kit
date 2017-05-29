@@ -64,6 +64,10 @@ gulp.task('test-autoAssociations', shell.task('npm run test-autoAssociations'));
 
 gulp.task('test-permissions', shell.task('npm run test-permissions'));
 
+gulp.task('test-groups', shell.task('npm run test-groups'));
+
+gulp.task('test-failing', shell.task('npm run test-failing'));
+
 gulp.task('append-stats', shell.task('git diff --stat `git hash-object -t tree /dev/null` > miscWikiPages/Stats.md'));
 
 gulp.task('generate-changelog', shell.task('github_changelog_generator'));

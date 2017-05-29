@@ -18,8 +18,9 @@ export default {
         Object.entries(groupPermissions).forEach(([resource, arrayOfGroupPermissionsArrays]) => {
           arrayOfGroupPermissionsArrays.forEach((groupPermissionsArray) => {
             if ((resource === resourceName) && (groupPermissionsArray[0] === groupResourceName)) {
-              const groupNameCheck = Boolean(groupPermissionsArray[2].length > 0) && (groupPermissionsArray[2] === groupName);
-              const groupIdCheck = Boolean(groupPermissionsArray[3].length > 0) && (groupPermissionsArray[3] === groupId);
+              // eslint-disable-next-line
+              const groupNameCheck = Boolean(groupPermissionsArray[2] && groupPermissionsArray[2].length > 0) && (groupPermissionsArray[2] === groupName);
+              const groupIdCheck = Boolean(groupPermissionsArray[3] && groupPermissionsArray[3].length > 0) && (groupPermissionsArray[3] === groupId);
               if ((typeof groupPermissionsArray[2] === 'string') && (groupNameCheck === true)) {
                 returnArray.push(groupPermissionsArray[1]);
               } else if ((typeof groupPermissionsArray[3] === 'string') && (groupIdCheck === true)) {
@@ -67,8 +68,15 @@ export default {
       }
       return unconvertedPermissionsArray;
     })).then(unconvertedPermissions => [].concat(...unconvertedPermissions));
-    const convertedPermissionsArray = combinedUnconvertedPermissions.map(epilogueAuth.convertPermissions, epilogueAuth);
-    return Boolean(convertedPermissionsArray.reduce(this.combinePermissions, [])[permissionsIndex]);
+    // eslint-disable-next-line
+    const convertedPermissionsArray = await Promise.all(combinedUnconvertedPermissions.map(async unconvertedPermissions => epilogueAuth.convertPermissions(unconvertedPermissions)));
+    let returnBool = false;
+    convertedPermissionsArray.forEach((convertedPermissions) => {
+      if (convertedPermissions[permissionsIndex]) {
+        returnBool = true;
+      }
+    });
+    return returnBool;
   },
   addToUnconvertedPermissionsArray(tempGroupPermissions, unconvertedPermissionsArray) {
     let unconvertedPermissionsArrayReturn = unconvertedPermissionsArray;

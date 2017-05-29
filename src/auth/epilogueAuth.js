@@ -533,7 +533,7 @@ export default {
    * @description Sends number strings to convertNumberPermissions, otherwise, string permissions are converted
    */
   convertStringPermissions(permissionsInput) {
-    let permissionsReturn = this.createInitPermissionsArray();
+    let permissionsReturn = this.createInitPermissionsArray(false);
     let permissionsInputCleaned = permissionsInput.toLowerCase();
 
     const numericReturn = this.numericStringPermissions(permissionsInput, permissionsInputCleaned, permissionsReturn);
@@ -557,9 +557,9 @@ export default {
 
         let sectionArguments = [nonPipeIndexFound, nextNonPipeIndex, permissionsInputCleaned];
         sectionArguments = sectionArguments.concat([findSectionLengthSubString, lengthOfSection, section]);
-        const sectionLengthAndNum = this.getSectionInfo(...sectionArguments);
-        lengthOfSection = sectionLengthAndNum[0];
-        section = sectionLengthAndNum[1];
+        const sectionInfo = this.getSectionInfo(...sectionArguments);
+        lengthOfSection = sectionInfo[0];
+        section = sectionInfo[1];
 
         const buildArguments = [lengthOfSection, permissionsInputCleaned, letterIndex, section, permissionsReturn];
         const permissionsReturnAndLetterIndex = this.buildStringPermissionReturn(...buildArguments);

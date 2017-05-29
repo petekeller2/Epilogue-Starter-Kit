@@ -219,6 +219,12 @@ describe('Permissions conversions for strings', () => {
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
+  it('some permissions (pipe format)', done => {
+    permissionReturnActual = epilogueAuth.convertPermissions('----|----|lcrud|----');
+    permissionReturnExpected = [false, false, false, false, false, false, false, false, false, false, true, true, true, true, true, false, false, false, false, false];
+    assert.deepEqual(permissionReturnActual, permissionReturnExpected);
+    done();
+  });
   it('all permissions (pipe format)', done => {
     permissionReturnActual = epilogueAuth.convertPermissions('lcrud|lcrud|lcrud|lcrud');
     permissionReturnExpected = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];

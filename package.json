@@ -1,6 +1,6 @@
 {
   "name": "epilogue-starter-kit",
-  "version": "0.02.0",
+  "version": "0.02.1",
   "private": false,
   "repository": {
     "type": "git",
@@ -19,9 +19,11 @@
     "start-no-nodemon": "babel-node src/app.js",
     "build": "babel src -d build",
     "serve": "node build/app.js",
-    "test": "mocha test/tests --recursive --compilers js:babel-register",
+    "test": "mocha test/tests --recursive --compilers js:babel-register --require babel-polyfill",
     "test-autoAssociations": "mocha test/tests/autoAssociations --recursive --compilers js:babel-register",
     "test-permissions": "mocha test/tests/permissions --recursive --compilers js:babel-register",
+    "test-groups": "mocha test/tests/groups --recursive --compilers js:babel-register --require babel-polyfill",
+    "test-failing": "mocha test/tests/failing.js --compilers js:babel-register",
     "http-test": "mocha test/httpTests --recursive --compilers js:babel-register",
     "http-just-aa-test": "mocha test/httpTests/autoAssociations/associations.js --compilers js:babel-register",
     "http-just-access-test": "mocha test/httpTests/permissions/access.js --compilers js:babel-register"
