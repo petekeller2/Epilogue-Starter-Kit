@@ -446,6 +446,26 @@ export default {
     return returnValue;
   },
   /** @function
+   * @name shiftStringPermissionElements
+   * @param {Array} permissionsArray
+   * @param {String} permissionsInputCleaned
+   * @return {Array}
+   * @description Helper function for buildStringPermissionReturn
+   */
+  shiftStringPermissionElements(permissionsArray, permissionsInputCleaned) {
+    const checkSubString = permissionsInputCleaned.slice(0, permissionsInputCleaned.split('|', 2).join('|').length);
+    if (checkSubString.search(/[lcrud]/g) === -1) {
+      const permissionsReturn = permissionsArray;
+      permissionsReturn.splice(15, 5);
+      for (let i = 0; i < 5; i += 1) {
+        permissionsReturn.unshift(false);
+      }
+      return permissionsReturn;
+    } else {
+      return permissionsArray;
+    }
+  },
+  /** @function
    * @name buildStringPermissionTrueIndex
    * @param {string} permissionLetter
    * @param {number} section
@@ -567,7 +587,7 @@ export default {
         letterIndex = permissionsReturnAndLetterIndex[1];
       }
     }
-    return permissionsReturn;
+    return this.shiftStringPermissionElements(permissionsReturn, permissionsInputCleaned);
   },
   /** @function
    * @name convertArrayPermissions
