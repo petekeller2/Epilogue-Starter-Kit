@@ -70,7 +70,6 @@ export default {
    * @param {Array} permissionsArray
    * @param {Array} convertedPermissions
    * @return {Array}
-   * @description Not in use (todo)
    */
   combinePermissions(permissionsArray, convertedPermissions) {
     let permissionsArrayReturn = permissionsArray;
@@ -105,13 +104,7 @@ export default {
     })).then(unconvertedPermissions => [].concat(...unconvertedPermissions));
     // eslint-disable-next-line
     const convertedPermissionsArray = await Promise.all(combinedUnconvertedPermissions.map(async unconvertedPermissions => epilogueAuth.convertPermissions(unconvertedPermissions)));
-    let returnBool = false;
-    convertedPermissionsArray.forEach((convertedPermissions) => {
-      if (convertedPermissions[permissionsIndex]) {
-        returnBool = true;
-      }
-    });
-    return returnBool;
+    return convertedPermissionsArray.reduce(this.combinePermissions, [])[permissionsIndex];
   },
   /** @function
    * @name addToUnconvertedPermissionsArray
