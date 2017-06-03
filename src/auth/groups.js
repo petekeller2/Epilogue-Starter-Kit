@@ -3,6 +3,15 @@ import epilogueAuth from './epilogueAuth';
 import utilities from '../utilities';
 
 export default {
+  /** @function
+   * @name getJsonGroupPermissions
+   * @param {boolean} isTest
+   * @param {string} resourceName
+   * @param {string} groupResourceName
+   * @param {string} groupName
+   * @param {string} groupId
+   * @return {Promise}
+   */
   getJsonGroupPermissions(isTest, resourceName, groupResourceName, groupName, groupId) {
     let jsonPath = './groupPermissions.json';
     if (isTest) {
@@ -35,6 +44,15 @@ export default {
       });
     });
   },
+  /** @function
+   * @name getDbGroupPermissions
+   * @param {object} sequelize
+   * @param {string} resourceName
+   * @param {string} groupResourceName
+   * @param {string} groupName
+   * @param {string} groupId
+   * @return {Promise}
+   */
   getDbGroupPermissions(sequelize, resourceName, groupResourceName, groupName, groupId) {
     let queryString = 'SELECT permission FROM "GroupPermission"';
     queryString += ` where "resource" = '${resourceName}' and "groupResourceName" = ${groupResourceName}`;
@@ -47,6 +65,13 @@ export default {
     return sequelize.query(queryString, { type: sequelize.QueryTypes.SELECT })
       .then(permissionResults => permissionResults);
   },
+  /** @function
+   * @name combinePermissions
+   * @param {Array} permissionsArray
+   * @param {Array} convertedPermissions
+   * @return {Array}
+   * @description Not in use (todo)
+   */
   combinePermissions(permissionsArray, convertedPermissions) {
     let permissionsArrayReturn = permissionsArray;
     if (permissionsArray.length === 0) {
@@ -54,6 +79,16 @@ export default {
     }
     return permissionsArrayReturn.map((bit, index) => bit || convertedPermissions[index]);
   },
+  /** @function
+   * @name accessCheck
+   * @param {string} testUserId
+   * @param {object} req
+   * @param {object} sequelize
+   * @param {string} resourceName
+   * @param {number} permissionsIndex
+   * @return {Boolean}
+   * @description Main function
+   */
   async accessCheck(testUserId, req, sequelize, resourceName, permissionsIndex) {
     let tempGroupPermissions;
     let unconvertedPermissionsArray = [];
@@ -78,6 +113,12 @@ export default {
     });
     return returnBool;
   },
+  /** @function
+   * @name addToUnconvertedPermissionsArray
+   * @param {*} tempGroupPermissions
+   * @param {Array} unconvertedPermissionsArray
+   * @return {Array}
+   */
   addToUnconvertedPermissionsArray(tempGroupPermissions, unconvertedPermissionsArray) {
     let unconvertedPermissionsArrayReturn = unconvertedPermissionsArray;
     if (tempGroupPermissions) {
@@ -89,6 +130,13 @@ export default {
     }
     return unconvertedPermissionsArrayReturn;
   },
+  /** @function
+   * @name getUserGroups
+   * @param {string} testUserId
+   * @param {object} req
+   * @param {object} sequelize
+   * @return {Promise}
+   */
   getUserGroups(testUserId, req, sequelize) {
     const userId = ((req || {}).user || {}).id;
     if (testUserId) {
