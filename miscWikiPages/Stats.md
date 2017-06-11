@@ -34,7 +34,7 @@
 
  miscWikiPages/readme.md                            |   7 +
 
- notes.md                                           |  13 +
+ notes.md                                           |   1 +
 
  package.json                                       |  73 ++
 
@@ -184,4 +184,4 @@
 
 Files: 91
 
-Total Lines of Code: 5623
+Total Lines of Code: 5611
