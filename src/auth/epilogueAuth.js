@@ -8,8 +8,6 @@ import utilities from '../utilities';
 import epilogueSetup from '../epilogueSetup';
 import testConfig from '../../test/testConfig.json';
 
-// todo: Update functions here when the User resource is replaced with config
-// todo: string that matches a User type resource
 export default {
   /** @function
    * @name ownerGroupCheckWrapper
@@ -205,7 +203,9 @@ export default {
   belongsToUserResourceCheck(resourceAAs) {
     let belongsToUserReturn = false;
     const convertedResourceAAs = epilogueSetup.convertAutoAssociations(resourceAAs);
-    convertedResourceAAs.forEach(([aaType, resourceName]) => {
+    convertedResourceAAs.forEach((convertedResource) => {
+      const aaType = Object.keys(convertedResource)[0];
+      const resourceName = convertedResource[aaType];
       if ((aaType === 'belongsTo' || aaType === 'belongsToMany') && (resourceName === 'User')) {
         belongsToUserReturn = true;
       }
@@ -294,11 +294,12 @@ export default {
         }));
 
         const milestoneParamObj = {
-          ownResource: [isGroup, isHttpTest, validTestNumber, resource[1], database],
-          listOwned: [resource[2], isHttpTest, validTestNumber, resource[1]],
-          deleteGroup: [awaitedGroupXrefModel, isGroup],
+          ownResource: [isHttpTest, validTestNumber, resource[1], database],
+          listOwned: [resource[2], isHttpTest, validTestNumber, resource[1], awaitedGroupXrefModel],
+          deleteGroup: [awaitedGroupXrefModel],
+          deleteMessage: ['hello'],
         };
-        const sharedParameters = [actionsList, i, resource[5], resource[0], userAAs];
+        const sharedParameters = [actionsList, i, resource[5], resource[0], userAAs, resource[6]];
         const addMilestonesParams = [milestoneParamObj, sharedParameters, authMilestone];
         authMilestone = defaultMilestones.addMilestones(...addMilestonesParams);
 

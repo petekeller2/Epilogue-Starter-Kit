@@ -73,7 +73,7 @@ export default {
             if (testConfig.testsCasesHaveBeenGenerated !== true) {
               testCases.generateTestCases().then((generateTestCasesMessage) => {
                 winston.info('generateTestCasesMessage', generateTestCasesMessage);
-              });
+              }, error => winston.info(`Test case generation error: ${error}`));
             }
 
             testData.basicTestData(resources, groupXrefModel).then((val) => {
@@ -107,10 +107,10 @@ export default {
                   }
                 });
               }
-            });
+            }, error => winston.info(`basic test data error: ${error}`));
           }
           winston.info(`listening on port: ${port}`);
         });
-      });
+      }, error => winston.info(`Server Error: ${error}`));
   },
 };

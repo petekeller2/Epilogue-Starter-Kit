@@ -40,7 +40,6 @@ export default {
    * @description Builds the resources from the resources folder and returns a map of the resources.
    *              The creation of the resources will be finished in epilogueAuth.js. The map creation
    *              is finished here
-   * @todo replace the hard coded 'User' with a config variable
    */
   async setupResources(database, Sequelize, groupXrefModel) {
     const awaitedGroupXrefModel = await groupXrefModel;

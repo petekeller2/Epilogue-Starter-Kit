@@ -1,3 +1,13 @@
-**5/01/17**
+**6/10/17**
 
-New resources documentation
+Libraries updated
+
+Bug fixes
+
+**6/11/17**
+
+Bug fixes
+
+Delete message milestone
+
+Better error handling

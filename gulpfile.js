@@ -388,6 +388,8 @@ const buildNonModelResourceFiles = function(resourceName) {
             }
           });
         });
+      }, function(error) {
+        gulpErrors.info(error);
       });
     });
   });
@@ -694,6 +696,8 @@ const moveMarkdown = function(dir) {
                   usedFileNames.push(newFileName);
                   createWikiFile(file, newFileName);
                }
+              }, function(error) {
+                gulpErrors.info(error);
               });
             }
           }

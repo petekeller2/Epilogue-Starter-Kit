@@ -63,7 +63,7 @@ export default {
       queryString += ` and "groupID" = '${groupId}'`;
     }
     return sequelize.query(queryString, { type: sequelize.QueryTypes.SELECT })
-      .then(permissionResults => permissionResults);
+      .then(permissionResults => permissionResults, error => utilities.winstonWrapper(`getDbGroupPermissions error: ${error}`));
   },
   /** @function
    * @name combinePermissions
@@ -80,7 +80,7 @@ export default {
   },
   /** @function
    * @name accessCheck
-   * @param {string} testUserId
+   * @param {*} testUserId - user id string or falsy value
    * @param {object} req
    * @param {object} sequelize
    * @param {string} resourceName
@@ -101,7 +101,8 @@ export default {
         unconvertedPermissionsArray = this.addToUnconvertedPermissionsArray(tempGroupPermissions, unconvertedPermissionsArray);
       }
       return unconvertedPermissionsArray;
-    })).then(unconvertedPermissions => [].concat(...unconvertedPermissions));
+    })).then(unconvertedPermissions => [].concat(...unconvertedPermissions),
+      error => utilities.winstonWrapper(`accessCheck error: ${error}`));
     // eslint-disable-next-line
     const convertedPermissionsArray = await Promise.all(combinedUnconvertedPermissions.map(async unconvertedPermissions => epilogueAuth.convertPermissions(unconvertedPermissions)));
     return convertedPermissionsArray.reduce(this.combinePermissions, [])[permissionsIndex];
@@ -147,7 +148,7 @@ export default {
       let queryString = 'SELECT permission FROM "UserGroupXref"';
       queryString += ` where "UserId" = '${userId}'`;
       return sequelize.query(queryString, { type: sequelize.QueryTypes.SELECT })
-        .then(userGroupsResults => userGroupsResults);
+        .then(userGroupsResults => userGroupsResults, error => utilities.winstonWrapper(`getUserGroups error: ${error}`));
     }
     return utilities.winstonWrapper('No user id and no test user id', 'info', false);
   },

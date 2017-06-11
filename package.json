@@ -1,6 +1,6 @@
 {
   "name": "epilogue-starter-kit",
-  "version": "0.02.1",
+  "version": "0.03.0",
   "private": false,
   "repository": {
     "type": "git",
@@ -48,7 +48,7 @@
     "passport-twitter": "^1.0.4",
     "pg": "^6.1.5",
     "pg-hstore": "^2.3.2",
-    "sequelize": "^3.30.4",
+    "sequelize": "^4.0.0",
     "fs-extra": "^3.0.0",
     "winston": "^2.3.1"
   },
@@ -66,7 +66,7 @@
     "jsdoc": "^3.4.3",
     "mocha": "^3.3.0",
     "nodemon": "^1.11.0",
-    "pluralize": "^4.0.0",
+    "pluralize": "^5.0.0",
     "request": "^2.81.0",
     "retire": "^1.2.13"
   }

@@ -64,7 +64,7 @@ export default {
       authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async (resolve) => {
         const userId = this.returnUserId(req, false);
         const permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
-        const isAdminResult = await this.isAdmin(userId, sequelize);
+        const isAdminResult = await this.isAdmin(userId, sequelize, false);
         if ((isAdminResult === true) || (this.adminsOnly(permissions) === false)) {
           if (isGroup === true) {
             req.body.OwnerID = userId;
@@ -87,19 +87,23 @@ export default {
    * @name isAdmin
    * @param {string} userId
    * @param {object} sequelize
+   * @param {boolean} debug
    * @return promise
    */
-  isAdmin(userId, sequelize) {
+  isAdmin(userId, sequelize, debug) {
     return sequelize.query(`SELECT * FROM "Admins" where "AdminId" = '${userId}'`, { type: sequelize.QueryTypes.SELECT })
       .then((adminResults) => {
-        utilities.winstonWrapper(`admin user check: ${adminResults}`);
+        if (debug === true) {
+          utilities.winstonWrapper(`admin user check: ${adminResults}`);
+        }
         return Boolean(adminResults.length);
-      });
+      }, error => utilities.winstonWrapper(`isAdmin error: ${error}`));
   },
   /** @function
    * @name adminsOnly
    * @param {Array} permissions
    * @return boolean
+   * @description Note that group create permissions must be false
    */
   adminsOnly(permissions) {
     return Boolean((permissions[1] === true) && (permissions[6] === false) && (permissions[11] === false) && (permissions[16] === false));
@@ -116,10 +120,13 @@ export default {
    * @param {boolean} isHttpTest
    * @param {boolean} validTestNumber
    * @param {*} permissionsInput
+   * @param {boolean} isGroup
+   * @param {object} awaitedGroupXrefModel
    * @return object
    * @description Returns a possibly modified version of totalAuthMilestone. Only list owned resources under certain permissions
    */
-  listOwned(totalAuthMilestone, actionsList, i, aa, name, userAAs, model, isHttpTest, validTestNumber, permissionsInput) {
+  // eslint-disable-next-line
+  listOwned(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, model, isHttpTest, validTestNumber, permissionsInput, awaitedGroupXrefModel) {
     if ((actionsList[i] === 'list')) {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
@@ -127,23 +134,17 @@ export default {
       // eslint-disable-next-line
       authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async(resolve) => {
         const permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
-        if (permissions[0] === true && permissions[10] === false && permissions[15] === false) {
+        const groupCheck = Boolean(isGroup && (permissions[5] === false));
+        if (((permissions[0] === true) || (isGroup && (permissions[5] === true))) && permissions[10] === false && permissions[15] === false) {
           if ((((req || {}).user || {}).id)) {
-            if ((name === 'User') || (userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa))) {
-              const findAllObj = {
-                all: true,
-              };
-              if (name === 'User') {
-                findAllObj.where = { id: req.user.id };
-              } else {
-                findAllObj.where = { UserId: req.user.id };
-              }
-              return model.findAll(findAllObj)
-                .then((result) => {
-                  // eslint-disable-next-line
-                  context.instance = result;
-                })
-                .then(() => resolve(context.skip));
+            if ((name === 'User') || (userAAs.indexOf(name) >= 0) || (epilogueAuth.belongsToUserResourceCheck(aa)) || groupCheck) {
+              // eslint-disable-next-line
+              context.instance = await this.listOwnedOnly(name, req, groupCheck, model, context);
+              resolve(context.skip);
+            } else if (isGroup) {
+              // eslint-disable-next-line
+              context.instance = await this.listGroupsAssociatedWith(req, model, name, awaitedGroupXrefModel, context);
+              resolve(context.skip);
             } else {
               let longMessage = 'With these permissions, users can only list resources that belong to them, ';
               longMessage += 'but this resource can not belong to anyone';
@@ -162,6 +163,58 @@ export default {
     }
     return totalAuthMilestone;
   },
+  listOwnedOnly(name, req, groupCheck, model) {
+    const findAllObj = {
+      all: true,
+    };
+    if (name === 'User') {
+      findAllObj.where = { id: req.user.id };
+    } else if (groupCheck) {
+      findAllObj.where = { OwnerID: req.user.id };
+    } else {
+      findAllObj.where = { UserId: req.user.id };
+    }
+    return model.findAll(findAllObj);
+  },
+  listGroupsAssociatedWith(req, model, name, awaitedGroupXrefModel) {
+    const findAllObj = {
+      all: true,
+      where: { OwnerID: req.user.id },
+    };
+    return model.findAll(findAllObj)
+      .then((ownerResult) => {
+        const findAllMemberObj = {
+          all: true,
+        };
+        findAllMemberObj.where = {
+          UserId: req.user.id,
+          groupResourceName: name,
+        };
+        return awaitedGroupXrefModel.findAll(findAllMemberObj)
+          .then((memberResult) => {
+            const ownedGroupArray = [];
+            let groupMemberOfArray = [];
+            ownerResult.forEach((ownedGroup) => {
+              ownedGroupArray.push(ownedGroup.dataValues);
+            });
+            memberResult.forEach((groupMemberOf) => {
+              groupMemberOfArray.push(groupMemberOf.dataValues);
+            });
+            return Promise.all(groupMemberOfArray.map((unconvertedPermissions) => {
+              const findGroupObj = {
+                where: { id: unconvertedPermissions.groupID },
+              };
+              return model.findOne(findGroupObj);
+            })).then((groupsMemberBelongsTo) => {
+              groupMemberOfArray = [];
+              groupsMemberBelongsTo.forEach((groupMemberOf) => {
+                groupMemberOfArray.push(groupMemberOf.dataValues);
+              });
+              return [...groupMemberOfArray, ...ownedGroupArray];
+            }, error => utilities.winstonWrapper(`List Groups Associated With (Promise.all) Error: ${error}`));
+          }, error => utilities.winstonWrapper(`List Groups Associated With (Member) Error: ${error}`));
+      }, error => utilities.winstonWrapper(`List Groups Associated With (Own) Error: ${error}`));
+  },
   /** @function
    * @name deleteGroup
    * @param {object} totalAuthMilestone
@@ -173,21 +226,56 @@ export default {
    * @param {object} awaitedGroupXrefModel
    * @param {boolean} isGroup
    * @return object
-   * @description Returns a possibly modified version of totalAuthMilestone. Deletes GroupXref rows
+   * @description Returns a possibly modified version of totalAuthMilestone. Deletes GroupXref rows.
    */
-  deleteGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, awaitedGroupXrefModel, isGroup) {
+  deleteGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel) {
     if ((actionsList[i] === 'delete') && (isGroup === true)) {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
-      authMilestone[actionsList[i]].delete = {};
+      authMilestone[actionsList[i]].fetch = {};
       // eslint-disable-next-line
-      authMilestone[actionsList[i]].delete.before = ((req, res, context) => new Promise(async (resolve) => {
-        awaitedGroupXrefModel.destroy({
-          where: {
-            groupId: req.body.id,
-            groupResourceName: name,
-          },
-        });
+      authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async (resolve) => {
+        if ((((req || {}).body || {}).id)) {
+          const deleteObj = {
+            where: {
+              groupId: req.body.id,
+              groupResourceName: name,
+            },
+          };
+          return awaitedGroupXrefModel.destroy(deleteObj)
+            .then(() => resolve(context.continue), error => utilities.winstonWrapper(`Delete group milestone error: ${error}`));
+        } else {
+          resolve(context.continue);
+        }
+      }));
+      return merge(authMilestone, totalAuthMilestone);
+    }
+    return totalAuthMilestone;
+  },
+  /** @function
+   * @name deleteMessage
+   * @param {object} totalAuthMilestone
+   * @param {Array} actionsList
+   * @param {number} i
+   * @param {*} aa
+   * @param {string} name
+   * @param {Array} userAAs
+   * @param {string} message
+   * @param {boolean} isGroup
+   * @return object
+   * @description Returns a possibly modified version of totalAuthMilestone.
+   */
+  deleteMessage(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, message) {
+    if (actionsList[i] === 'delete') {
+      const authMilestone = {};
+      authMilestone[actionsList[i]] = {};
+      authMilestone[actionsList[i]].write = {};
+      // eslint-disable-next-line
+      authMilestone[actionsList[i]].write.after = ((req, res, context) => new Promise(async (resolve) => {
+        // eslint-disable-next-line
+        context.instance = {
+          message,
+        };
         resolve(context.continue);
       }));
       return merge(authMilestone, totalAuthMilestone);
@@ -195,7 +283,7 @@ export default {
     return totalAuthMilestone;
   },
   /** @function
-   * @name deleteGroup
+   * @name updateAsLoggedInUser
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
    * @param {number} i
