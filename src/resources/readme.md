@@ -8,7 +8,7 @@ specific files should be added to its corresponding resource's
 resources folder.
 
 ```javascript
-// An example resource index.js
+// An example resource's index.js
 import extension from './extension';
 import model from './model';
 import milestones from './milestones';
@@ -148,4 +148,4 @@ through the userGroupXrefs resource. Users can have many groups through group xr
 
 ## Creating New Resources
 
-gulp new-resource
+Use `gulp new-resource`
