@@ -288,7 +288,7 @@ export default {
               resource: resource[0],
             };
             unauthorizedLog.info(unauthObj);
-            res.status(401).send({ message: 'Unauthorized' });
+            res.status(401).send({ message: utilities.displayMessage('unauthorized') });
             resolve(context.stop);
           }
         }));
@@ -296,8 +296,10 @@ export default {
         const milestoneParamObj = {
           ownResource: [isHttpTest, validTestNumber, resource[1], database],
           listOwned: [resource[2], isHttpTest, validTestNumber, resource[1], awaitedGroupXrefModel],
+          readGroup: [awaitedGroupXrefModel],
+          updateGroup: [awaitedGroupXrefModel],
           deleteGroup: [awaitedGroupXrefModel],
-          deleteMessage: ['hello'],
+          deleteMessage: [utilities.displayMessage('deleteMessage')],
         };
         const sharedParameters = [actionsList, i, resource[5], resource[0], userAAs, resource[6]];
         const addMilestonesParams = [milestoneParamObj, sharedParameters, authMilestone];

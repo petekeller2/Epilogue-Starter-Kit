@@ -53,8 +53,8 @@ module.exports = {
    * @name winstonWrapper
    * @param {*} message
    * @param {string} level
-   * @param {boolean} returns
-   * @return {boolean}
+   * @param {*} returns - usually a boolean
+   * @return {*} usually a boolean
    * @description Winston wrapper function that returns a boolean for convenience
    */
   winstonWrapper(message, level = 'info', returns = false) {
@@ -113,6 +113,26 @@ module.exports = {
   throwErrorConditionally(truthyOrFalsy, message, severity = 'Error', status = 500) {
     if (!truthyOrFalsy) {
       throw new MainError(message, severity, status);
+    }
+  },
+  /** @function
+   * @name displayMessage
+   * @param {string} messageName
+   * @return {string}
+   */
+  displayMessage(messageName) {
+    const errorMessage = 'Messages not found in config!';
+    if (config && config.messages) {
+      if (config.messages[messageName]) {
+        return config.messages[messageName];
+      } else if (config.messages.defaultMessage) {
+        const defaultMessage = config.messages.defaultMessage;
+        return this.winstonWrapper(defaultMessage, 'notice', defaultMessage);
+      } else {
+        return this.winstonWrapper(errorMessage, 'warning', errorMessage);
+      }
+    } else {
+      return this.winstonWrapper(errorMessage, 'warning', errorMessage);
     }
   },
 };

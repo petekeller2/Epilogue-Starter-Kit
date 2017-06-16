@@ -75,7 +75,7 @@ export default {
           req.body.updatedBy = userId;
           resolve(context.continue);
         } else {
-          res.status(401).send({ message: 'Unauthorized' });
+          res.status(401).send({ message: utilities.displayMessage('unauthorized') });
           resolve(context.stop);
         }
       }));
@@ -163,6 +163,15 @@ export default {
     }
     return totalAuthMilestone;
   },
+  /** @function
+   * @name listOwnedOnly
+   * @param {string} name
+   * @param {object} req
+   * @param {boolean} groupCheck
+   * @param {object} model
+   * @return promise
+   * @description Used by listOwned
+   */
   listOwnedOnly(name, req, groupCheck, model) {
     const findAllObj = {
       all: true,
@@ -176,6 +185,15 @@ export default {
     }
     return model.findAll(findAllObj);
   },
+  /** @function
+   * @name listGroupsAssociatedWith
+   * @param {object} req
+   * @param {object} model
+   * @param {string} name
+   * @param {object} awaitedGroupXrefModel
+   * @return promise
+   * @description Used by listOwned
+   */
   listGroupsAssociatedWith(req, model, name, awaitedGroupXrefModel) {
     const findAllObj = {
       all: true,
@@ -216,6 +234,98 @@ export default {
       }, error => utilities.winstonWrapper(`List Groups Associated With (Own) Error: ${error}`));
   },
   /** @function
+   * @name readGroup
+   * @param {object} totalAuthMilestone
+   * @param {Array} actionsList
+   * @param {number} i
+   * @param {*} aa
+   * @param {string} name
+   * @param {Array} userAAs
+   * @param {object} awaitedGroupXrefModel
+   * @param {boolean} isGroup
+   * @return object
+   * @description Returns a possibly modified version of totalAuthMilestone.
+   */
+  readGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel) {
+    if ((actionsList[i] === 'read') && (isGroup === true)) {
+      const authMilestone = {};
+      authMilestone[actionsList[i]] = {};
+      authMilestone[actionsList[i]].fetch = {};
+      // eslint-disable-next-line
+      authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async (resolve) => {
+        if ((((req || {}).body || {}).id) && (((req || {}).user || {}).id)) {
+          const findObj = {
+            where: {
+              groupId: req.body.id,
+              UserId: req.user.id,
+            },
+          };
+          const findResults = await awaitedGroupXrefModel.findOne(findObj);
+          if (findResults && findResults.UserId === req.user.id) {
+            resolve(context.continue);
+          } else {
+            res.status(401).send({ message: utilities.displayMessage('unauthorized') });
+            resolve(context.stop);
+          }
+        } else {
+          res.status(401).send({ message: utilities.displayMessage('unauthorized') });
+          resolve(context.stop);
+        }
+      }));
+      return merge(authMilestone, totalAuthMilestone);
+    }
+    return totalAuthMilestone;
+  },
+  /** @function
+   * @name updateGroup
+   * @param {object} totalAuthMilestone
+   * @param {Array} actionsList
+   * @param {number} i
+   * @param {*} aa
+   * @param {string} name
+   * @param {Array} userAAs
+   * @param {object} awaitedGroupXrefModel
+   * @param {boolean} isGroup
+   * @return object
+   * @description Returns a possibly modified version of totalAuthMilestone.
+   */
+  updateGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel) {
+    if ((actionsList[i] === 'update') && (isGroup === true)) {
+      const authMilestone = {};
+      authMilestone[actionsList[i]] = {};
+      authMilestone[actionsList[i]].fetch = {};
+      // eslint-disable-next-line
+      authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async (resolve) => {
+        if ((((req || {}).body || {}).id) && (((req || {}).user || {}).id)) {
+          const findObj = {
+            where: {
+              groupId: req.body.id,
+              UserId: req.user.id,
+            },
+          };
+          const findResults = await awaitedGroupXrefModel.findOne(findObj);
+          if (findResults && findResults.UserId === req.user.id) {
+            const { id, groupID, groupName, groupResourceName } = req.body;
+            const updateObj = {
+              where: {
+                groupId: req.body.id,
+                groupResourceName: name,
+              },
+            };
+            return awaitedGroupXrefModel.update({ id, groupID, groupName, groupResourceName }, updateObj)
+              .then(() => resolve(context.continue), error => utilities.winstonWrapper(`Delete group milestone error: ${error}`));
+          } else {
+            resolve(context.continue);
+          }
+        } else {
+          resolve(context.continue);
+        }
+      }));
+      return merge(authMilestone, totalAuthMilestone);
+    }
+    return totalAuthMilestone;
+  },
+  /** @function
    * @name deleteGroup
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
@@ -235,15 +345,26 @@ export default {
       authMilestone[actionsList[i]].fetch = {};
       // eslint-disable-next-line
       authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async (resolve) => {
-        if ((((req || {}).body || {}).id)) {
-          const deleteObj = {
+        if ((((req || {}).body || {}).id) && (((req || {}).user || {}).id)) {
+          const findObj = {
             where: {
               groupId: req.body.id,
-              groupResourceName: name,
+              UserId: req.user.id,
             },
           };
-          return awaitedGroupXrefModel.destroy(deleteObj)
-            .then(() => resolve(context.continue), error => utilities.winstonWrapper(`Delete group milestone error: ${error}`));
+          const findResults = await awaitedGroupXrefModel.findOne(findObj);
+          if (findResults && findResults.UserId === req.user.id) {
+            const deleteObj = {
+              where: {
+                groupId: req.body.id,
+                groupResourceName: name,
+              },
+            };
+            return awaitedGroupXrefModel.destroy(deleteObj)
+              .then(() => resolve(context.continue), error => utilities.winstonWrapper(`Delete group milestone error: ${error}`));
+          } else {
+            resolve(context.continue);
+          }
         } else {
           resolve(context.continue);
         }

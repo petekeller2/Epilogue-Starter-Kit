@@ -64,6 +64,11 @@ const config = {
     maxsize: process.env.MAXSIZE_WINSTON || 50000,
     maxFiles: process.env.MAX_FILES_WINSTON || 5,
     zippedArchive: process.env.ZIPPED_ARCHIVE_WINSTON || 'YES',
-  }
+  },
+  messages: {
+    deleteMessage: 'Deleted!',
+    unauthorized: 'Unauthorized',
+    defaultMessage: '<YOUR DEFAULT MESSAGE>',
+  },
 };
 module.exports = config;
