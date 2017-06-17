@@ -288,7 +288,7 @@ export default {
               resource: resource[0],
             };
             unauthorizedLog.info(unauthObj);
-            res.status(401).send({ message: utilities.displayMessage('unauthorized') });
+            res.status(401).send({ message: utilities.displayMessage('deleteMessage') });
             resolve(context.stop);
           }
         }));

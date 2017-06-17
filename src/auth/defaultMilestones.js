@@ -253,10 +253,14 @@ export default {
       authMilestone[actionsList[i]].fetch = {};
       // eslint-disable-next-line
       authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async (resolve) => {
-        if ((((req || {}).body || {}).id) && (((req || {}).user || {}).id)) {
+        if ((((req || {}).url || {}).id) && (((req || {}).user || {}).id)) {
+          let reqUrlArray = req.url.split('/');
+          reqUrlArray = reqUrlArray.filter(entry => entry.trim() !== '');
+          const searchId = reqUrlArray[reqUrlArray.length - 1];
           const findObj = {
             where: {
-              groupId: req.body.id,
+              groupId: searchId,
+              groupResourceName: name,
               UserId: req.user.id,
             },
           };
@@ -300,6 +304,7 @@ export default {
           const findObj = {
             where: {
               groupId: req.body.id,
+              groupResourceName: name,
               UserId: req.user.id,
             },
           };
@@ -349,6 +354,7 @@ export default {
           const findObj = {
             where: {
               groupId: req.body.id,
+              groupResourceName: name,
               UserId: req.user.id,
             },
           };

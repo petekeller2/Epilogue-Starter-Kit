@@ -1,5 +1,5 @@
-**6/15/17**
+**6/17/17**
 
-New config
+Read group milestone fixed
 
-New default milestones
+Update and delete group milestones fixed
