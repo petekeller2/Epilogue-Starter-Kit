@@ -53,7 +53,7 @@ export default {
    * @param {object} sequelize
    * @return object
    * @description Returns a possibly modified version of totalAuthMilestone. When an instance of a resource is created,
-   *  the UserID and/or OwnerID column is updated
+   *  the UserId and/or OwnerID column is updated
    */
   ownResource(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, isHttpTest, validTestNumber, permissionsInput, sequelize) {
     if (actionsList[i] === 'create') {
@@ -243,23 +243,28 @@ export default {
    * @param {Array} userAAs
    * @param {object} awaitedGroupXrefModel
    * @param {boolean} isGroup
+   * @param {boolean} isHttpTest
+   * @param {boolean} validTestNumber
+   * @param {*} permissionsInput
    * @return object
    * @description Returns a possibly modified version of totalAuthMilestone.
    */
-  readGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel) {
-    if ((actionsList[i] === 'read') && (isGroup === true)) {
+  readGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel, isHttpTest, validTestNumber, permissionsInput) {
+    const permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
+    const permissionsBool = Boolean((permissions[7] === true) && (permissions[12] === false) && (permissions[12] === false));
+    if ((actionsList[i] === 'read') && (isGroup === true) && (permissionsBool)) {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
       authMilestone[actionsList[i]].fetch = {};
       // eslint-disable-next-line
       authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async (resolve) => {
-        if ((((req || {}).url || {}).id) && (((req || {}).user || {}).id)) {
+        if (((req || {}).url) && (((req || {}).user || {}).id)) {
           let reqUrlArray = req.url.split('/');
           reqUrlArray = reqUrlArray.filter(entry => entry.trim() !== '');
           const searchId = reqUrlArray[reqUrlArray.length - 1];
           const findObj = {
             where: {
-              groupId: searchId,
+              groupID: searchId,
               groupResourceName: name,
               UserId: req.user.id,
             },
@@ -303,7 +308,7 @@ export default {
         if ((((req || {}).body || {}).id) && (((req || {}).user || {}).id)) {
           const findObj = {
             where: {
-              groupId: req.body.id,
+              groupID: req.body.id,
               groupResourceName: name,
               UserId: req.user.id,
             },
@@ -313,7 +318,7 @@ export default {
             const { id, groupID, groupName, groupResourceName } = req.body;
             const updateObj = {
               where: {
-                groupId: req.body.id,
+                groupID: req.body.id,
                 groupResourceName: name,
               },
             };
@@ -353,7 +358,7 @@ export default {
         if ((((req || {}).body || {}).id) && (((req || {}).user || {}).id)) {
           const findObj = {
             where: {
-              groupId: req.body.id,
+              groupID: req.body.id,
               groupResourceName: name,
               UserId: req.user.id,
             },
@@ -362,7 +367,7 @@ export default {
           if (findResults && findResults.UserId === req.user.id) {
             const deleteObj = {
               where: {
-                groupId: req.body.id,
+                groupID: req.body.id,
                 groupResourceName: name,
               },
             };

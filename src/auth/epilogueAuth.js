@@ -173,8 +173,8 @@ export default {
       return trueForCreateOrListReturn;
     } else {
       const foundResource = await awaitedGroupXrefModel.findOne({
-        attributes: ['userID', 'groupID', 'groupResourceName'],
-        where: { userID: req.user.id, groupID: reqUrlArray[1], groupResourceName: resource[0] },
+        attributes: ['UserId', 'groupID', 'groupResourceName'],
+        where: { UserId: req.user.id, groupID: reqUrlArray[1], groupResourceName: resource[0] },
       });
       if (foundResource) {
         return true;
@@ -288,7 +288,7 @@ export default {
               resource: resource[0],
             };
             unauthorizedLog.info(unauthObj);
-            res.status(401).send({ message: utilities.displayMessage('deleteMessage') });
+            res.status(401).send({ message: utilities.displayMessage('unauthorized') });
             resolve(context.stop);
           }
         }));
