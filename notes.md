@@ -1,9 +1,7 @@
-**6/17/17**
+**7/03/17**
 
-Read group milestone fixed
+Bug fixes in epilogueAuth.js and defaultMilestones.js
 
-Update and delete group milestones fixed
+Manual test
 
-**6/21/17**
-
-Export manual tests
+Wiki updates

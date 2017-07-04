@@ -130,11 +130,6 @@ done to make hex format more readable.
 // more examples of valid permissions formats
 ```
 
-#### Note
-
-The enabled bit in `-----|-c---|----|-----` currently does not 
-have a purpose. It will be given a purpose in a future version.
-
 ## Admins
 
 The enabled bit in `-c---|-----|----|-----` means that admins 
@@ -143,8 +138,26 @@ AdminId being a user's user id.
 
 ## Groups
 
-Groups are a work in progress. Groups and users are linked 
+Groups and users are linked 
 through the userGroupXrefs resource. Users can have many groups through group xrefs.
+
+The enabled bit in `-----|-c---|----|-----` enables group permissions. 
+Group permissions are ORed with each other and regular resource permissions.
+
+For example, if a group resource called City has the following regular
+ permissions: `l----|-c---|----|-----` and the following group permissions:
+ 
+| Resource  | Permissions | Group Name  | Group ID |
+| --------- | ---------- | ----------- | -------- |
+| City | -----\|l--ud\|-----\|----- | NYC | 1 |
+| City | -----\|l-r--\|-crud\|-----  | | |
+
+Will lead to the following permissions for these City groups:
+
+| Group  | Permissions |
+| --------- | ---------- |
+| NYC | l----\|lcrud\|-crud\|----- |
+| LA | l----\|lcr--\|-crud\|-----  |
 
 ## Creating New Resources
 

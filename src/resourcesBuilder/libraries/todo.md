@@ -1,1 +1,0 @@
-Milestones and recources libraries repos

@@ -273,8 +273,11 @@ export default {
           if (findResults && findResults.UserId === req.user.id) {
             resolve(context.continue);
           } else {
-            res.status(401).send({ message: utilities.displayMessage('unauthorized') });
-            resolve(context.stop);
+            // If you want membership in the group xref to be required for even owners of the resource,
+            // comment out context.continue and comment in the lines under it
+            resolve(context.continue);
+            // res.status(401).send({ message: utilities.displayMessage('unauthorized') });
+            // resolve(context.stop);
           }
         } else {
           res.status(401).send({ message: utilities.displayMessage('unauthorized') });
@@ -355,27 +358,18 @@ export default {
       authMilestone[actionsList[i]].fetch = {};
       // eslint-disable-next-line
       authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async (resolve) => {
-        if ((((req || {}).body || {}).id) && (((req || {}).user || {}).id)) {
-          const findObj = {
+        if (((req || {}).url) && (((req || {}).user || {}).id)) {
+          let reqUrlArray = req.url.split('/');
+          reqUrlArray = reqUrlArray.filter(entry => entry.trim() !== '');
+          const groupID = reqUrlArray.pop();
+          const deleteObj = {
             where: {
-              groupID: req.body.id,
+              groupID,
               groupResourceName: name,
-              UserId: req.user.id,
             },
           };
-          const findResults = await awaitedGroupXrefModel.findOne(findObj);
-          if (findResults && findResults.UserId === req.user.id) {
-            const deleteObj = {
-              where: {
-                groupID: req.body.id,
-                groupResourceName: name,
-              },
-            };
-            return awaitedGroupXrefModel.destroy(deleteObj)
-              .then(() => resolve(context.continue), error => utilities.winstonWrapper(`Delete group milestone error: ${error}`));
-          } else {
-            resolve(context.continue);
-          }
+          return awaitedGroupXrefModel.destroy(deleteObj)
+            .then(() => resolve(context.continue), error => utilities.winstonWrapper(`Delete group milestone error: ${error}`));
         } else {
           resolve(context.continue);
         }

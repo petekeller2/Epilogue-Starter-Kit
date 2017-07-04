@@ -3,7 +3,7 @@ import model from './model';
 import milestones from './milestones';
 
 const endpoints = ['/users', '/users/:id'];
-const permissions = 'l-rud|-----|-----|-----';
+const permissions = '--rud|-----|-----|-----';//'l-rud|-----|-----|-----';
 const isGroup = false;
 const autoAssociations = 'Todo';
 

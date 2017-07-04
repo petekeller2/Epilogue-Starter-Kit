@@ -286,6 +286,7 @@ export default {
             const unauthObj = {
               userID: ((req || {}).user || {}).id,
               resource: resource[0],
+              ip: req.headers['x-forwarded-for'] || req.connection.remoteAddress,
             };
             unauthorizedLog.info(unauthObj);
             res.status(401).send({ message: utilities.displayMessage('unauthorized') });
@@ -296,7 +297,7 @@ export default {
         const milestoneParamObj = {
           ownResource: [isHttpTest, validTestNumber, resource[1], database],
           listOwned: [resource[2], isHttpTest, validTestNumber, resource[1], awaitedGroupXrefModel],
-          readGroup: [awaitedGroupXrefModel],
+          readGroup: [awaitedGroupXrefModel, isHttpTest, validTestNumber, resource[1]],
           updateGroup: [awaitedGroupXrefModel],
           deleteGroup: [awaitedGroupXrefModel],
           deleteMessage: [utilities.displayMessage('deleteMessage')],

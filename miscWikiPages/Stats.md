@@ -16,8 +16,6 @@
 
  .travis.yml                                        |   9 +
 
- CHANGELOG.md                                       |   5 +
-
  Gemfile                                            |   5 +
 
  Gemfile.lock                                       |  49 ++
@@ -34,7 +32,7 @@
 
  miscWikiPages/readme.md                            |   7 +
 
- notes.md                                           |   1 +
+ notes.md                                           |   3 +
 
  package.json                                       |  73 ++
 
@@ -46,11 +44,11 @@
 
  src/auth/customMilestones.js                       |  27 +
 
- src/auth/defaultMilestones.js                      | 307 ++++++++
+ src/auth/defaultMilestones.js                      | 433 +++++++++++
 
  src/auth/endpoints.js                              | 108 +++
 
- src/auth/epilogueAuth.js                           | 739 +++++++++++++++++++
+ src/auth/epilogueAuth.js                           | 742 +++++++++++++++++++
 
  src/auth/groupPermissions.json                     |   5 +
 
@@ -60,7 +58,7 @@
 
  src/auth/readme.md                                 |  23 +
 
- src/config.js                                      |  69 ++
+ src/config.js                                      |  74 ++
 
  src/custom/endpoints/placeholder.md                |   1 +
 
@@ -100,9 +98,7 @@
 
  src/resources/index.js                             |   5 +
 
- src/resources/readme.md                            | 151 ++++
-
- src/resourcesBuilder/libraries/todo.md             |   1 +
+ src/resources/readme.md                            | 164 +++++
 
  src/resourcesBuilder/modelFields.js                |  17 +
 
@@ -122,7 +118,7 @@
 
  src/server.js                                      | 116 +++
 
- src/utilities.js                                   | 118 +++
+ src/utilities.js                                   | 138 ++++
 
  test/httpTests/autoAssociations/associations.js    |  46 ++
 
@@ -151,6 +147,20 @@
  test/manualTests/tests/4-16-17/notes.md            |   3 +
 
  test/manualTests/tests/4-16-17/resources/sheet.css |   1 +
+
+ .../tests/6-10-17/Manual Test Cases.csv            |  87 +++
+
+ .../tests/6-10-17/Manual Test Cases.html           |  39 +
+
+ test/manualTests/tests/6-10-17/notes.md            |   3 +
+
+ test/manualTests/tests/6-10-17/resources/sheet.css |   1 +
+
+ .../manualTests/tests/7-3-17/Manual Test Cases.csv |  87 +++
+
+ .../tests/7-3-17/Manual Test Cases.html            |  39 +
+
+ test/manualTests/tests/7-3-17/notes.md             |   3 +
 
  test/readme.md                                     |   5 +
 
@@ -182,6 +192,6 @@
 
  wikiConfig.json                                    |  17 +
 
-Files: 91
+Files: 96
 
-Total Lines of Code: 5611
+Total Lines of Code: 6033
