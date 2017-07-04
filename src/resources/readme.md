@@ -1,9 +1,7 @@
 # Resources
 
-The resources folders contain the pieces that will be 
-used to create Epilogue resources. All the resources, 
-except the UserGroupXref resource, are created based on 
-the pieces found in the resources folder. Custom resource 
+The subdirectories of the resources directory (src/resources and build/resources) contain the pieces that will be 
+used to create Epilogue resources. Custom resource 
 specific files should be added to its corresponding resource's 
 resources folder.
 
@@ -54,13 +52,6 @@ There are 8 elements to the resource array, with their purpose
 being implied by their names in the example above. Order 
 matters and if you want to leave an element blank, replace it 
 with a falsy element rather than leaving it out altogether.
-
-## Exporting the Arrays
-
-This is a work in progress. Currently, you need to manually 
-add import lines and add them to the export array to the 
-index.js file at the root of the resources folder. This will 
-be automated in later versions.
 
 ## Auto Associations
 
@@ -145,14 +136,18 @@ The enabled bit in `-----|-c---|----|-----` enables group permissions.
 Group permissions are ORed with each other and regular resource permissions.
 
 For example, if a group resource called City has the following regular
- permissions: `l----|-c---|----|-----` and the following group permissions:
+ permissions: 
+ 
+`l----|-c---|----|-----` 
+ 
+And the following group permissions:
  
 | Resource  | Permissions | Group Name  | Group ID |
 | --------- | ---------- | ----------- | -------- |
 | City | -----\|l--ud\|-----\|----- | NYC | 1 |
 | City | -----\|l-r--\|-crud\|-----  | | |
 
-Will lead to the following permissions for these City groups:
+There will be the following permissions for these City groups:
 
 | Group  | Permissions |
 | --------- | ---------- |

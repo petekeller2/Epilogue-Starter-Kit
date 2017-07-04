@@ -32,7 +32,7 @@
 
  miscWikiPages/readme.md                            |   7 +
 
- notes.md                                           |   3 +
+ notes.md                                           |   7 +
 
  package.json                                       |  73 ++
 
@@ -98,7 +98,7 @@
 
  src/resources/index.js                             |   5 +
 
- src/resources/readme.md                            | 164 +++++
+ src/resources/readme.md                            | 159 ++++
 
  src/resourcesBuilder/modelFields.js                |  17 +
 
@@ -162,6 +162,8 @@
 
  test/manualTests/tests/7-3-17/notes.md             |   3 +
 
+ test/manualTests/tests/7-3-17/resources/sheet.css  |   1 +
+
  test/readme.md                                     |   5 +
 
  test/setup/readme.md                               |   8 +
@@ -192,6 +194,6 @@
 
  wikiConfig.json                                    |  17 +
 
-Files: 96
+Files: 97
 
 Total Lines of Code: 6033
