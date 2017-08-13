@@ -1,3 +1,4 @@
+// @flow
 import winston from 'winston';
 import merge from 'deepmerge';
 import defaultMilestones from './defaultMilestones';
@@ -13,10 +14,10 @@ export default {
    * @name ownerGroupCheckWrapper
    * @param {object} req
    * @param {string} functionName
-   * @return {*} False or Array
+   * @return {(boolean|Array)} False or Array
    * @description Helper function for isOwnerOfRegularResourceCheck, isOwnerOfGroupResourceCheck and isMemberOfGroupCheck
    */
-  ownerGroupCheckWrapper(req, functionName) {
+  ownerGroupCheckWrapper(req: {}, functionName: string): boolean | [] {
     let reqUrlArray;
     if ((req || {}).url && this.hasUserId(req)) {
       reqUrlArray = req.url.split('/');
@@ -35,7 +36,7 @@ export default {
    * @param {object} req
    * @return {boolean}
    */
-  hasUserId(req) {
+  hasUserId(req: {}): boolean {
     return (((req || {}).user || {}).id);
   },
   /** @function
@@ -45,10 +46,10 @@ export default {
    * @param {Array} actionsList - ['list', 'create', 'read', 'update', 'delete']
    * @param {object} resource
    * @param {number} index - index of the action list
-   * @return boolean
+   * @return {boolean}
    * @description Checks if the user is the owner of a resource. Group ownership checking is done in another function
    */
-  async isOwnerOfRegularResourceCheck(req, cleanedEndpointsArray, actionsList, resource, index) {
+  async isOwnerOfRegularResourceCheck(req: {}, cleanedEndpointsArray: [], actionsList: [], resource: {}, index: number): boolean {
     const reqUrlArray = this.ownerGroupCheckWrapper(req, this.name);
     if (reqUrlArray === false) {
       return reqUrlArray;
@@ -76,12 +77,12 @@ export default {
   },
   /** @function
    * @name buildFindOneObj
-   * @param {object} reqUrlArray
+   * @param {Array} reqUrlArray
    * @param {Array} resource
    * @return {object}
    * @description Helper function for isOwnerOfRegularResourceCheck
    */
-  buildFindOneObj(reqUrlArray, resource) {
+  buildFindOneObj(reqUrlArray: [], resource: []): {} {
     const findOneObj = {
       where: { id: reqUrlArray[1] },
     };
@@ -95,11 +96,11 @@ export default {
   /** @function
    * @name usersUrlCheckHelper
    * @param {object} req
-   * @param {object} reqUrlArray
+   * @param {Array} reqUrlArray
    * @return {boolean}
    * @description Helper function for isOwnerOfRegularResourceCheck
    */
-  usersUrlCheckHelper(req, reqUrlArray) {
+  usersUrlCheckHelper(req: {}, reqUrlArray: []) {
     if (req.user.id === reqUrlArray[1]) {
       return true;
     } else {
@@ -114,7 +115,7 @@ export default {
    * @return {boolean}
    * @description Helper function for isOwnerOfRegularResourceCheck
    */
-  searchUserResourceCheckHelper(resource, foundResource, req) {
+  searchUserResourceCheckHelper(resource: [], foundResource: {}, req: {}): boolean {
     if (resource[0] === 'User' && (foundResource || {}).id && foundResource.id === req.user.id) {
       return true;
     } else if ((foundResource || {}).UserId && foundResource.UserId === req.user.id) {
@@ -130,10 +131,10 @@ export default {
    * @param {Array} actionsList - ['list', 'create', 'read', 'update', 'delete']
    * @param {object} resource
    * @param {number} index - index of the action list
-   * @return boolean
+   * @return {boolean}
    * @description Checks if the user is the group owner of a group resource
    */
-  async isOwnerOfGroupResourceCheck(req, actionsList, resource, index) {
+  async isOwnerOfGroupResourceCheck(req: {}, actionsList: [], resource: {}, index: number): boolean {
     const reqUrlArray = this.ownerGroupCheckWrapper(req, this.name);
     if (reqUrlArray === false) {
       return reqUrlArray;
@@ -160,10 +161,10 @@ export default {
    * @param {object} resource
    * @param {number} index - index of the action list
    * @param {object} awaitedGroupXrefModel
-   * @return boolean
+   * @return {boolean}
    * @description Checks if the user is a group member
    */
-  async isMemberOfGroupCheck(req, actionsList, resource, index, awaitedGroupXrefModel) {
+  async isMemberOfGroupCheck(req: {}, actionsList: [], resource: {}, index: number, awaitedGroupXrefModel: {}): boolean {
     const reqUrlArray = this.ownerGroupCheckWrapper(req, this.name);
     if (reqUrlArray === false) {
       return reqUrlArray;
@@ -188,19 +189,19 @@ export default {
    * @param {Array} actionsList - ['list', 'create', 'read', 'update', 'delete']
    * @param {number} index - index of the action list
    * @param {object} req
-   * @return boolean
+   * @return {boolean}
    * @description Returns true for action is create or list and the user is not a guest
    */
-  trueForCreateOrList(actionsList, index, req) {
+  trueForCreateOrList(actionsList: [], index: number, req: {}): boolean {
     return Boolean((actionsList[index] === 'create' || actionsList[index] === 'list') && this.hasUserId(req));
   },
   /** @function
    * @name belongsToUserResourceCheck
    * @param {*} resourceAAs - Non-converted AAs
-   * @return boolean
+   * @return {boolean}
    * @description Returns true if the resource belongs to the User resource
    */
-  belongsToUserResourceCheck(resourceAAs) {
+  belongsToUserResourceCheck(resourceAAs: any): boolean {
     let belongsToUserReturn = false;
     const convertedResourceAAs = epilogueSetup.convertAutoAssociations(resourceAAs);
     convertedResourceAAs.forEach((convertedResource) => {
@@ -219,7 +220,7 @@ export default {
    * @param {object} database
    * @description Finishes milestone creation for the resources, with auth milestones being created for every resource
    */
-  async setupAuthCheck(resourcesFromSetup, groupXrefModel, database) {
+  async setupAuthCheck(resourcesFromSetup: Map, groupXrefModel: {}, database: {}) {
     let permissions;
     let cleanedEndpointsArray;
     let currentUserOwnsResource;
@@ -319,7 +320,7 @@ export default {
    * @return {Array}
    * @description Creates a 20 boolean array with all true or all false
    */
-  createInitPermissionsArray(defaultBool) {
+  createInitPermissionsArray(defaultBool: any): [] {
     let defaultPermissions = false;
     if (defaultBool) {
       defaultPermissions = true;
@@ -336,7 +337,7 @@ export default {
    * @return {string}
    * @description Helper function for convertNumberPermissions
    */
-  reverseInputInBinary(inputInBinary) {
+  reverseInputInBinary(inputInBinary: string): string {
     let inputInBinaryBackwards = '';
     for (let i = inputInBinary.length - 1; i >= 0; i -= 1) {
       inputInBinaryBackwards += inputInBinary[i];
@@ -349,7 +350,7 @@ export default {
    * @return {Array}
    * @description For number permissions, read being true means list is true as well (list permissions can't be directly set)
    */
-  convertNumberPermissions(permissionsInput) {
+  convertNumberPermissions(permissionsInput: number): [] {
     const permissionsReturn = this.createInitPermissionsArray(false);
     if (!Number.isFinite(permissionsInput)) {
       utilities.winstonWrapper('Infinite number!', 'warning');
@@ -384,7 +385,7 @@ export default {
    * @return {string}
    * @description Regex cleaning on the partially cleaned permissions string
    */
-  stringPermissionsRegex(permissionsInputPartiallyCleaned) {
+  stringPermissionsRegex(permissionsInputPartiallyCleaned: string): string {
     let permissionsInputCleanedReturn = permissionsInputPartiallyCleaned.replace(/^\s+/g, '');
     permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/n\/a/g, '|');
     permissionsInputCleanedReturn = permissionsInputCleanedReturn.replace(/na/g, '|');
@@ -412,7 +413,7 @@ export default {
    * @return {*}
    * @description Helper function for numericStringPermissions
    */
-  getNumberSubStringStart(permissionsInputCleaned) {
+  getNumberSubStringStart(permissionsInputCleaned: string): any {
     if (permissionsInputCleaned.indexOf('0x') > -1) {
       return permissionsInputCleaned.indexOf('0x');
     } else if (permissionsInputCleaned.indexOf('0o') > -1) {
@@ -428,10 +429,10 @@ export default {
    * @param {string} permissionsInput
    * @param {string} permissionsInputCleaned
    * @param {Array} permissionsReturn
-   * @return {*} False or Array
+   * @return {boolean|Array} False or Array
    * @description Returns permissions array if string is numeric. Returns permissionsReturn as is if numbers and strings are mixed
    */
-  numericStringPermissions(permissionsInput, permissionsInputCleaned, permissionsReturn) {
+  numericStringPermissions(permissionsInput: string, permissionsInputCleaned: string, permissionsReturn: []): boolean | [] {
     let returnValue = false;
     const numberSubStringStart = this.getNumberSubStringStart(permissionsInputCleaned);
     if (!Number.isNaN(Number(permissionsInput))) {
@@ -456,7 +457,7 @@ export default {
    * @return {Array}
    * @description Helper function for buildStringPermissionReturn
    */
-  shiftStringPermissionElements(permissionsArray, permissionsInputCleaned) {
+  shiftStringPermissionElements(permissionsArray: [], permissionsInputCleaned: string): [] {
     const checkSubString = permissionsInputCleaned.slice(0, permissionsInputCleaned.split('|', 2).join('|').length);
     if (checkSubString.search(/[lcrud]/g) === -1) {
       const permissionsReturn = permissionsArray;
@@ -476,7 +477,7 @@ export default {
    * @return {*}
    * @description Helper function for buildStringPermissionReturn
    */
-  buildStringPermissionTrueIndex(permissionLetter, section) {
+  buildStringPermissionTrueIndex(permissionLetter: string, section: number): any {
     if (permissionLetter === 'l') {
       return (section * 5);
     } else if (permissionLetter === 'c') {
@@ -501,7 +502,7 @@ export default {
    * @return {Array}
    * @description Helper function for convertStringPermissions
    */
-  buildStringPermissionReturn(lengthOfSection, permissionsInputCleaned, letterIndex, section, permissionsReturn) {
+  buildStringPermissionReturn(lengthOfSection, permissionsInputCleaned, letterIndex, section, permissionsReturn): [] {
     let lengthOfSectionCopy = lengthOfSection;
     let letterIndexCopy = letterIndex;
     const permissionsReturnCopy = permissionsReturn;
@@ -528,7 +529,7 @@ export default {
    * @return {Array}
    * @description Helper function for convertStringPermissions
    */
-  getSectionInfo(nonPipeIndexFound, nextNonPipeIndex, permissionsInputCleaned, findSectionLengthSubString, lengthOfSection, section) {
+  getSectionInfo(nonPipeIndexFound, nextNonPipeIndex, permissionsInputCleaned, findSectionLengthSubString, lengthOfSection, section): [] {
     let lengthOfSectionCopy = lengthOfSection;
     let nonPipeIndexFoundCopy = nonPipeIndexFound;
     let nextNonPipeIndexCopy = nextNonPipeIndex;
@@ -556,7 +557,7 @@ export default {
    * @return {Array}
    * @description Sends number strings to convertNumberPermissions, otherwise, string permissions are converted
    */
-  convertStringPermissions(permissionsInput) {
+  convertStringPermissions(permissionsInput: string): [] {
     let permissionsReturn = this.createInitPermissionsArray(false);
     let permissionsInputCleaned = permissionsInput.toLowerCase();
 
@@ -598,7 +599,7 @@ export default {
    * @param {Array} permissionsInput
    * @return {Array}
    */
-  convertArrayPermissions(permissionsInput) {
+  convertArrayPermissions(permissionsInput: []): [] {
     const permissionsReturn = [];
     permissionsInput.forEach((permissionsElement) => {
       if ((typeof permissionsElement) === 'boolean') {
@@ -616,7 +617,7 @@ export default {
    * @return {*}
    * @description Helper function for convertObjectPermissions
    */
-  getSectionMultiplier(permissionKey) {
+  getSectionMultiplier(permissionKey: string): any {
     if (permissionKey.toLowerCase() === 'owner') {
       return 0;
     } else if (permissionKey.toLowerCase() === 'group') {
@@ -638,7 +639,7 @@ export default {
    * @return {Array}
    * @description Used in convertObjectPermissions
    */
-  buildObjectPermissionsReturn(permissionsReturn, permissionArrayElement, permissionsReturnIndex) {
+  buildObjectPermissionsReturn(permissionsReturn: [], permissionArrayElement: string, permissionsReturnIndex: number): [] {
     const permissionsReturnCopy = permissionsReturn;
     let permissionsReturnIndexCopy = permissionsReturnIndex;
     if (permissionArrayElement === 'list' || permissionArrayElement === 'l') {
@@ -666,7 +667,7 @@ export default {
    * @return {Array}
    * @description Object of arrays with strings as elements. Non-string elements are meaningless
    */
-  convertObjectPermissions(permissionsInput) {
+  convertObjectPermissions(permissionsInput: {}): [] {
     let permissionKey;
     let sectionMultiplier;
     let permissionArrayElement;
@@ -700,7 +701,7 @@ export default {
    * @return {Array}
    * @description Passes permissions to the other permissions functions based on input type
    */
-  convertPermissions(permissionsInput) {
+  convertPermissions(permissionsInput: any): [] {
     if (permissionsInput) {
       if ((typeof permissionsInput) === 'string') {
         return this.convertStringPermissions(permissionsInput);
@@ -730,7 +731,7 @@ export default {
    * @return {Array}
    * @description Passes real permissions or test permissions to convertPermissions
    */
-  convertRealOrTestPermissions(permissionsInput, resourceName, isHttpTest, validTestNumber) {
+  convertRealOrTestPermissions(permissionsInput: any, resourceName: string, isHttpTest: boolean, validTestNumber: boolean): [] {
     if (isHttpTest && validTestNumber && testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'access') {
       const testPermissionsArray = testConfig.testCases[testConfig.testNumber - 1].permissions;
       if (testPermissionsArray.indexOf(resourceName) >= 0) {

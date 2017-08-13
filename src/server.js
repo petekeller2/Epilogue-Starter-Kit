@@ -1,3 +1,4 @@
+// @flow
 import winston from 'winston';
 import childProcess from 'child_process';
 import http from 'http';
@@ -17,7 +18,7 @@ export default {
    * @return {object}
    * @description Creates an http or https server object. Used in app.js
    */
-  createServerObject(app) {
+  createServerObject(app: {}): {} {
     let serverType = {};
     if (config.protocol.toLowerCase() === 'https') {
       const options = {
@@ -46,7 +47,7 @@ export default {
    * @return {object}
    * @description Starts the server program. Runs http tests depending on testConfig.json configuration
    */
-  serve(database, server, resources, groupXrefModel) {
+  serve(database: {}, server: {}, resources: Map, groupXrefModel: {}): {} {
     let force = false;
     if (utilities.yesTrueNoFalse(config.force)) {
       force = true;

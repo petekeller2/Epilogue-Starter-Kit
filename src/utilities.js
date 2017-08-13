@@ -1,3 +1,4 @@
+// @flow
 let srcOrBuild;
 if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production') {
   srcOrBuild = 'build';
@@ -18,7 +19,7 @@ module.exports = {
    * @param {object} query
    * @return {object}
    */
-  createRequestOptions(query) {
+  createRequestOptions(query: {}): {} {
     const options = {
       url: `${config.protocol}://${config.host}:${config.port}/${query}`,
     };
@@ -37,7 +38,7 @@ module.exports = {
    * @return {boolean}
    * @description Should yesOrNo should be a string
    */
-  yesTrueNoFalse(yesOrNo) {
+  yesTrueNoFalse(yesOrNo: any): boolean {
     if (yesOrNo && typeof yesOrNo === 'string' && yesOrNo.toUpperCase() === 'YES') {
       return true;
     } else if (yesOrNo && typeof yesOrNo === 'string' && yesOrNo.toUpperCase() === 'NO') {
@@ -57,7 +58,7 @@ module.exports = {
    * @return {*} usually a boolean
    * @description Winston wrapper function that returns a boolean for convenience
    */
-  winstonWrapper(message, level = 'info', returns = false) {
+  winstonWrapper(message: any, level: string = 'info', returns: any = false): any {
     let levelToUse = level.toLowerCase();
     if (['debug', 'info', 'notice', 'warning', 'error', 'crit', 'alert', 'emerg'].indexOf(levelToUse) < 0) {
       levelToUse = 'info';
@@ -78,7 +79,7 @@ module.exports = {
    * @param {boolean} zippedArchiveInput
    * @return {object}
    */
-  setUpWinstonLogger(filename, tailableInput, maxsizeInput, maxFilesInput, zippedArchiveInput) {
+  setUpWinstonLogger(filename, tailableInput, maxsizeInput, maxFilesInput, zippedArchiveInput): {} {
     let tailable = tailableInput;
     if (tailableInput === undefined) {
       tailable = this.yesTrueNoFalse(config.winston.tailable);
@@ -110,7 +111,7 @@ module.exports = {
    * @param {string} severity
    * @param {number} status
    */
-  throwErrorConditionally(truthyOrFalsy, message, severity = 'Error', status = 500) {
+  throwErrorConditionally(truthyOrFalsy: any, message: string, severity: string = 'Error', status: number = 500) {
     if (!truthyOrFalsy) {
       throw new MainError(message, severity, status);
     }
@@ -120,7 +121,7 @@ module.exports = {
    * @param {string} messageName
    * @return {string}
    */
-  displayMessage(messageName) {
+  displayMessage(messageName: string): string {
     const errorMessage = 'Messages not found in config!';
     if (config && config.messages) {
       if (config.messages[messageName]) {

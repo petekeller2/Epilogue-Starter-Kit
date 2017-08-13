@@ -1,4 +1,4 @@
-
+// @flow
 export default {
   /**
    @name milestoneParamObj
@@ -11,13 +11,13 @@ export default {
    * @param {object} authMilestone
    * @param {Array} actionsList
    * @param {number} i
-   * @param {array} resource
+   * @param {Array} resource
    * @param {boolean} isHttpTest
    * @param {boolean} validTestNumber
-   * @return object
+   * @return {object}
    * @description Returns all of the allowed custom milestones plus the milestones the function was given
    */
-  addMilestones(authMilestone, actionsList, i, resource, isHttpTest, validTestNumber) {
+  addMilestones(authMilestone: {}, actionsList: [], i: number, resource: [], isHttpTest: boolean, validTestNumber: boolean): {} {
     let authMilestoneReturn = authMilestone;
     this.milestoneParamObj.forEach((milestoneFunctionName) => {
       authMilestoneReturn = this[milestoneFunctionName](authMilestoneReturn, actionsList, i, resource, isHttpTest, validTestNumber);

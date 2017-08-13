@@ -1,3 +1,4 @@
+// @flow
 import fs from 'fs-extra';
 import epilogueAuth from './epilogueAuth';
 import utilities from '../utilities';
@@ -12,7 +13,7 @@ export default {
    * @param {string} groupId
    * @return {Promise}
    */
-  getJsonGroupPermissions(isTest, resourceName, groupResourceName, groupName, groupId) {
+  getJsonGroupPermissions(isTest: boolean, resourceName: string, groupResourceName: string, groupName: string, groupId: string): Promise {
     let jsonPath = './groupPermissions.json';
     if (isTest) {
       jsonPath = 'test/testGroupPermissions.json';
@@ -53,7 +54,7 @@ export default {
    * @param {string} groupId
    * @return {Promise}
    */
-  getDbGroupPermissions(sequelize, resourceName, groupResourceName, groupName, groupId) {
+  getDbGroupPermissions(sequelize: {}, resourceName: string, groupResourceName: string, groupName: string, groupId: string): Promise {
     let queryString = 'SELECT permission FROM "GroupPermission"';
     queryString += ` where "resource" = '${resourceName}' and "groupResourceName" = ${groupResourceName}`;
     if ((typeof groupName === 'string') && (groupName.length > 0)) {
@@ -71,7 +72,7 @@ export default {
    * @param {Array} convertedPermissions
    * @return {Array}
    */
-  combinePermissions(permissionsArray, convertedPermissions) {
+  combinePermissions(permissionsArray: [], convertedPermissions: []): [] {
     let permissionsArrayReturn = permissionsArray;
     if (permissionsArray.length === 0) {
       permissionsArrayReturn = convertedPermissions;
@@ -85,10 +86,10 @@ export default {
    * @param {object} sequelize
    * @param {string} resourceName
    * @param {number} permissionsIndex
-   * @return {Boolean}
+   * @return {boolean}
    * @description Main function
    */
-  async accessCheck(testUserId, req, sequelize, resourceName, permissionsIndex) {
+  async accessCheck(testUserId: any, req, sequelize: {}, resourceName: {}, permissionsIndex: number): boolean {
     let tempGroupPermissions;
     let unconvertedPermissionsArray = [];
     const userGroups = await this.getUserGroups(testUserId, req, sequelize);
@@ -113,7 +114,7 @@ export default {
    * @param {Array} unconvertedPermissionsArray
    * @return {Array}
    */
-  addToUnconvertedPermissionsArray(tempGroupPermissions, unconvertedPermissionsArray) {
+  addToUnconvertedPermissionsArray(tempGroupPermissions: any, unconvertedPermissionsArray: []): [] {
     let unconvertedPermissionsArrayReturn = unconvertedPermissionsArray;
     if (tempGroupPermissions) {
       if (typeof tempGroupPermissions === 'string') {
@@ -131,7 +132,7 @@ export default {
    * @param {object} sequelize
    * @return {Promise}
    */
-  getUserGroups(testUserId, req, sequelize) {
+  getUserGroups(testUserId: string, req: {}, sequelize: {}): Promise {
     const userId = ((req || {}).user || {}).id;
     if (testUserId) {
       return new Promise((resolve, reject) => {

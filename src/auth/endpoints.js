@@ -1,3 +1,4 @@
+// @flow
 import jwt from 'jsonwebtoken';
 import session from 'express-session';
 import config from '../config';
@@ -10,7 +11,7 @@ export default {
    * @param {object} passport
    * @description Creates auth endpoint
    */
-  setup(app, passport) {
+  setup(app: {}, passport: {}) {
     if (!config.authOptionsDisabled.indexOf('twitter') || config.authOptionsDisabled.indexOf('twitter') === -1) {
       const sessionObj = {
         secret: config.sessionSecret,
@@ -30,15 +31,15 @@ export default {
     const authMethods = Object.keys(config.authMethods);
     authMethods.forEach((authMethod) => {
       if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf(authMethod) !== -1)) {
-        const session = utilities.yesTrueNoFalse(config.passportSession);
+        const passportSession = utilities.yesTrueNoFalse(config.passportSession);
         const failureRedirect = config.authFailureRedirect;
         const authSuccessRedirect = config.authSuccessRedirect;
         const authOptionsObj = { failureRedirect };
         let passportAuthenticate = '';
         if (authMethod !== 'twitter') {
           const scope = config.authMethods[authMethod].scope;
-          passportAuthenticate = passport.authenticate(authMethod, {scope, session});
-          authOptionsObj.session = session;
+          passportAuthenticate = passport.authenticate(authMethod, { scope, session: passportSession });
+          authOptionsObj.session = passportSession;
         } else {
           passportAuthenticate = passport.authenticate(authMethod);
         }
@@ -52,8 +53,8 @@ export default {
             const expiresIn = parseInt(config.tokenExpiresIn, 10);
             const maxAge = parseInt(config.cookieMaxAge, 10);
             const httpOnly = utilities.yesTrueNoFalse(config.httpOnlyCookie);
-            const cookieOptions = {maxAge, httpOnly};
-            const token = jwt.sign(req.user, config.jwt.secret, {expiresIn});
+            const cookieOptions = { maxAge, httpOnly };
+            const token = jwt.sign(req.user, config.jwt.secret, { expiresIn });
             res.cookie('id_token', token, cookieOptions);
             if (config.environment === 'development' || config.environment === 'testing') {
               res.redirect(authSuccessRedirect);

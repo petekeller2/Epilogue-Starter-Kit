@@ -1,3 +1,4 @@
+// @flow
 export default {
   /** @function
    * @name addDefaultFields
@@ -6,7 +7,7 @@ export default {
    * @param {boolean} isGroup
    * @return {object}
    */
-  addDefaultFields(userDefinedFieldsObj, sequelize, isGroup) {
+  addDefaultFields(userDefinedFieldsObj: {}, sequelize: {}, isGroup: boolean): {} {
     const fields = userDefinedFieldsObj;
     fields.updatedBy = sequelize.STRING;
     if (isGroup) {

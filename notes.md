@@ -1,7 +1,5 @@
-**7/03/17**
+**08/13/17**
 
-Bug fixes in epilogueAuth.js and defaultMilestones.js
+Updated dependencies
 
-Manual test
-
-Wiki updates
+Flow type annotations

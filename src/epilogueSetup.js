@@ -1,3 +1,4 @@
+// @flow
 import epilogue from 'epilogue';
 import merge from 'deepmerge';
 import utilities from './utilities';
@@ -13,7 +14,7 @@ export default {
    * @return {object}
    * @description Does initEpilogue, createAdminsTable and createGroupXrefTable. Returns the results from createGroupXrefTable
    */
-  setupEpilogue(app, database, Sequelize) {
+  setupEpilogue(app: number, database: {}, Sequelize: {}): {} {
     this.initEpilogue(app, database);
     this.createAdminsTable(database, Sequelize);
     this.createGroupPermissionTable(database, Sequelize);
@@ -25,7 +26,7 @@ export default {
    * @param {object} database
    * @description Initializes Epilogue
    */
-  async initEpilogue(app, database) {
+  async initEpilogue(app: {}, database: {}): {} {
     await epilogue.initialize({
       app,
       sequelize: database,
@@ -41,7 +42,7 @@ export default {
    *              The creation of the resources will be finished in epilogueAuth.js. The map creation
    *              is finished here
    */
-  async setupResources(database, Sequelize, groupXrefModel) {
+  async setupResources(database: {}, Sequelize: {}, groupXrefModel: {}): Map {
     const awaitedGroupXrefModel = await groupXrefModel;
     // build all models for next step
     let tempResource = [];
@@ -126,7 +127,7 @@ export default {
    * @return {object}
    * @description Returns the UserGroupXref model. This resource is owned by the User resource
    */
-  async createGroupXrefTable(database, sequelize) {
+  async createGroupXrefTable(database: {}, sequelize: {}): {} {
     const groupXref = await database.define('UserGroupXref', {
       groupID: sequelize.STRING,
       groupName: sequelize.STRING,
@@ -146,7 +147,7 @@ export default {
    * @return {object}
    * @description Used in auth/groups.js
    */
-  async createGroupPermissionTable(database, sequelize) {
+  async createGroupPermissionTable(database: {}, sequelize: {}): {} {
     const groupPermissions = await database.define('GroupPermission', {
       groupID: sequelize.STRING,
       groupName: sequelize.STRING,
@@ -168,7 +169,7 @@ export default {
    * @return {object}
    * @description Returns the admins model. Admin Id is the admin user's user id
    */
-  async createAdminsTable(database, sequelize) {
+  async createAdminsTable(database: {}, sequelize: {}): {} {
     const admins = await database.define('Admins', {
       AdminId: sequelize.STRING,
     });
@@ -186,7 +187,7 @@ export default {
    * @return {Array}
    * @description Converts aaInput to auto association array. See wiki for detailed overview
    */
-  convertAutoAssociations(aaInput, getResourcesNames) {
+  convertAutoAssociations(aaInput: any, getResourcesNames: boolean): [] {
     let aaReturn = [];
     if ((typeof aaInput) === 'string') {
       if (aaInput) {
@@ -222,7 +223,7 @@ export default {
    * @return {Array}
    * @description Helper function for convertAutoAssociations
    */
-  aaBuildFromObject(aaInput, getResourcesNames, aaReturn) {
+  aaBuildFromObject(aaInput: any, getResourcesNames: boolean, aaReturn: []): [] {
     if (Array.isArray(aaInput)) {
       return this.aaBuildFromArray(aaInput, getResourcesNames, aaReturn);
     } else if (getResourcesNames === true) {
@@ -240,7 +241,7 @@ export default {
    * @return {Array}
    * @description Helper function for aaBuildFromObject
    */
-  aaBuildFromArray(aaInput, getResourcesNames, aaReturn) {
+  aaBuildFromArray(aaInput: any, getResourcesNames: boolean, aaReturn: []): [] {
     const aaReturnCopy = aaReturn;
     aaInput.forEach((aaElement) => {
       if (aaElement) {

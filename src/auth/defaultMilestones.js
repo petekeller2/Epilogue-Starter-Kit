@@ -1,3 +1,4 @@
+// @flow
 import merge from 'deepmerge';
 import epilogueAuth from './epilogueAuth';
 import utilities from '../utilities';
@@ -9,10 +10,10 @@ export default {
    * @param {object} milestoneParamObj
    * @param {Array} sharedParameters
    * @param {object} authMilestone
-   * @return object
+   * @return {object}
    * @description Returns all of the allowed default milestones plus the milestones the function was given
    */
-  addMilestones(milestoneParamObj, sharedParameters, authMilestone) {
+  addMilestones(milestoneParamObj: {}, sharedParameters: [], authMilestone: {}): {} {
     let totalParameters = [];
     let authMilestoneReturn = authMilestone;
     Object.entries(milestoneParamObj).forEach(([milestoneParamObjKey, milestoneParamObjVal]) => {
@@ -27,10 +28,10 @@ export default {
    * @name returnUserId
    * @param {object} req
    * @param {boolean} guestIfNoUser
-   * @return object
+   * @return {object}
    * @description Helper function that returns a user's id conditionally. Note that if guest is returned, a guest user must exist
    */
-  returnUserId(req, guestIfNoUser) {
+  returnUserId(req: {}, guestIfNoUser: boolean): {} {
     if (((req || {}).body) && ((req || {}).user || {}).id) {
       return req.user.id;
     } else if (guestIfNoUser === true) {
@@ -51,7 +52,7 @@ export default {
    * @param {boolean} validTestNumber
    * @param {*} permissionsInput
    * @param {object} sequelize
-   * @return object
+   * @return {object}
    * @description Returns a possibly modified version of totalAuthMilestone. When an instance of a resource is created,
    *  the UserId and/or OwnerID column is updated
    */
@@ -88,9 +89,9 @@ export default {
    * @param {string} userId
    * @param {object} sequelize
    * @param {boolean} debug
-   * @return promise
+   * @return {Promise}
    */
-  isAdmin(userId, sequelize, debug) {
+  isAdmin(userId: string, sequelize: {}, debug: boolean): Promise {
     return sequelize.query(`SELECT * FROM "Admins" where "AdminId" = '${userId}'`, { type: sequelize.QueryTypes.SELECT })
       .then((adminResults) => {
         if (debug === true) {
@@ -102,10 +103,10 @@ export default {
   /** @function
    * @name adminsOnly
    * @param {Array} permissions
-   * @return boolean
+   * @return {boolean}
    * @description Note that group create permissions must be false
    */
-  adminsOnly(permissions) {
+  adminsOnly(permissions: []): boolean {
     return Boolean((permissions[1] === true) && (permissions[6] === false) && (permissions[11] === false) && (permissions[16] === false));
   },
   /** @function
@@ -122,7 +123,7 @@ export default {
    * @param {*} permissionsInput
    * @param {boolean} isGroup
    * @param {object} awaitedGroupXrefModel
-   * @return object
+   * @return {object}
    * @description Returns a possibly modified version of totalAuthMilestone. Only list owned resources under certain permissions
    */
   // eslint-disable-next-line
@@ -169,10 +170,10 @@ export default {
    * @param {object} req
    * @param {boolean} groupCheck
    * @param {object} model
-   * @return promise
+   * @return {Promise}
    * @description Used by listOwned
    */
-  listOwnedOnly(name, req, groupCheck, model) {
+  listOwnedOnly(name: string, req: {}, groupCheck: boolean, model: {}): Promise {
     const findAllObj = {
       all: true,
     };
@@ -191,10 +192,10 @@ export default {
    * @param {object} model
    * @param {string} name
    * @param {object} awaitedGroupXrefModel
-   * @return promise
+   * @return {Promise}
    * @description Used by listOwned
    */
-  listGroupsAssociatedWith(req, model, name, awaitedGroupXrefModel) {
+  listGroupsAssociatedWith(req: {}, model: {}, name: string, awaitedGroupXrefModel: {}): Promise {
     const findAllObj = {
       all: true,
       where: { OwnerID: req.user.id },
@@ -246,7 +247,7 @@ export default {
    * @param {boolean} isHttpTest
    * @param {boolean} validTestNumber
    * @param {*} permissionsInput
-   * @return object
+   * @return {object}
    * @description Returns a possibly modified version of totalAuthMilestone.
    */
   readGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel, isHttpTest, validTestNumber, permissionsInput) {
@@ -298,10 +299,10 @@ export default {
    * @param {Array} userAAs
    * @param {object} awaitedGroupXrefModel
    * @param {boolean} isGroup
-   * @return object
+   * @return {object}
    * @description Returns a possibly modified version of totalAuthMilestone.
    */
-  updateGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel) {
+  updateGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel): {} {
     if ((actionsList[i] === 'update') && (isGroup === true)) {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
@@ -348,10 +349,10 @@ export default {
    * @param {Array} userAAs
    * @param {object} awaitedGroupXrefModel
    * @param {boolean} isGroup
-   * @return object
+   * @return {object}
    * @description Returns a possibly modified version of totalAuthMilestone. Deletes GroupXref rows.
    */
-  deleteGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel) {
+  deleteGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel): {} {
     if ((actionsList[i] === 'delete') && (isGroup === true)) {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
@@ -388,10 +389,10 @@ export default {
    * @param {Array} userAAs
    * @param {string} message
    * @param {boolean} isGroup
-   * @return object
+   * @return {object}
    * @description Returns a possibly modified version of totalAuthMilestone.
    */
-  deleteMessage(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, message) {
+  deleteMessage(totalAuthMilestone: {}, actionsList: [], i: number, aa: any, name: string, userAAs: [], isGroup: boolean, message: string): {} {
     if (actionsList[i] === 'delete') {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
@@ -413,10 +414,10 @@ export default {
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
    * @param {number} i
-   * @return object
+   * @return {object}
    * @description Returns a possibly modified version of totalAuthMilestone. Adds updatedBy to body
    */
-  updateAsLoggedInUser(totalAuthMilestone, actionsList, i) { //  aa, name, userAAs
+  updateAsLoggedInUser(totalAuthMilestone: {}, actionsList: [], i: number): {} {
     if ((actionsList[i] === 'update')) {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};

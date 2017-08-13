@@ -1,3 +1,4 @@
+// @flow
 import passport from 'passport';
 import Auth0Strategy from 'passport-auth0';
 import FacebookStrategy from 'passport-facebook';
@@ -21,12 +22,12 @@ export default {
   /** @function
    * @name getFromProfile
    * @param {object} profile
-   * @return object
+   * @return {object}
    * @description Makes the profile objects from many strategies uniform
    */
-  getFromProfile(profile) {
+  getFromProfile(profile: {}): {} {
     const returnObj = {};
-    /* eslint no-underscore-dangle: ["error", { "allow": ["_json"] }]*/
+    /* eslint no-underscore-dangle: ["error", { "allow": ["_json"] }] */
     const profileJson = ((profile || {})._json || {});
     returnObj.username = this.getUsername(profile, profileJson);
     returnObj.emailAddress = this.getEmailAddress(profileJson);
@@ -37,10 +38,10 @@ export default {
    * @name getUsername
    * @param {object} profile
    * @param {object} profileJson
-   * @return string
+   * @return {string}
    * @description Helper function for getFromProfile
    */
-  getUsername(profile, profileJson) {
+  getUsername(profile: {}, profileJson: {}): string {
     let username = (profile || {}).displayName;
     if (!username) {
       username = profileJson.first_name;
@@ -54,10 +55,10 @@ export default {
   /** @function
    * @name getEmailAddress
    * @param {object} profileJson
-   * @return string
+   * @return {string}
    * @description Helper function for getFromProfile
    */
-  getEmailAddress(profileJson) {
+  getEmailAddress(profileJson: {}): string {
     let emailAddress = profileJson.email;
     if (!emailAddress) {
       emailAddress = profileJson.emails;
@@ -70,10 +71,10 @@ export default {
   /** @function
    * @name getProfilePicture
    * @param {object} profileJson
-   * @return string
+   * @return {string}
    * @description Helper function for getFromProfile
    */
-  getProfilePicture(profileJson) {
+  getProfilePicture(profileJson: {}): string {
     let profilePicture = ((profileJson.picture || {}).data || {}).url;
     if (!profilePicture) {
       profilePicture = profileJson.profile_image_url_https;
@@ -90,10 +91,10 @@ export default {
    * @name getId
    * @param {object} req
    * @param {object} profile
-   * @return string
+   * @return {string}
    * @description Helper function for setup
    */
-  getId(req, profile) {
+  getId(req: {}, profile: {}): string {
     let id = ((req || {}).user || {}).id;
     if (!id) {
       id = (profile || {}).id;
@@ -104,10 +105,10 @@ export default {
    * @name buildUserObj
    * @param {object} user
    * @param {*} id
-   * @return object
+   * @return {object}
    * @description Helper function for setup
    */
-  buildUserObj(user, id) {
+  buildUserObj(user: {}, id: any): {} {
     const userCopy = user;
     if (typeof id === 'string') {
       userCopy.id = id;
@@ -129,11 +130,11 @@ export default {
   /** @function
    * @name setup
    * @param {map} resourcesFromSetup
-   * @return object
+   * @return {object}
    * @description Sets up passport
    * @todo Update this function when the User resource can be set from config.js
    */
-  setup(resourcesFromSetup) {
+  setup(resourcesFromSetup: Map): {} {
     let passportConfig = {};
     Object.entries(this.passportOptions).forEach(([passportOptionName, PassportStrategy]) => {
       passportConfig = {

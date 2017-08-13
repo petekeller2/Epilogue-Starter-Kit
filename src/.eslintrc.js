@@ -3,10 +3,13 @@ module.exports = {
     "es6": true,
     "node": true
   },
-  "extends": "airbnb-base",
-  "installedESLint": true,
+  "extends": [
+    "airbnb-base",
+    "plugin:flowtype/recommended"
+  ],
   "plugins": [
-    "import"
+    "import",
+    "flowtype"
   ],
   "rules": {
     "no-else-return": 0,
