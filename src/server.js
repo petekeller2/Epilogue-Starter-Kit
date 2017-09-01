@@ -45,7 +45,7 @@ export default {
    * @param {map} resources - created in epilogueSetup.js
    * @param {object} groupXrefModel - created in epilogueSetup.js
    * @return {object}
-   * @description Starts the server program. Runs http tests depending on testConfig.json configuration
+   * @description Starts the application. Runs http tests depending on the testConfig.json configuration
    */
   serve(database: {}, server: {}, resources: Map, groupXrefModel: {}): {} {
     let force = false;

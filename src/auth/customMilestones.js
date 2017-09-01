@@ -10,7 +10,7 @@ export default {
    * @name addMilestones
    * @param {object} authMilestone
    * @param {Array} actionsList
-   * @param {number} i
+   * @param {number} i - actionsList index
    * @param {Array} resource
    * @param {boolean} isHttpTest
    * @param {boolean} validTestNumber

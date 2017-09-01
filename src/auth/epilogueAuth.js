@@ -729,7 +729,7 @@ export default {
    * @param {boolean} isHttpTest - Should be boolean or something that is clearly truthy or falsy
    * @param {boolean} validTestNumber - Should be boolean or something that is clearly truthy or falsy
    * @return {Array}
-   * @description Passes real permissions or test permissions to convertPermissions
+   * @description Passes real permissions or test permissions to convertPermissions and returns its results
    */
   convertRealOrTestPermissions(permissionsInput: any, resourceName: string, isHttpTest: boolean, validTestNumber: boolean): [] {
     if (isHttpTest && validTestNumber && testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'access') {

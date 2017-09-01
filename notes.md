@@ -1,5 +1,3 @@
-**08/13/17**
+**08/31/17**
 
-Updated dependencies
-
-Flow type annotations
+Updated comments

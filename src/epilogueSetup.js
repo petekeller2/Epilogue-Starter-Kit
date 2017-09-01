@@ -33,7 +33,7 @@ export default {
     });
   },
   /** @function
-   * @name initEpilogue
+   * @name setupResources
    * @param {object} database
    * @param {object} Sequelize
    * @param {object} groupXrefModel
@@ -65,7 +65,7 @@ export default {
     });
     utilities.throwErrorConditionally(hasUser, 'The User resource is required!');
 
-    // the next step (see: build all models for next step)
+    // the next step (see 'build all models for next step' above)
     let model;
     let endpoints;
     let extension;
@@ -185,7 +185,7 @@ export default {
    * @param {*} aaInput
    * @param {boolean} getResourcesNames
    * @return {Array}
-   * @description Converts aaInput to auto association array. See wiki for detailed overview
+   * @description Converts aaInput to an auto association array
    */
   convertAutoAssociations(aaInput: any, getResourcesNames: boolean): [] {
     let aaReturn = [];

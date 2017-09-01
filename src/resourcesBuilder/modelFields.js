@@ -6,6 +6,7 @@ export default {
    * @param {object} userDefinedFieldsObj
    * @param {boolean} isGroup
    * @return {object}
+   * @description Used in template/model.js
    */
   addDefaultFields(userDefinedFieldsObj: {}, sequelize: {}, isGroup: boolean): {} {
     const fields = userDefinedFieldsObj;

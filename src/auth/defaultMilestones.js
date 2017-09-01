@@ -43,7 +43,7 @@ export default {
    * @name ownResource
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
-   * @param {number} i
+   * @param {number} i - actionsList index
    * @param {*} aa
    * @param {string} name
    * @param {Array} userAAs
@@ -113,7 +113,7 @@ export default {
    * @name ownResource
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
-   * @param {number} i
+   * @param {number} i - actionsList index
    * @param {*} aa
    * @param {string} name
    * @param {Array} userAAs
@@ -238,7 +238,7 @@ export default {
    * @name readGroup
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
-   * @param {number} i
+   * @param {number} i - actionsList index
    * @param {*} aa
    * @param {string} name
    * @param {Array} userAAs
@@ -293,7 +293,7 @@ export default {
    * @name updateGroup
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
-   * @param {number} i
+   * @param {number} i - actionsList index
    * @param {*} aa
    * @param {string} name
    * @param {Array} userAAs
@@ -343,7 +343,7 @@ export default {
    * @name deleteGroup
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
-   * @param {number} i
+   * @param {number} i - actionsList index
    * @param {*} aa
    * @param {string} name
    * @param {Array} userAAs
@@ -383,7 +383,7 @@ export default {
    * @name deleteMessage
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
-   * @param {number} i
+   * @param {number} i - actionsList index
    * @param {*} aa
    * @param {string} name
    * @param {Array} userAAs
@@ -413,7 +413,7 @@ export default {
    * @name updateAsLoggedInUser
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
-   * @param {number} i
+   * @param {number} i - actionsList index
    * @return {object}
    * @description Returns a possibly modified version of totalAuthMilestone. Adds updatedBy to body
    */

@@ -1,4 +1,3 @@
-// @flow
 let srcOrBuild;
 if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production') {
   srcOrBuild = 'build';
@@ -52,11 +51,11 @@ module.exports = {
   },
   /** @function
    * @name winstonWrapper
-   * @param {*} message
+   * @param {*} message - usually a string
    * @param {string} level
    * @param {*} returns - usually a boolean
    * @return {*} usually a boolean
-   * @description Winston wrapper function that returns a boolean for convenience
+   * @description Winston wrapper function. Returns a boolean for convenience
    */
   winstonWrapper(message, level = 'info', returns = false) {
     let levelToUse = level.toLowerCase();
@@ -106,10 +105,10 @@ module.exports = {
   },
   /** @function
    * @name throwErrorConditionally
-   * @param {*} truthyOrFalsy
+   * @param {*} truthyOrFalsy - Should be clearly meant to be truthy or falsy
    * @param {string} message
-   * @param {string} severity
-   * @param {number} status
+   * @param {(number|string)} severity -  example: 1 or alert
+   * @param {number} status - 500, 400, ect
    */
   throwErrorConditionally(truthyOrFalsy, message, severity = 'Error', status = 500) {
     if (!truthyOrFalsy) {

@@ -9,7 +9,7 @@ export default {
    * @name setup
    * @param {object} app
    * @param {object} passport
-   * @description Creates auth endpoint
+   * @description Creates auth endpoints
    */
   setup(app: {}, passport: {}) {
     if (!config.authOptionsDisabled.indexOf('twitter') || config.authOptionsDisabled.indexOf('twitter') === -1) {
