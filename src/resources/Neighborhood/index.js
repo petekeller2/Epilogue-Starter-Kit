@@ -3,7 +3,7 @@ import model from './model';
 import milestones from './milestones';
 
 const endpoints = ['/neighborhoods', '/neighborhoods/:id'];
-const permissions = 'lcrud|-----|-----|-----';//'lcrud|lcrud|l-r--|-----';
+const permissions = 'lcrud|-----|-----|-----';
 const isGroup = true;
 const autoAssociations = 'Todo';
 

@@ -1,3 +1,11 @@
-**08/31/17**
+**09/04/17**
 
-Updated comments
+Flow fix
+
+**09/06/17**
+
+Destructuring resource array in epilogueSetup.js
+
+app.js comments updated
+
+Readme updated

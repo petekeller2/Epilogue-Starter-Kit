@@ -14,7 +14,7 @@ export default {
    * @return {object}
    * @description Does initEpilogue, createAdminsTable and createGroupXrefTable. Returns the results from createGroupXrefTable
    */
-  setupEpilogue(app: number, database: {}, Sequelize: {}): {} {
+  setupEpilogue(app: {}, database: {}, Sequelize: {}): {} {
     this.initEpilogue(app, database);
     this.createAdminsTable(database, Sequelize);
     this.createGroupPermissionTable(database, Sequelize);
@@ -48,17 +48,17 @@ export default {
     let tempResource = [];
     const modelNames = [];
     let hasUser = false;
-    let isGroup;
     await Resources.map((resource) => {
       tempResource = resource;
-      isGroup = resource[6];
+      const isGroup = resource[6];
+      const model = resource[2];
       if (tempResource[0] === 'User') {
         hasUser = true;
       }
       if (isGroup === true) {
-        tempResource[2] = resource[2].setup(database, Sequelize, tempResource[0], isGroup);
+        tempResource[2] = model.setup(database, Sequelize, tempResource[0], isGroup);
       } else {
-        tempResource[2] = resource[2].setup(database, Sequelize, tempResource[0]);
+        tempResource[2] = model.setup(database, Sequelize, tempResource[0]);
       }
       modelNames.push(tempResource[0]);
       return tempResource;
@@ -66,10 +66,6 @@ export default {
     utilities.throwErrorConditionally(hasUser, 'The User resource is required!');
 
     // the next step (see 'build all models for next step' above)
-    let model;
-    let endpoints;
-    let extension;
-    let autoAssociations;
     let autoAssociationsConverted;
     let autoAssociationsIndex;
     let autoAssociationType;
@@ -77,14 +73,11 @@ export default {
     let autoAssociationsTestCheck;
     const returnResourceMap = new Map();
     await Resources.forEach(async (resource) => {
-      model = resource[2];
-      endpoints = resource[3];
-      extension = resource[4];
-      autoAssociations = resource[5];
+      const [name, , model, endpoints, extension, autoAssociations, , specificMilestones] = resource;
       autoAssociationsTest = false;
       autoAssociationsTestCheck = Boolean(testConfig.individualHttpTest === true && testConfig.testCases[testConfig.testNumber - 1]);
       if (autoAssociationsTestCheck && testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'aa') {
-        if (resource[0] === testConfig.testCases[testConfig.testNumber - 1].association.parent) {
+        if (name === testConfig.testCases[testConfig.testNumber - 1].association.parent) {
           autoAssociationsTest = true;
           autoAssociationsIndex = modelNames.indexOf(testConfig.testCases[testConfig.testNumber - 1].association.child);
           model[testConfig.testCases[testConfig.testNumber - 1].association.aa](Resources[autoAssociationsIndex][2]);
@@ -100,7 +93,7 @@ export default {
           }
         });
       }
-      if (resource[0] === 'User') {
+      if (name === 'User') {
         model.hasMany(awaitedGroupXrefModel);
       }
       let resourceParam = {
@@ -110,8 +103,8 @@ export default {
       resourceParam = merge(resourceParam, extension);
 
       const usableResource = await epilogue.resource(resourceParam);
-      if (resource[7]) {
-        usableResource.use(resource[7]);
+      if (specificMilestones) {
+        usableResource.use(specificMilestones);
       }
 
       tempResource = resource;

@@ -11,7 +11,7 @@ Epilogue resources and milestones.
 
 # Getting Started
 
-Run `gulp env-staging-server` and `gulp env-test-server` to see 
+Put your credentials into src/config.js. Run `gulp env-staging-server` and `gulp env-test-server` to see 
 if Epilogue Starter Kit is working properly locally. If it is not, check 
 that you have babel and gulp installed. Also check if the 
 npm libraries needed were installed (`npm install`).

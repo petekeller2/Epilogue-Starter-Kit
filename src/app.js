@@ -22,6 +22,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: utilities.yesTrueNoFalse(config.urlencodedExtended) }));
 app.use(cookieParser());
 
+// --------------------logging------------------------
 const winstonConfig = utilities.setUpWinstonLogger('logs/general.log');
 winston.add(winston.transports.File, winstonConfig);
 winston.setLevels(winston.config.syslog.levels);
@@ -30,7 +31,7 @@ spawnTest.logging(childProcess);
 const database = new Sequelize(config.dbString);
 const groupXrefModel = epilogueSetup.setupEpilogue(app, database, Sequelize);
 const resources = epilogueSetup.setupResources(database, Sequelize, groupXrefModel);
-// ----------------------auth--------------------------
+// ---------------------auth--------------------------
 const passport = Passport.setup(resources);
 
 app.use(expressJwt({
@@ -44,5 +45,5 @@ app.use(passport.initialize());
 epilogueAuth.setupAuthCheck(resources, groupXrefModel, database);
 
 authEndpoints.setup(app, passport);
-// ------------------server---------------------------
+// ---------------------server------------------------
 server.serve(database, server.createServerObject(app), resources, groupXrefModel);
