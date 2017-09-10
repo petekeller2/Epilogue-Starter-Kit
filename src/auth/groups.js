@@ -21,7 +21,7 @@ export default {
     return new Promise((resolve, reject) => {
       fs.readFile(jsonPath, 'utf8', (groupPermissionsErr, groupPermissionsData) => {
         if (groupPermissionsErr) {
-          reject(`Error: ${groupPermissionsErr}`);
+          reject(groupPermissionsErr);
         }
         const groupPermissions = JSON.parse(groupPermissionsData);
         const returnArray = [];
@@ -102,8 +102,10 @@ export default {
         unconvertedPermissionsArray = this.addToUnconvertedPermissionsArray(tempGroupPermissions, unconvertedPermissionsArray);
       }
       return unconvertedPermissionsArray;
-    })).then(unconvertedPermissions => [].concat(...unconvertedPermissions),
-      error => utilities.winstonWrapper(`accessCheck error: ${error}`));
+    })).then(
+      unconvertedPermissions => [].concat(...unconvertedPermissions),
+      error => utilities.winstonWrapper(`accessCheck error: ${error}`),
+    );
     // eslint-disable-next-line
     const convertedPermissionsArray = await Promise.all(combinedUnconvertedPermissions.map(async unconvertedPermissions => epilogueAuth.convertPermissions(unconvertedPermissions)));
     return convertedPermissionsArray.reduce(this.combinePermissions, [])[permissionsIndex];
@@ -141,6 +143,7 @@ export default {
           if (testUserGroups) {
             resolve(testUserGroups[testUserId]);
           } else {
+            // eslint-disable-next-line
             reject('Error in the testUserGroups.json file');
           }
         });

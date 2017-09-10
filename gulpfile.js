@@ -44,13 +44,11 @@ gulp.task('env-force', function() {
   return process.env.FORCE = 'YES';
 });
 
-gulp.task('server-start', shell.task('npm start'));
-
-gulp.task('server-start-no-nodemon', shell.task('npm run start-no-nodemon'));
-
-gulp.task('server-build', shell.task('npm run build'));
+gulp.task('build', shell.task('npm run build'));
 
 gulp.task('server-serve', shell.task('npm run serve'));
+
+gulp.task('server-start-no-nodemon', shell.task('npm run start-no-nodemon'));
 
 gulp.task('server-http-test', shell.task('npm run http-test'));
 
@@ -58,7 +56,7 @@ gulp.task('server-http-just-aa-test', shell.task('npm run http-just-aa-test'));
 
 gulp.task('server-http-just-access-test', shell.task('npm run http-just-access-test'));
 
-gulp.task('server-test', shell.task('npm run test'));
+gulp.task('test', shell.task('npm run test'));
 
 gulp.task('test-autoAssociations', shell.task('npm run test-autoAssociations'));
 
@@ -74,6 +72,8 @@ gulp.task('generate-changelog', shell.task('github_changelog_generator'));
 
 gulp.task('build-dup-report', shell.task('jscpd'));
 
+gulp.task('serve', ['build', 'server-serve']);
+
 gulp.task('travis-test', ['test-permissions', 'test-autoAssociations']);
 
 gulp.task('build-stats', ['stats-clear', 'append-stats', 'stats-clean']);
@@ -82,7 +82,7 @@ gulp.task('server-test-all-ignore-config', ['server-http-test', 'server-test']);
 
 gulp.task('pre-commit-build', ['build-dup-report', 'generate-changelog', 'wiki-build']);
 
-gulp.task('build-all', ['server-build', 'pre-commit-build']);
+gulp.task('build-all', ['build', 'pre-commit-build']);
 
 // main test task for not built code
 gulp.task('env-test-server', ['env-force', 'env-test', 'server-start-no-nodemon'], function () {
@@ -90,7 +90,7 @@ gulp.task('env-test-server', ['env-force', 'env-test', 'server-start-no-nodemon'
 });
 
 // main test task for built code
-gulp.task('env-staging-server', ['server-build', 'env-force', 'env-staging', 'server-serve'], function () {
+gulp.task('env-staging-server', ['env-force', 'env-staging', 'serve'], function () {
   runHttpTestsOrEnd('staging');
 });
 
@@ -120,12 +120,12 @@ gulp.task('retire', function() {
   const child = spawn('retire', [], {cwd: process.cwd()});
 
   child.stdout.setEncoding('utf8');
-  child.stdout.on('data', function (data) {
+  child.stdout.on('data', function(data) {
     winston.info(data);
   });
 
   child.stderr.setEncoding('utf8');
-  child.stderr.on('data', function (data) {
+  child.stderr.on('data', function(data) {
     gulpErrors.error(data);
   });
 });
@@ -138,6 +138,99 @@ gulp.task('stats-clean', function() {
 gulp.task('new-resource', function() {
   rlInput('', buildResourceFolder, false);
 });
+
+gulp.task('start', function() {
+  preStart(['start']);
+});
+
+gulp.task('start-no-nodemon', function() {
+  preStart(['run', 'start-no-nodemon']);
+});
+
+/** @function
+ * @name preStart
+ * @param {Array} npmScript
+ */
+const preStart = function(npmScript) {
+  mainConfigTest().then(function(result) {
+    if (result.length === 0) {
+      const child = spawn('npm', npmScript, {cwd: process.cwd()});
+
+      child.stdout.setEncoding('utf8');
+      child.stdout.on('data', function(data) {
+        console.log(data);
+      });
+
+      child.stderr.setEncoding('utf8');
+      child.stderr.on('data', function(data) {
+        gulpErrors.error(data);
+      });
+    }
+  });
+};
+
+/** @function
+ * @name mainConfigTest
+ * @return {Promise}
+ * @description Checks to see if default values were replaced for required config variables
+ */
+const mainConfigTest = function() {
+  return new Promise(function(resolve) {
+    fs.readFile('test/mainConfigTest.json', 'utf8', function(mainConfigTestErr, mainConfigTestData) {
+      if (mainConfigTestErr) {
+        winston.error(`Attempt to read mainConfigTest.js. ${mainConfigTestErr}`);
+      }
+      const mainConfigTestObj = JSON.parse(mainConfigTestData);
+
+      const ignore = [];
+      mainConfigTestObj.activeList.forEach(function(activeCheck) {
+        const actualCheckVariable = config[activeCheck.activeVariable];
+        if (activeCheck.activeType.toLowerCase() === 'string') {
+          if ((activeCheck.activeEquals === true) && (activeCheck.activeValue !== actualCheckVariable)) {
+            ignore.push.apply(ignore, activeCheck.configVariables);
+          } else if ((activeCheck.activeEquals === false) && (activeCheck.activeValue === actualCheckVariable)) {
+            ignore.push.apply(ignore, activeCheck.configVariables);
+          }
+        } else if (activeCheck.activeType.toLowerCase() === 'array') {
+          if (activeCheck.activeEquals === true) {
+            if ((actualCheckVariable.length === 0) || (actualCheckVariable.indexOf(activeCheck.activeValue) < 0)) {
+              ignore.push.apply(ignore, activeCheck.configVariables);
+            }
+          } else if ((activeCheck.activeEquals === false) && (actualCheckVariable.indexOf(activeCheck.activeValue) >= 0)) {
+            ignore.push.apply(ignore, activeCheck.configVariables);
+          }
+        }
+      });
+
+      let returnMessage = '';
+      Object.keys(mainConfigTestObj.configVariables).forEach(function(key) {
+        if (ignore.indexOf(key) === -1) {
+          const keySplit = key.split('.');
+          let actualPlaceholderText = config;
+          if (keySplit.length > 0) {
+            keySplit.forEach(function (keyEle) {
+              actualPlaceholderText = actualPlaceholderText[keyEle];
+            });
+          } else {
+            actualPlaceholderText = actualPlaceholderText[key];
+          }
+          if (mainConfigTestObj.configVariables[key].placeholderText === actualPlaceholderText) {
+            if (mainConfigTestObj.configVariables[key].customMessage.length > 0) {
+              returnMessage += mainConfigTestObj.configVariables[key].customMessage;
+            } else {
+              returnMessage += `${key} is still using the placeholder input!`;
+            }
+            returnMessage += '\n';
+          }
+        }
+      });
+      if (returnMessage.length > 0) {
+        winston.error(returnMessage);
+      }
+      resolve(returnMessage);
+    });
+  });
+};
 
 /** @function
  * @name partialRight

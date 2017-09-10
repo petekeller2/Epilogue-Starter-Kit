@@ -83,13 +83,12 @@ module.exports = {
     if (tailableInput === undefined) {
       tailable = this.yesTrueNoFalse(config.winston.tailable);
     }
-    let maxsize = maxsizeInput;
-    if (maxsizeInput === undefined) {
-      maxsize = config.winston.maxsize;
+    let { maxsize, maxFiles } = config.winston;
+    if (maxsizeInput !== undefined) {
+      maxsize = maxsizeInput;
     }
-    let maxFiles = maxFilesInput;
-    if (maxFilesInput === undefined) {
-      maxFiles = config.winston.maxFiles;
+    if (maxFilesInput !== undefined) {
+      maxFiles = maxFilesInput;
     }
     let zippedArchive = zippedArchiveInput;
     if (zippedArchiveInput === undefined) {
@@ -126,7 +125,7 @@ module.exports = {
       if (config.messages[messageName]) {
         return config.messages[messageName];
       } else if (config.messages.defaultMessage) {
-        const defaultMessage = config.messages.defaultMessage;
+        const { defaultMessage } = config.messages;
         return this.winstonWrapper(defaultMessage, 'notice', defaultMessage);
       } else {
         return this.winstonWrapper(errorMessage, 'warning', errorMessage);

@@ -86,7 +86,7 @@ export default {
       if (autoAssociations && !(autoAssociationsTest === true)) {
         autoAssociationsConverted = this.convertAutoAssociations(autoAssociations, false);
         autoAssociationsConverted.forEach((aaConvertedElement) => {
-          autoAssociationType = Object.keys(aaConvertedElement)[0];
+          [autoAssociationType] = Object.keys(aaConvertedElement);
           autoAssociationsIndex = modelNames.indexOf(aaConvertedElement[autoAssociationType]);
           if (autoAssociationsIndex >= 0) {
             model[autoAssociationType](Resources[autoAssociationsIndex][2]);

@@ -8,7 +8,6 @@ Thumbs.db
 node_modules
 .idea/
 npm-debug.log
-yarn.lock
 
 build
 logs

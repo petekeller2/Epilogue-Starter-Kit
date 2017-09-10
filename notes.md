@@ -1,11 +1,13 @@
-**09/04/17**
+**09/09/17**
 
-Flow fix
+gitignore updated for lock files
 
-**09/06/17**
+setUpWinstonLogger object destructuring
 
-Destructuring resource array in epilogueSetup.js
+groups.js eslint fixes
 
-app.js comments updated
+config checker
 
-Readme updated
+readme updates
+
+autoAssociationType array destructuring

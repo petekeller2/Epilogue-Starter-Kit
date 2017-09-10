@@ -1,15 +1,15 @@
 # Contribution Guide
 
 For wiki contributions, try to keep markdown files out of 
-the miscWikiPages folder.
+the miscWikiPages folder. This folder is for wiki files that 
+don't belong to a folder in the code.
 
 Try to write tests for the updates you made.
 
 Write and maintain JSDoc comments.
 
-Check if the documentation build (`gulp wiki-build`is good and the tests pass (`env-test-server` and 
- `env-staging-server`) pass. For the tests, you can skip http
- tests for now as they are broken.
+Check if the documentation build (`gulp wiki-build`) is good 
+and the tests pass (`gulp test`, `env-test-server` and `env-staging-server`) pass.
  
 To update the wiki, you must push to the wiki repo.
  

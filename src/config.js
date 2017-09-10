@@ -2,8 +2,8 @@ const config = {
   // if process.env is not being set, you may need to set 'Defaults env_keep +=' in the /etc/sudoers
   environment: process.env.NODE_ENV || 'development', // development, testing, staging or production
   protocol: process.env.PROTOCOL || 'https',
-  httpsCert: process.env.HTTPS_CERT || 'path/to/https/server.crt',
-  httpsKey: process.env.HTTPS_KEY || 'path/to/https/key.pem',
+  httpsCert: process.env.HTTPS_CERT || '<path/to/https/server.crt>',
+  httpsKey: process.env.HTTPS_KEY || '<path/to/https/key.pem>',
   allowBadCertForDev: process.env.ALLOW_BAD_CERT_FOR_DEV || 'YES',
   relativePaths: process.env.RELATIVE_PATHS || 'YES',
   auth0Logout: process.env.AUTH0_LOGOUT || 'NO',
@@ -68,7 +68,7 @@ const config = {
   messages: {
     deleteMessage: 'Deleted!',
     unauthorized: 'Unauthorized',
-    defaultMessage: '<YOUR DEFAULT MESSAGE>',
+    defaultMessage: 'Default Message',
   },
 };
 module.exports = config;

@@ -22,4 +22,4 @@ in Epilogue Starter Kit, [read this.](https://github.com/petekeller2/epilogue-st
 You should read Epilogue's documentation as well to fully understand resources 
 and milestones.
 
-Start using `npm start` or `npm run serve` for the built version (`npm run build` to build).
+Start using `gulp start` or `gulp serve` for the built version.
