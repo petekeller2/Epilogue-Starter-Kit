@@ -80,7 +80,7 @@ gulp.task('build-stats', ['stats-clear', 'append-stats', 'stats-clean']);
 
 gulp.task('server-test-all-ignore-config', ['server-http-test', 'server-test']);
 
-gulp.task('pre-commit-build', ['build-dup-report', 'generate-changelog', 'wiki-build']);
+gulp.task('pre-commit-build', ['build-dup-report', 'generate-changelog', 'build-wiki']);
 
 gulp.task('build-all', ['build', 'pre-commit-build']);
 
@@ -94,11 +94,11 @@ gulp.task('env-staging-server', ['env-force', 'env-staging', 'serve'], function 
   runHttpTestsOrEnd('staging');
 });
 
-gulp.task('wiki-build', ['wiki-clear', 'build-stats'], function () {
+gulp.task('build-wiki', ['clear-wiki', 'build-stats'], function () {
   markdownBuild('src', 'test');
 });
 
-gulp.task('wiki-clear', function () {
+gulp.task('clear-wiki', function () {
   emptyDirExceptForGit('wiki');
 });
 
@@ -170,6 +170,71 @@ const preStart = function(npmScript) {
 };
 
 /** @function
+ * @name addToIgnoreList
+ * @param {Array} activeList
+ * @return {Array}
+ * @description Helper program for mainConfigTest. Returns list of config variables to ignore
+ */
+const addToIgnoreList = function(activeList) {
+  const ignore = [];
+  activeList.forEach(function(activeCheck) {
+    const actualCheckVariable = config[activeCheck.activeVariable];
+    if (activeCheck.activeType.toLowerCase() === 'string') {
+      if ((activeCheck.activeEquals === true) && (activeCheck.activeValue !== actualCheckVariable)) {
+        ignore.push.apply(ignore, activeCheck.configVariables);
+      } else if ((activeCheck.activeEquals === false) && (activeCheck.activeValue === actualCheckVariable)) {
+        ignore.push.apply(ignore, activeCheck.configVariables);
+      }
+    } else if (activeCheck.activeType.toLowerCase() === 'array') {
+      if (activeCheck.activeEquals === true) {
+        if ((actualCheckVariable.length === 0) || (actualCheckVariable.indexOf(activeCheck.activeValue) < 0)) {
+          ignore.push.apply(ignore, activeCheck.configVariables);
+        }
+      } else if ((activeCheck.activeEquals === false) && (actualCheckVariable.indexOf(activeCheck.activeValue) >= 0)) {
+        ignore.push.apply(ignore, activeCheck.configVariables);
+      }
+    }
+  });
+  return ignore;
+};
+
+/** @function
+ * @name configTestMessage
+ * @param {object} configVariables
+ * @param {Array} ignore
+ * @return {string}
+ * @description Helper program for mainConfigTest. Returns error message
+ */
+const configTestMessage = function(configVariables, ignore) {
+  let returnMessage = '';
+  Object.keys(configVariables).forEach(function(key) {
+    if (ignore.indexOf(key) === -1) {
+      const keySplit = key.split('.');
+      let actualPlaceholderText = config;
+      if (keySplit.length > 0) {
+        keySplit.forEach(function (keyEle) {
+          actualPlaceholderText = actualPlaceholderText[keyEle];
+        });
+      } else {
+        actualPlaceholderText = actualPlaceholderText[key];
+      }
+      if (configVariables[key].placeholderText === actualPlaceholderText) {
+        if (configVariables[key].customMessage.length > 0) {
+          returnMessage += configVariables[key].customMessage;
+        } else {
+          returnMessage += `${key} is still using the placeholder input!`;
+        }
+        returnMessage += '\n';
+      }
+    }
+  });
+  if (returnMessage.length > 0) {
+    winston.error(returnMessage);
+  }
+  return returnMessage;
+};
+
+/** @function
  * @name mainConfigTest
  * @return {Promise}
  * @description Checks to see if default values were replaced for required config variables
@@ -182,52 +247,7 @@ const mainConfigTest = function() {
       }
       const mainConfigTestObj = JSON.parse(mainConfigTestData);
 
-      const ignore = [];
-      mainConfigTestObj.activeList.forEach(function(activeCheck) {
-        const actualCheckVariable = config[activeCheck.activeVariable];
-        if (activeCheck.activeType.toLowerCase() === 'string') {
-          if ((activeCheck.activeEquals === true) && (activeCheck.activeValue !== actualCheckVariable)) {
-            ignore.push.apply(ignore, activeCheck.configVariables);
-          } else if ((activeCheck.activeEquals === false) && (activeCheck.activeValue === actualCheckVariable)) {
-            ignore.push.apply(ignore, activeCheck.configVariables);
-          }
-        } else if (activeCheck.activeType.toLowerCase() === 'array') {
-          if (activeCheck.activeEquals === true) {
-            if ((actualCheckVariable.length === 0) || (actualCheckVariable.indexOf(activeCheck.activeValue) < 0)) {
-              ignore.push.apply(ignore, activeCheck.configVariables);
-            }
-          } else if ((activeCheck.activeEquals === false) && (actualCheckVariable.indexOf(activeCheck.activeValue) >= 0)) {
-            ignore.push.apply(ignore, activeCheck.configVariables);
-          }
-        }
-      });
-
-      let returnMessage = '';
-      Object.keys(mainConfigTestObj.configVariables).forEach(function(key) {
-        if (ignore.indexOf(key) === -1) {
-          const keySplit = key.split('.');
-          let actualPlaceholderText = config;
-          if (keySplit.length > 0) {
-            keySplit.forEach(function (keyEle) {
-              actualPlaceholderText = actualPlaceholderText[keyEle];
-            });
-          } else {
-            actualPlaceholderText = actualPlaceholderText[key];
-          }
-          if (mainConfigTestObj.configVariables[key].placeholderText === actualPlaceholderText) {
-            if (mainConfigTestObj.configVariables[key].customMessage.length > 0) {
-              returnMessage += mainConfigTestObj.configVariables[key].customMessage;
-            } else {
-              returnMessage += `${key} is still using the placeholder input!`;
-            }
-            returnMessage += '\n';
-          }
-        }
-      });
-      if (returnMessage.length > 0) {
-        winston.error(returnMessage);
-      }
-      resolve(returnMessage);
+      resolve(configTestMessage(mainConfigTestObj.configVariables, addToIgnoreList(mainConfigTestObj.activeList)));
     });
   });
 };

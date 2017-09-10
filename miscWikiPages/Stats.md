@@ -1,199 +1,203 @@
 # Stats
 
- .babelrc                                           |   4 +
+ .babelrc                                           |    4 +
 
- .bithoundrc                                        |   5 +
+ .bithoundrc                                        |    5 +
 
- .codeclimate.yml                                   |  20 +
+ .codeclimate.yml                                   |   20 +
 
- .cpd.yaml                                          |  10 +
+ .cpd.yaml                                          |   10 +
 
- .doclets.yml                                       |  17 +
+ .doclets.yml                                       |   17 +
 
- .gitignore                                         |  56 ++
+ .gitignore                                         |   55 +
 
- .gitmodules                                        |   3 +
+ .gitmodules                                        |    3 +
 
- .travis.yml                                        |   9 +
+ .travis.yml                                        |    9 +
 
- Gemfile                                            |   5 +
+ Gemfile                                            |    5 +
 
- Gemfile.lock                                       |  49 ++
+ Gemfile.lock                                       |   49 +
 
- LICENSE                                            |  21 +
+ LICENSE                                            |   21 +
 
- gulpfile.js                                        | 815 +++++++++++++++++++++
+ gulpfile.js                                        |  908 +++
 
- miscWikiPages/Contribution-Guide.md                |  19 +
+ miscWikiPages/Contribution-Guide.md                |   20 +
 
- miscWikiPages/Home.md                              |   9 +
+ miscWikiPages/Home.md                              |    9 +
 
- miscWikiPages/Stats.md                             |   0
+ miscWikiPages/Stats.md                             |    0
 
- miscWikiPages/readme.md                            |   7 +
+ miscWikiPages/readme.md                            |    7 +
 
- notes.md                                           |   7 +
+ notes.md                                           |   13 +
 
- package.json                                       |  73 ++
+ package-lock.json                                  | 7441 ++++++++++++++++++++
 
- readme.md                                          |  25 +
+ package.json                                       |   77 +
 
- src/.eslintrc.js                                   |  17 +
+ readme.md                                          |   25 +
 
- src/app.js                                         |  48 ++
+ src/.eslintrc.js                                   |   20 +
 
- src/auth/customMilestones.js                       |  27 +
+ src/.flowconfig                                    |    2 +
 
- src/auth/defaultMilestones.js                      | 433 +++++++++++
+ src/app.js                                         |   49 +
 
- src/auth/endpoints.js                              | 108 +++
+ src/auth/customMilestones.js                       |   27 +
 
- src/auth/epilogueAuth.js                           | 742 +++++++++++++++++++
+ src/auth/defaultMilestones.js                      |  434 ++
 
- src/auth/groupPermissions.json                     |   5 +
+ src/auth/endpoints.js                              |  109 +
 
- src/auth/groups.js                                 | 155 ++++
+ src/auth/epilogueAuth.js                           |  743 ++
 
- src/auth/passport.js                               | 189 +++++
+ src/auth/groupPermissions.json                     |    5 +
 
- src/auth/readme.md                                 |  23 +
+ src/auth/groups.js                                 |  159 +
 
- src/config.js                                      |  74 ++
+ src/auth/passport.js                               |  189 +
 
- src/custom/endpoints/placeholder.md                |   1 +
+ src/auth/readme.md                                 |   23 +
 
- src/custom/errors/index.js                         |  63 ++
+ src/config.js                                      |   74 +
 
- src/custom/readme.md                               |   4 +
+ src/custom/endpoints/placeholder.md                |    1 +
 
- src/custom/sql/queries/placeholder.md              |   1 +
+ src/custom/errors/index.js                         |   63 +
 
- src/custom/sql/storedFunctions/placeholder.md      |   1 +
+ src/custom/readme.md                               |    4 +
 
- src/epilogueSetup.js                               | 258 +++++++
+ src/custom/sql/queries/placeholder.md              |    1 +
 
- src/resources/Neighborhood/extension.js            |   4 +
+ src/custom/sql/storedFunctions/placeholder.md      |    1 +
 
- src/resources/Neighborhood/index.js                |  12 +
+ src/epilogueSetup.js                               |  252 +
 
- src/resources/Neighborhood/milestones.js           |  24 +
+ src/resources/Neighborhood/extension.js            |    4 +
 
- src/resources/Neighborhood/model.js                |  12 +
+ src/resources/Neighborhood/index.js                |   12 +
 
- src/resources/Todo/extension.js                    |   4 +
+ src/resources/Neighborhood/milestones.js           |   24 +
 
- src/resources/Todo/index.js                        |  12 +
+ src/resources/Neighborhood/model.js                |   12 +
 
- src/resources/Todo/milestones.js                   |  24 +
+ src/resources/Todo/extension.js                    |    4 +
 
- src/resources/Todo/model.js                        |  12 +
+ src/resources/Todo/index.js                        |   12 +
 
- src/resources/User/extension.js                    |   4 +
+ src/resources/Todo/milestones.js                   |   24 +
 
- src/resources/User/index.js                        |  12 +
+ src/resources/Todo/model.js                        |   12 +
 
- src/resources/User/milestones.js                   |  24 +
+ src/resources/User/extension.js                    |    4 +
 
- src/resources/User/model.js                        |  14 +
+ src/resources/User/index.js                        |   12 +
 
- src/resources/index.js                             |   5 +
+ src/resources/User/milestones.js                   |   24 +
 
- src/resources/readme.md                            | 159 ++++
+ src/resources/User/model.js                        |   14 +
 
- src/resourcesBuilder/modelFields.js                |  17 +
+ src/resources/index.js                             |    5 +
 
- src/resourcesBuilder/readme.md                     |   5 +
+ src/resources/readme.md                            |  159 +
 
- src/resourcesBuilder/resourceGenerator.js          |   1 +
+ src/resourcesBuilder/modelFields.js                |   19 +
 
- src/resourcesBuilder/resources.json                |   3 +
+ src/resourcesBuilder/readme.md                     |    5 +
 
- src/resourcesBuilder/template/extension.js         |   4 +
+ src/resourcesBuilder/resources.json                |    3 +
 
- src/resourcesBuilder/template/index.js             |  12 +
+ src/resourcesBuilder/template/extension.js         |    4 +
 
- src/resourcesBuilder/template/milestones.js        |  24 +
+ src/resourcesBuilder/template/index.js             |   12 +
 
- src/resourcesBuilder/template/model.js             |  11 +
+ src/resourcesBuilder/template/milestones.js        |   24 +
 
- src/server.js                                      | 116 +++
+ src/resourcesBuilder/template/model.js             |   11 +
 
- src/utilities.js                                   | 138 ++++
+ src/server.js                                      |  117 +
 
- test/httpTests/autoAssociations/associations.js    |  46 ++
+ src/utilities.js                                   |  137 +
 
- test/httpTests/autoAssociations/readme.md          |   5 +
+ test/httpTests/autoAssociations/associations.js    |   46 +
 
- test/httpTests/connection.js                       |  19 +
+ test/httpTests/autoAssociations/readme.md          |    5 +
 
- test/httpTests/permissions/access.js               | 176 +++++
+ test/httpTests/connection.js                       |   19 +
 
- test/httpTests/permissions/readme.md               |   5 +
+ test/httpTests/permissions/access.js               |  176 +
 
- test/manualTests/readme.md                         |   8 +
+ test/httpTests/permissions/readme.md               |    5 +
 
- .../manualTests/tests/3-4-17/Manual Test Cases.csv |  87 +++
+ test/mainConfigTest.json                           |   97 +
 
- .../tests/3-4-17/Manual Test Cases.html            |  39 +
+ test/manualTests/readme.md                         |    8 +
 
- test/manualTests/tests/3-4-17/notes.md             |   3 +
+ .../manualTests/tests/3-4-17/Manual Test Cases.csv |   87 +
 
- test/manualTests/tests/3-4-17/resources/sheet.css  |   1 +
+ .../tests/3-4-17/Manual Test Cases.html            |   39 +
 
- .../tests/4-16-17/Manual Test Cases.csv            |  16 +
+ test/manualTests/tests/3-4-17/notes.md             |    3 +
 
- .../tests/4-16-17/Manual Test Cases.html           |  39 +
+ test/manualTests/tests/3-4-17/resources/sheet.css  |    1 +
 
- test/manualTests/tests/4-16-17/notes.md            |   3 +
+ .../tests/4-16-17/Manual Test Cases.csv            |   16 +
 
- test/manualTests/tests/4-16-17/resources/sheet.css |   1 +
+ .../tests/4-16-17/Manual Test Cases.html           |   39 +
 
- .../tests/6-10-17/Manual Test Cases.csv            |  87 +++
+ test/manualTests/tests/4-16-17/notes.md            |    3 +
 
- .../tests/6-10-17/Manual Test Cases.html           |  39 +
+ test/manualTests/tests/4-16-17/resources/sheet.css |    1 +
 
- test/manualTests/tests/6-10-17/notes.md            |   3 +
+ .../tests/6-10-17/Manual Test Cases.csv            |   87 +
 
- test/manualTests/tests/6-10-17/resources/sheet.css |   1 +
+ .../tests/6-10-17/Manual Test Cases.html           |   39 +
 
- .../manualTests/tests/7-3-17/Manual Test Cases.csv |  87 +++
+ test/manualTests/tests/6-10-17/notes.md            |    3 +
 
- .../tests/7-3-17/Manual Test Cases.html            |  39 +
+ test/manualTests/tests/6-10-17/resources/sheet.css |    1 +
 
- test/manualTests/tests/7-3-17/notes.md             |   3 +
+ .../manualTests/tests/7-3-17/Manual Test Cases.csv |   87 +
 
- test/manualTests/tests/7-3-17/resources/sheet.css  |   1 +
+ .../tests/7-3-17/Manual Test Cases.html            |   39 +
 
- test/readme.md                                     |   5 +
+ test/manualTests/tests/7-3-17/notes.md             |    3 +
 
- test/setup/readme.md                               |   8 +
+ test/manualTests/tests/7-3-17/resources/sheet.css  |    1 +
 
- test/setup/spawnTest.js                            |  16 +
+ test/readme.md                                     |    5 +
 
- test/setup/testCases.js                            | 158 ++++
+ test/setup/readme.md                               |    8 +
 
- test/setup/testData.js                             |  66 ++
+ test/setup/spawnTest.js                            |   16 +
 
- test/testConfig.json                               |  87 +++
+ test/setup/testCases.js                            |  158 +
 
- test/testGroupPermissions.json                     |  12 +
+ test/setup/testData.js                             |   66 +
 
- test/testUserGroups.json                           |   9 +
+ test/testConfig.json                               |   87 +
 
- test/tests/autoAssociations/conversions.js         | 142 ++++
+ test/testGroupPermissions.json                     |   12 +
 
- test/tests/autoAssociations/getResourceNames.js    | 142 ++++
+ test/testUserGroups.json                           |    9 +
 
- test/tests/failing.js                              |  98 +++
+ test/tests/autoAssociations/conversions.js         |  142 +
 
- test/tests/groups/jsonPermissions.js               | 131 ++++
+ test/tests/autoAssociations/getResourceNames.js    |  142 +
 
- test/tests/permissions/conversions.js              | 477 ++++++++++++
+ test/tests/failing.js                              |   98 +
 
- wiki                                               |   1 +
+ test/tests/groups/jsonPermissions.js               |  131 +
 
- wikiConfig.json                                    |  17 +
+ test/tests/permissions/conversions.js              |  477 ++
 
-Files: 97
+ wiki                                               |    1 +
 
-Total Lines of Code: 6033
+ wikiConfig.json                                    |   17 +
+
+Files: 99
+
+Total Lines of Code: 13682

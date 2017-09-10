@@ -1,13 +1,7 @@
-**09/09/17**
+**09/10/17**
 
-gitignore updated for lock files
+wiki update
 
-setUpWinstonLogger object destructuring
+Dependencies updated
 
-groups.js eslint fixes
-
-config checker
-
-readme updates
-
-autoAssociationType array destructuring
+Refactored mainConfigTest code
