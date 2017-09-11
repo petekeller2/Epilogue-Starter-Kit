@@ -68,7 +68,7 @@ to a standard Auto Association format.
 * String, array, object or boolean.
 * The preferred format is the array of objects format.
 * Array styles can be mixed.
-* Though false is acceptable, '' should be used instead if you don't
+* Though false is acceptable, an empty string should be used instead if you don't
   want to create an auto-association on that resource. This is because
   an auto-association with that resource could be on another resource,
   making false misleading.
@@ -101,10 +101,11 @@ used to set them up for a resource.
 #### Format
 
 * String, array, number or object.
-* The preferred format is string with | for deliminator and - for 
-disallowed.
+* The preferred format is the string with | separating user 
+type sections and - disallowing operations format.
 * For numbers, the list and read bit are the same. This was 
-done to make hex format more readable.
+done to make hexadecimal format more readable. Decimal, octal 
+and binary format are also valid.
 
 **Examples:**
 
@@ -117,15 +118,18 @@ done to make hex format more readable.
 'lrud|lcrud|lcrud|lcrud' => [true, false, true, true, ..., true]
 {owner: ['l', 'c', 'r']} => [true, true, true, false, false, ..., false]
 [true, ..., true] => [true, ..., true]
-// See test/tests/permissions/conversions.js for
-// more examples of valid permissions formats
+/* 
+  See test/unitTests/permissions/conversions.js for
+  more examples of valid permissions formats
+*/
 ```
 
 ## Admins
 
 The enabled bit in `-c---|-----|----|-----` means that admins 
-can create a resource. Admins are found in the Admins table, with 
-AdminId being a user's user id.
+can create an instance of that resource. The list of admin 
+users is in the Admins table, with AdminId being the admin's 
+user id.
 
 ## Groups
 
@@ -133,7 +137,7 @@ Groups and users are linked
 through the userGroupXrefs resource. Users can have many groups through group xrefs.
 
 The enabled bit in `-----|-c---|----|-----` enables group permissions. 
-Group permissions are ORed with each other and regular resource permissions.
+Group permissions are bitwise ORed with each other and regular resource permissions.
 
 For example, if a group resource called City has the following regular
  permissions: 

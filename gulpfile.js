@@ -56,7 +56,7 @@ gulp.task('server-http-just-aa-test', shell.task('npm run http-just-aa-test'));
 
 gulp.task('server-http-just-access-test', shell.task('npm run http-just-access-test'));
 
-gulp.task('test', shell.task('npm run test'));
+gulp.task('unit-test', shell.task('npm run unit-test'));
 
 gulp.task('test-autoAssociations', shell.task('npm run test-autoAssociations'));
 
@@ -78,19 +78,19 @@ gulp.task('travis-test', ['test-permissions', 'test-autoAssociations']);
 
 gulp.task('build-stats', ['stats-clear', 'append-stats', 'stats-clean']);
 
-gulp.task('server-test-all-ignore-config', ['server-http-test', 'server-test']);
+gulp.task('server-test-all-ignore-config', ['server-http-test', 'unit-test']);
 
 gulp.task('pre-commit-build', ['build-dup-report', 'generate-changelog', 'build-wiki']);
 
 gulp.task('build-all', ['build', 'pre-commit-build']);
 
 // main test task for not built code
-gulp.task('env-test-server', ['env-force', 'env-test', 'server-start-no-nodemon'], function () {
+gulp.task('test-server', ['env-force', 'env-test', 'server-start-no-nodemon'], function () {
   runHttpTestsOrEnd('test');
 });
 
 // main test task for built code
-gulp.task('env-staging-server', ['env-force', 'env-staging', 'serve'], function () {
+gulp.task('test-staging-server', ['env-force', 'env-staging', 'serve'], function () {
   runHttpTestsOrEnd('staging');
 });
 
@@ -207,22 +207,25 @@ const addToIgnoreList = function(activeList) {
  */
 const configTestMessage = function(configVariables, ignore) {
   let returnMessage = '';
-  Object.keys(configVariables).forEach(function(key) {
-    if (ignore.indexOf(key) === -1) {
-      const keySplit = key.split('.');
+  configVariables.forEach(function(configVariableObj) {
+    if (ignore.indexOf(configVariableObj.variable) === -1) {
+      const variableSplit = configVariableObj.variable.split('.');
       let actualPlaceholderText = config;
-      if (keySplit.length > 0) {
-        keySplit.forEach(function (keyEle) {
-          actualPlaceholderText = actualPlaceholderText[keyEle];
+      if (variableSplit.length > 0) {
+        variableSplit.forEach(function(varEle) {
+          actualPlaceholderText = actualPlaceholderText[varEle];
         });
       } else {
-        actualPlaceholderText = actualPlaceholderText[key];
+        actualPlaceholderText = actualPlaceholderText[configVariableObj.variable];
       }
-      if (configVariables[key].placeholderText === actualPlaceholderText) {
-        if (configVariables[key].customMessage.length > 0) {
-          returnMessage += configVariables[key].customMessage;
+      if (configVariableObj.placeholderText === actualPlaceholderText) {
+        if (returnMessage.length === 0) {
+          returnMessage += '\n';
+        }
+        if (configVariableObj.customMessage.length > 0) {
+          returnMessage += configVariableObj.customMessage;
         } else {
-          returnMessage += `${key} is still using the placeholder input!`;
+          returnMessage += `${configVariableObj.variable} is still using the placeholder input!`;
         }
         returnMessage += '\n';
       }
@@ -584,7 +587,7 @@ const waitForFileWriteToFinish = function(filePath, functionToRun, safetyCounter
     } else if (stats.isFile()) {
       let sameSizeCountCopy = sameSizeCount;
       if ((stats.size > 0) && stats.size && previousSize && (stats.size === previousSize)) {
-        sameSizeCountCopy+=1;
+        sameSizeCountCopy += 1;
       }
       if (sameSizeCountCopy > 25) {
         functionToRun();
@@ -870,9 +873,9 @@ const endOfTests = function() {
     }
     let testResultOverview = '';
     if (data.toString('utf8').search(/failing/g) !== -1) {
-      testResultOverview = `Did not pass all tests (${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')})`;
+      testResultOverview = `Did not pass all tests on ${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC)`;
     } else {
-      testResultOverview = `Passed all tests (${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')})`;
+      testResultOverview = `Passed all tests on ${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC)`;
     }
     fs.writeFile('logs/latestTests.log', testResultOverview, function (err) {
       if (err) return gulpErrors.error(err);
@@ -897,9 +900,9 @@ const runHttpTests = function(env) {
       fs.writeFile('./test/testConfig.json', JSON.stringify(testConfig, null, 2), function (err) {
         if (err) return gulpErrors.error(err);
         if (env === 'test') {
-          gulp.start('env-test-server');
+          gulp.start('test-server');
         } else if (env === 'staging') {
-          gulp.start('env-staging-server');
+          gulp.start('test-staging-server');
         } else {
           gulpErrors.error('environment is not test or staging!');
         }

@@ -12,6 +12,7 @@ import Sequelize from 'sequelize';
 
 const database = new Sequelize(config.dbString);
 
+// For:
 // Neighborhood: 'lcrud|lcrud|l-r--|-----'
 // Todo: 'lcrud|-----|-----|-----'
 // User: 'l-rud|-----|-----|-----'

@@ -14,7 +14,7 @@ tests [here.](https://github.com/petekeller2/epilogue-starter-kit/wiki/Manual-Te
 
 Write and maintain JSDoc comments and flow annotations.
 
-Check if the tests pass (`gulp test`, `env-test-server` 
-and `env-staging-server`).
+Check if the tests pass (`gulp unit-test`, `test-server` 
+and `test-staging-server`).
 
 Email me at petekeller2@gmail.com if you have any questions.

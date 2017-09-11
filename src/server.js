@@ -57,7 +57,7 @@ export default {
       .then(() => {
         server.listen(config.port, () => {
           // const host = server.address().address,
-          const port = server.address().port;
+          const { port } = server.address();
           if (config.environment === 'testing' || config.environment === 'staging') {
             let winstonConfig = utilities.setUpWinstonLogger('logs/tests.log');
             winston.loggers.add('testsLog', {

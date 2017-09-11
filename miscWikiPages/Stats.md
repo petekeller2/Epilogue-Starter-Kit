@@ -22,7 +22,7 @@
 
  LICENSE                                            |   21 +
 
- gulpfile.js                                        |  908 +++
+ gulpfile.js                                        |  931 +++
 
  miscWikiPages/Contribution-Guide.md                |   20 +
 
@@ -32,13 +32,13 @@
 
  miscWikiPages/readme.md                            |    7 +
 
- notes.md                                           |   13 +
+ notes.md                                           |   11 +
 
- package-lock.json                                  | 7441 ++++++++++++++++++++
+ package-lock.json                                  | 7449 ++++++++++++++++++++
 
  package.json                                       |   77 +
 
- readme.md                                          |   25 +
+ readme.md                                          |   23 +
 
  src/.eslintrc.js                                   |   20 +
 
@@ -76,6 +76,8 @@
 
  src/epilogueSetup.js                               |  252 +
 
+ src/readme.md                                      |   16 +
+
  src/resources/Neighborhood/extension.js            |    4 +
 
  src/resources/Neighborhood/index.js                |   12 +
@@ -102,7 +104,7 @@
 
  src/resources/index.js                             |    5 +
 
- src/resources/readme.md                            |  159 +
+ src/resources/readme.md                            |  163 +
 
  src/resourcesBuilder/modelFields.js                |   19 +
 
@@ -132,7 +134,9 @@
 
  test/httpTests/permissions/readme.md               |    5 +
 
- test/mainConfigTest.json                           |   97 +
+ test/httpTests/readme.md                           |    9 +
+
+ test/mainConfigTest.json                           |  111 +
 
  test/manualTests/readme.md                         |    8 +
 
@@ -168,7 +172,7 @@
 
  test/manualTests/tests/7-3-17/resources/sheet.css  |    1 +
 
- test/readme.md                                     |    5 +
+ test/readme.md                                     |    4 +
 
  test/setup/readme.md                               |    8 +
 
@@ -184,20 +188,22 @@
 
  test/testUserGroups.json                           |    9 +
 
- test/tests/autoAssociations/conversions.js         |  142 +
+ test/unitTests/autoAssociations/conversions.js     |  142 +
 
- test/tests/autoAssociations/getResourceNames.js    |  142 +
+ .../unitTests/autoAssociations/getResourceNames.js |  142 +
 
- test/tests/failing.js                              |   98 +
+ test/unitTests/failing.js                          |    8 +
 
- test/tests/groups/jsonPermissions.js               |  131 +
+ test/unitTests/groups/jsonPermissions.js           |  132 +
 
- test/tests/permissions/conversions.js              |  477 ++
+ test/unitTests/permissions/conversions.js          |  477 ++
+
+ test/unitTests/readme.md                           |    4 +
 
  wiki                                               |    1 +
 
  wikiConfig.json                                    |   17 +
 
-Files: 99
+Files: 102
 
-Total Lines of Code: 13682
+Total Lines of Code: 13666

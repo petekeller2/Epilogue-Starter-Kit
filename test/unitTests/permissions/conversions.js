@@ -59,7 +59,7 @@ describe('All elements should be false for', () => {
 });
 
 describe('Permissions conversions for numbers', () => {
-  it('should all be true (hex)', done => {
+  it('should all be true (hexadecimal)', done => {
     permissionReturnActual = epilogueAuth.convertPermissions(0xFFFF);
     permissionReturnExpected = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
@@ -84,7 +84,7 @@ describe('Permissions conversions for numbers', () => {
     done();
   });
 
-  it('some should be true (hex)', done => {
+  it('some should be true (hexadecimal)', done => {
     permissionReturnActual = epilogueAuth.convertPermissions(0xEFFF);
     permissionReturnExpected = [true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
@@ -109,7 +109,7 @@ describe('Permissions conversions for numbers', () => {
     done();
   });
 
-  it('some should be true (hex string)', done => {
+  it('some should be true (hexadecimal string)', done => {
     permissionReturnActual = epilogueAuth.convertPermissions('0xEFFF');
     permissionReturnExpected = [true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
@@ -134,8 +134,8 @@ describe('Permissions conversions for numbers', () => {
     done();
   });
 
-  it('some should be true (hex string with comment)', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions('hex 0xEFFF');
+  it('some should be true (hexadecimal string with comment)', done => {
+    permissionReturnActual = epilogueAuth.convertPermissions('hexadecimal 0xEFFF');
     permissionReturnExpected = [true, true, true, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
@@ -159,7 +159,7 @@ describe('Permissions conversions for numbers', () => {
     done();
   });
 
-  it('some should be true with a read and list being false (hex)', done => {
+  it('some should be true with a read and list being false (hexadecimal)', done => {
     permissionReturnActual = epilogueAuth.convertPermissions(0xBFFF);
     permissionReturnExpected = [false, true, false, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);

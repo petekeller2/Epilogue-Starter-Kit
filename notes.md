@@ -1,7 +1,11 @@
-**09/10/17**
+**09/11/17**
 
-wiki update
+Refactored pre-start (configTestMessage and mainConfigTest.json)
 
-Dependencies updated
+Refactored code and documentation related to tests
 
-Refactored mainConfigTest code
+Documentation updates
+
+Wiki updates
+
+Eslint fix

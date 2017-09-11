@@ -36,62 +36,76 @@
       "configVariables": ["authMethods.twitter.id", "authMethods.twitter.secret"]
     }
   ],
-  "configVariables": {
-    "httpsCert": {
+  "configVariables": [
+    {
+      "variable": "httpsCert",
       "placeholderText": "<path/to/https/server.crt>",
       "customMessage": ""
     },
-    "httpsKey": {
+    {
+      "variable": "httpsKey",
       "placeholderText": "<path/to/https/key.pem>",
       "customMessage": ""
     },
-    "dbString": {
+    {
+      "variable": "dbString",
       "placeholderText": "<DB_URL>",
       "customMessage": ""
     },
-    "sessionSecret": {
+    {
+      "variable": "sessionSecret",
       "placeholderText": "<SESSION_SECRET>",
       "customMessage": ""
     },
-    "authMethods.auth0.id": {
+    {
+      "variable": "authMethods.auth0.id",
       "placeholderText": "<AUTH0_CLIENT_ID>",
       "customMessage": ""
     },
-    "authMethods.auth0.secret": {
+    {
+      "variable": "authMethods.auth0.secret",
       "placeholderText": "<AUTH0_CLIENT_SECRET>",
       "customMessage": ""
     },
-    "authMethods.auth0.domain": {
+    {
+      "variable": "authMethods.auth0.domain",
       "placeholderText": "<DOMAIN>.auth0.com",
       "customMessage": ""
     },
-    "authMethods.facebook.id": {
+    {
+      "variable": "authMethods.facebook.id",
       "placeholderText": "<FACEBOOK_CLIENT_ID>",
       "customMessage": ""
     },
-    "authMethods.facebook.secret": {
+    {
+      "variable": "authMethods.facebook.secret",
       "placeholderText": "<FACEBOOK_CLIENT_SECRET>",
       "customMessage": ""
     },
-    "authMethods.google.id": {
+    {
+      "variable": "authMethods.google.id",
       "placeholderText": "<GOOGLE_CLIENT_ID>",
       "customMessage": ""
     },
-    "authMethods.google.secret": {
+    {
+      "variable": "authMethods.google.secret",
       "placeholderText": "<GOOGLE_CLIENT_SECRET>",
       "customMessage": ""
     },
-    "authMethods.twitter.id": {
+    {
+      "variable": "authMethods.twitter.id",
       "placeholderText": "<TWITTER_CONSUMER_KEY>",
       "customMessage": ""
     },
-    "authMethods.twitter.secret": {
+    {
+      "variable": "authMethods.twitter.secret",
       "placeholderText": "<TWITTER_CONSUMER_SECRET>",
       "customMessage": ""
     },
-    "jwt.secret": {
+    {
+      "variable": "jwt.secret",
       "placeholderText": "<JWT_SECRET>",
       "customMessage": ""
     }
-  }
+  ]
 }
