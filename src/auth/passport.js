@@ -95,9 +95,9 @@ export default {
    * @description Helper function for setup
    */
   getId(req: {}, profile: {}): string {
-    let id = ((req || {}).user || {}).id;
+    const { id } = ((req || {}).user || {});
     if (!id) {
-      id = (profile || {}).id;
+      return (profile || {}).id;
     }
     return id;
   },

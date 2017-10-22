@@ -248,7 +248,7 @@ export default {
         authMilestone[actionsList[i]] = {};
         // eslint-disable-next-line
         authMilestone[actionsList[i]].auth = ((req, res, context) => new Promise(async(resolve) => {
-
+          // eslint-disable-next-line
           isGroup = resource[6];
           permissions = this.convertRealOrTestPermissions(resource[1], resource[0], isHttpTest, validTestNumber);
 
@@ -582,14 +582,10 @@ export default {
 
         let sectionArguments = [nonPipeIndexFound, nextNonPipeIndex, permissionsInputCleaned];
         sectionArguments = sectionArguments.concat([findSectionLengthSubString, lengthOfSection, section]);
-        const sectionInfo = this.getSectionInfo(...sectionArguments);
-        lengthOfSection = sectionInfo[0];
-        section = sectionInfo[1];
+        [lengthOfSection, section] = this.getSectionInfo(...sectionArguments);
 
         const buildArguments = [lengthOfSection, permissionsInputCleaned, letterIndex, section, permissionsReturn];
-        const permissionsReturnAndLetterIndex = this.buildStringPermissionReturn(...buildArguments);
-        permissionsReturn = permissionsReturnAndLetterIndex[0];
-        letterIndex = permissionsReturnAndLetterIndex[1];
+        [permissionsReturn, letterIndex] = this.buildStringPermissionReturn(...buildArguments);
       }
     }
     return this.shiftStringPermissionElements(permissionsReturn, permissionsInputCleaned);

@@ -7,9 +7,11 @@ module.exports = class MainError extends Error {
 
     const severityCleaned = severity.toLowerCase();
 
-    if (!(severityCleaned === 'debug' || severityCleaned === '7' || severityCleaned === 7) && config.environment === 'production') {
-      // todo: Send emails to developers if in production.
-      // todo: Mail config string(s) in config
+    let debugCheck = Boolean(!(severityCleaned === 'debug' || severityCleaned === '7' || severityCleaned === 7));
+    debugCheck = Boolean(debugCheck && config.environment === 'production');
+    const mailAtCheck = Boolean(config.email.mailAtLevel.indexOf(severityCleaned) >= 0);
+
+    if (debugCheck || mailAtCheck) {
       Error.captureStackTrace(this, this.constructor);
     }
 

@@ -20,7 +20,7 @@ const gulpErrors = winston.loggers.get('gulpError');
 
 winstonConfig = utilities.setUpWinstonLogger('logs/testResults.log');
 winston.loggers.add('testResults', {
-  file: winstonConfig
+  file: winstonConfig,
 });
 const testResults = winston.loggers.get('testResults');
 
@@ -424,7 +424,7 @@ const getCleanedResourceName = function(resourceName) {
  * @return {string}
  */
 const getCleanedResourcePath = function(cleanedResourceName, fileName) {
-  return`src/resources/${cleanedResourceName}/${fileName}`;
+  return `src/resources/${cleanedResourceName}/${fileName}`;
 };
 
 /** @function
@@ -645,7 +645,7 @@ const makeTempDir = function(safetyCounter) {
  */
 // Transform sctreamer to remove first line
 const RemoveFirstLine = function(args) {
-  if (! (this instanceof RemoveFirstLine)) {
+  if (!(this instanceof RemoveFirstLine)) {
     return new RemoveFirstLine(args);
   }
   Transform.call(this, args);
@@ -740,7 +740,7 @@ const newMarkdownFileName = function(file) {
   return new Promise(function(resolve, reject) {
     let lineNumber = 0;
     const rl = readline.createInterface({
-      input: fs.createReadStream(file)
+      input: fs.createReadStream(file),
     });
     rl.on('line', function (line) {
       if (lineNumber === 0) {
@@ -748,7 +748,7 @@ const newMarkdownFileName = function(file) {
           return i !== '';
         }).map(i => {
           return i[0].toUpperCase() + i.substr(1).toLowerCase();
-        }).join('-')+'.md');
+        }).join('-') + '.md');
       }
       lineNumber += 1;
     });
@@ -765,7 +765,7 @@ const createWikiFile = function(file, wikiFile) {
   fs.copy(file, `wiki/${wikiFile}`, err => {
     if (err) return gulpErrors.error(err);
     removeTitleFromMarkdown(wikiFile);
-  })
+  });
 };
 
 /** @function
@@ -811,7 +811,7 @@ const moveMarkdown = function(dir) {
                   }
                   usedFileNames.push(newFileName);
                   createWikiFile(file, newFileName);
-               }
+                }
               }, function(error) {
                 gulpErrors.info(error);
               });

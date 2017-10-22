@@ -106,6 +106,41 @@
       "variable": "jwt.secret",
       "placeholderText": "<JWT_SECRET>",
       "customMessage": ""
+    },
+    {
+      "variable": "email.service",
+      "placeholderText": "<MAIL_SERIVCE>",
+      "customMessage": ""
+    },
+    {
+      "variable": "email.user",
+      "placeholderText": "<MAIL_USER>",
+      "customMessage": ""
+    },
+    {
+      "variable": "email.pass",
+      "placeholderText": "<MAIL_PASS>",
+      "customMessage": ""
+    },
+    {
+      "variable": "email.defaultFrom",
+      "placeholderText": "<MAIL_DEFAULT_FROM>",
+      "customMessage": ""
+    },
+    {
+      "variable": "email.defaultTo",
+      "placeholderText": "<MAIL_DEFAULT_TO>",
+      "customMessage": ""
+    },
+    {
+      "variable": "email.defaultSubject",
+      "placeholderText": "<MAIL_DEFAULT_SUBJECT>",
+      "customMessage": ""
+    },
+    {
+      "variable": "email.defaultText",
+      "placeholderText": "<MAIL_DEFAULT_TEXT>",
+      "customMessage": ""
     }
   ]
 }

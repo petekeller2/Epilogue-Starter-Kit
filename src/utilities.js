@@ -10,6 +10,7 @@ const config = require(`../${srcOrBuild}/config`);
 
 const fs = require('fs-extra');
 const winston = require('winston');
+const nodemailer = require('nodemailer');
 const MainError = require('./custom/errors/');
 
 module.exports = {
@@ -54,10 +55,11 @@ module.exports = {
    * @param {*} message - usually a string
    * @param {string} level
    * @param {*} returns - usually a boolean
+   * @param {boolean} sendMailConditionally
    * @return {*} usually a boolean
    * @description Winston wrapper function. Returns a boolean for convenience
    */
-  winstonWrapper(message, level = 'info', returns = false) {
+  winstonWrapper(message, level = 'info', returns = false, sendMailConditionally = true) {
     let levelToUse = level.toLowerCase();
     if (['debug', 'info', 'notice', 'warning', 'error', 'crit', 'alert', 'emerg'].indexOf(levelToUse) < 0) {
       levelToUse = 'info';
@@ -66,6 +68,9 @@ module.exports = {
       winston[levelToUse](message);
     } else {
       console.log(`${message} [not using winston]`);
+    }
+    if (sendMailConditionally && config.email.mailAtLevel.indexOf(levelToUse) >= 0) {
+      this.sendMail(message);
     }
     return returns;
   },
@@ -110,8 +115,13 @@ module.exports = {
    * @param {number} status - 500, 400, ect
    */
   throwErrorConditionally(truthyOrFalsy, message, severity = 'Error', status = 500) {
+    const levelToUse = severity.toLowerCase();
     if (!truthyOrFalsy) {
-      throw new MainError(message, severity, status);
+      if (config.email.mailAtLevel.indexOf(levelToUse) >= 0) {
+        this.sendMail(message);
+      }
+      this.winstonWrapper(message, levelToUse, false, false);
+      throw new MainError(message, levelToUse, status);
     }
   },
   /** @function
@@ -133,5 +143,50 @@ module.exports = {
     } else {
       return this.winstonWrapper(errorMessage, 'warning', errorMessage);
     }
+  },
+  /** @function
+   * @name mailConfig
+   * @param {string} service
+   * @param {string} user
+   * @param {string} pass
+   * @return {object}
+   */
+  mailConfig(service, user, pass) {
+    return nodemailer.createTransport({
+      service: service || config.email.service,
+      auth: {
+        user: user || config.email.user,
+        pass: pass || config.email.pass,
+      },
+    });
+  },
+  /** @function
+   * @name sendMail
+   * @param {string} text
+   * @param {string} subject
+   * @param {string} from
+   * @param {string} to
+   * @param {string} service
+   * @param {string} user
+   * @param {string} pass
+   * @return {boolean}
+   */
+  sendMail(text, subject, from, to, service, user, pass) {
+    const transporter = this.mailConfig(service, user, pass);
+
+    const mailOptions = {
+      from: from || config.email.defaultFrom,
+      to: to || config.email.defaultTo,
+      subject: subject || config.email.defaultSubject,
+      text: text || config.email.defaultText,
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        return this.winstonWrapper(error, 'error', false, false);
+      }
+      this.winstonWrapper(info, 'info');
+      return true;
+    });
   },
 };

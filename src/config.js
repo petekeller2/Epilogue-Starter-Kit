@@ -15,8 +15,8 @@ const config = {
   sessionSecret: process.env.SESSION_SECRET || '<SESSION_SECRET>',
   sessionResave: process.env.SESSION_RESAVE || 'NO',
   sessionSaveUninitialized: process.env.SESSION_SAVE_UNINITIALIZED || 'YES',
-  authOptionsDisabled: process.env.AUTH_OPTIONS_DISABLED || ['twitter'], // OAuth 2.0 preferred
-  disabledDefaultMilestones: process.env.DISABLED_DEFAULT_MILESTONES || [],
+  authOptionsDisabled: (process.env.AUTH_OPTIONS_DISABLED ? process.env.AUTH_OPTIONS_DISABLED.split(' ') : false) || ['twitter'], // OAuth 2.0 preferred
+  disabledDefaultMilestones: (process.env.DISABLED_DEFAULT_MILESTONES ? process.env.DISABLED_DEFAULT_MILESTONES.split(' ') : false) || [],
   tokenExpiresIn: process.env.TOKEN_EXPIRES_IN || (60 * 60 * 24 * 180), // 180 days
   cookieMaxAge: process.env.COOKIE_MAX_AGE || (60 * 60 * 24 * 180 * 1000), // 180,000 days
   authFailureRedirect: process.env.AUTH_FAILURE_REDIRECT || '/authFailure',
@@ -30,21 +30,21 @@ const config = {
       secret: process.env.AUTH0_CLIENT_SECRET || '<AUTH0_CLIENT_SECRET>',
       domain: process.env.AUTH0_DOMAIN || '<DOMAIN>.auth0.com',
       callbackURL: process.env.AUTH0_CALLBACK_URL || '/login/auth0/callback',
-      scope: process.env.AUTH0_SCOPE || ['email'],
+      scope: (process.env.AUTH0_SCOPE ? process.env.AUTH0_SCOPE.split(' ') : false) || ['email'],
     },
     facebook: {
       id: process.env.FACEBOOK_CLIENT_ID || '<FACEBOOK_CLIENT_ID>',
       secret: process.env.FACEBOOK_CLIENT_SECRET || '<FACEBOOK_CLIENT_SECRET>',
       callbackURL: process.env.FACEBOOK_CALLBACK_URL || '/login/facebook/callback',
       // eslint-disable-next-line
-      profileFields: process.env.FACEBOOK_PROFILE_FIELDS || ['id', 'email', 'picture.type(large)', 'gender', 'link', 'locale', 'name', 'timezone', 'updated_time', 'verified'],
-      scope: process.env.FACEBOOK_SCOPE || ['email', 'public_profile', 'user_friends'],
+      profileFields: (process.env.FACEBOOK_PROFILE_FIELDS ? process.env.FACEBOOK_PROFILE_FIELDS.split(' ') : '') || ['id', 'email', 'picture.type(large)', 'gender', 'link', 'locale', 'name', 'timezone', 'updated_time', 'verified'],
+      scope: (process.env.FACEBOOK_SCOPE ? process.env.FACEBOOK_SCOPE.split(' ') : false) || ['email', 'public_profile', 'user_friends'],
     },
     google: {
       id: process.env.GOOGLE_CLIENT_ID || '<GOOGLE_CLIENT_ID>',
       secret: process.env.GOOGLE_CLIENT_SECRET || '<GOOGLE_CLIENT_SECRET>',
       callbackURL: process.env.GOOGLE_CALLBACK_URL || '/login/google/callback',
-      scope: process.env.GOOGLE_SCOPE || ['email', 'profile'],
+      scope: (process.env.GOOGLE_SCOPE ? process.env.GOOGLE_SCOPE.split(' ') : false) || ['email', 'profile'],
     },
     twitter: {
       id: process.env.TWITTER_CONSUMER_KEY || '<TWITTER_CONSUMER_KEY>',
@@ -65,10 +65,24 @@ const config = {
     maxFiles: process.env.MAX_FILES_WINSTON || 5,
     zippedArchive: process.env.ZIPPED_ARCHIVE_WINSTON || 'YES',
   },
+  email: {
+    mailAtLevel: (process.env.MAIL_AT_LEVEL ? process.env.MAIL_AT_LEVEL.split(' ') : false) || ['error', 'crit', 'alert', 'emerg'],
+    service: process.env.MAIL_SERIVCE || '<MAIL_SERIVCE>',
+    user: process.env.MAIL_USER || '<MAIL_USER>',
+    pass: process.env.MAIL_PASS || '<MAIL_PASS>',
+    defaultFrom: process.env.MAIL_DEFAULT_FROM || '<MAIL_DEFAULT_FROM>',
+    defaultTo: process.env.MAIL_DEFAULT_TO || '<MAIL_DEFAULT_TO>',
+    defaultSubject: process.env.MAIL_DEFAULT_SUBJECT || '<MAIL_DEFAULT_SUBJECT>',
+    defaultText: process.env.MAIL_DEFAULT_TEXT || '<MAIL_DEFAULT_TEXT>',
+  },
   messages: {
-    deleteMessage: 'Deleted!',
-    unauthorized: 'Unauthorized',
-    defaultMessage: 'Default Message',
+    deleteMessage: process.env.MESSAGES_DELETE_MESSAGE || 'Deleted!',
+    unauthorized: process.env.MESSAGES_UNAUTHORIZED || 'Unauthorized',
+    defaultMessage: process.env.MESSAGES_DEFAULT_MESSAGE || 'Default Message',
+    authFailure: process.env.MESSAGES_AUTH_FAILURE || 'Auth Failure!',
+    getUserDataTestError: process.env.MESSAGES_GET_USER_DATA_TEST_ERROR || 'No user data found',
+    loggedOutScreenSuccess: process.env.MESSAGES_LOGGED_OUT_SCREEN_SUCCESS || 'still logged in!',
+    loggedOutScreenError: process.env.MESSAGES_LOGGED_OUT_SCREEN_ERROR || 'logged out',
   },
 };
 module.exports = config;

@@ -44,10 +44,12 @@ export default {
           passportAuthenticate = passport.authenticate(authMethod);
         }
 
-        app.get(`/login/${authMethod}`,
+        app.get(
+          `/login/${authMethod}`,
           passportAuthenticate,
         );
-        app.get(`/login/${authMethod}/callback`,
+        app.get(
+          `/login/${authMethod}/callback`,
           passport.authenticate(authMethod, authOptionsObj),
           (req, res) => {
             const expiresIn = parseInt(config.tokenExpiresIn, 10);
@@ -56,16 +58,13 @@ export default {
             const cookieOptions = { maxAge, httpOnly };
             const token = jwt.sign(req.user, config.jwt.secret, { expiresIn });
             res.cookie('id_token', token, cookieOptions);
-            if (config.environment === 'development' || config.environment === 'testing') {
-              res.redirect(authSuccessRedirect);
-            } else {
-              // production and staging
-            }
+            res.redirect(authSuccessRedirect);
           },
         );
       }
     });
-    app.get('/logout',
+    app.get(
+      '/logout',
       (req, res) => {
         req.logout();
         res.clearCookie('id_token');
@@ -79,28 +78,31 @@ export default {
         }
       },
     );
-    app.get('/authFailure',
+    app.get(
+      '/authFailure',
       (req, res) => {
-        res.end('Auth Failure!');
+        res.end(config.messages.authFailure);
       },
     );
     if (config.environment === 'development' || config.environment === 'testing') {
-      app.get('/getUserDataTest',
+      app.get(
+        '/getUserDataTest',
         (req, res) => {
           if (req.user) {
             res.json(req.user);
           } else {
-            res.end('No user data found');
+            res.end(config.messages.getUserDataTestError);
           }
         },
       );
 
-      app.get('/loggedOutScreen',
+      app.get(
+        '/loggedOutScreen',
         (req, res) => {
           if (req.user) {
-            res.end('still logged in :(');
+            res.end(config.messages.loggedOutScreenSuccess);
           } else {
-            res.end('logged out');
+            res.end(config.messages.loggedOutScreenError);
           }
         },
       );

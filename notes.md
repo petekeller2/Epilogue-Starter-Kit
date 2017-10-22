@@ -1,11 +1,9 @@
-**09/11/17**
+**10/21/17**
 
-Refactored pre-start (configTestMessage and mainConfigTest.json)
+Config updated
 
-Refactored code and documentation related to tests
+Have error class and winston send emails
 
-Documentation updates
+Eslint fixes
 
-Wiki updates
-
-Eslint fix
+Update dependencies
