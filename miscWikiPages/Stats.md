@@ -22,7 +22,7 @@
 
  LICENSE                                            |   21 +
 
- gulpfile.js                                        |  931 +++
+ gulpfile.js                                        |  951 +++
 
  miscWikiPages/Contribution-Guide.md                |   20 +
 
@@ -32,13 +32,15 @@
 
  miscWikiPages/readme.md                            |    7 +
 
- notes.md                                           |   11 +
+ notes.md                                           |    9 +
 
- package-lock.json                                  | 7449 ++++++++++++++++++++
+ package-lock.json                                  | 7454 ++++++++++++++++++++
 
- package.json                                       |   77 +
+ package.json                                       |   78 +
 
  readme.md                                          |   23 +
+
+ src/.eslintignore                                  |    1 +
 
  src/.eslintrc.js                                   |   20 +
 
@@ -48,11 +50,11 @@
 
  src/auth/customMilestones.js                       |   27 +
 
- src/auth/defaultMilestones.js                      |  434 ++
+ src/auth/defaultMilestones.js                      |  494 ++
 
- src/auth/endpoints.js                              |  109 +
+ src/auth/endpoints.js                              |  111 +
 
- src/auth/epilogueAuth.js                           |  743 ++
+ src/auth/epilogueAuth.js                           |  322 +
 
  src/auth/groupPermissions.json                     |    5 +
 
@@ -60,19 +62,17 @@
 
  src/auth/passport.js                               |  189 +
 
+ src/auth/permissionConversions.js                  |  428 ++
+
  src/auth/readme.md                                 |   23 +
 
- src/config.js                                      |   74 +
+ src/config.js                                      |   88 +
 
  src/custom/endpoints/placeholder.md                |    1 +
 
- src/custom/errors/index.js                         |   63 +
+ src/custom/errors/index.js                         |   65 +
 
  src/custom/readme.md                               |    4 +
-
- src/custom/sql/queries/placeholder.md              |    1 +
-
- src/custom/sql/storedFunctions/placeholder.md      |    1 +
 
  src/epilogueSetup.js                               |  252 +
 
@@ -120,23 +120,23 @@
 
  src/resourcesBuilder/template/model.js             |   11 +
 
- src/server.js                                      |  117 +
+ src/server.js                                      |  120 +
 
- src/utilities.js                                   |  137 +
+ src/utilities.js                                   |  192 +
 
- test/httpTests/autoAssociations/associations.js    |   46 +
+ test/httpTests/autoAssociations/associations.js    |   41 +
 
  test/httpTests/autoAssociations/readme.md          |    5 +
 
  test/httpTests/connection.js                       |   19 +
 
- test/httpTests/permissions/access.js               |  176 +
+ test/httpTests/permissions/access.js               |  296 +
 
  test/httpTests/permissions/readme.md               |    5 +
 
  test/httpTests/readme.md                           |    9 +
 
- test/mainConfigTest.json                           |  111 +
+ test/mainConfigTest.json                           |  146 +
 
  test/manualTests/readme.md                         |    8 +
 
@@ -178,25 +178,25 @@
 
  test/setup/spawnTest.js                            |   16 +
 
- test/setup/testCases.js                            |  158 +
+ test/setup/testCases.js                            |  159 +
 
- test/setup/testData.js                             |   66 +
+ test/setup/testData.js                             |   88 +
 
- test/testConfig.json                               |   87 +
+ test/testConfig.json                               |  479 ++
 
  test/testGroupPermissions.json                     |   12 +
 
  test/testUserGroups.json                           |    9 +
 
- test/unitTests/autoAssociations/conversions.js     |  142 +
+ test/unitTests/autoAssociations/conversions.js     |  143 +
 
- .../unitTests/autoAssociations/getResourceNames.js |  142 +
+ .../unitTests/autoAssociations/getResourceNames.js |  143 +
 
  test/unitTests/failing.js                          |    8 +
 
  test/unitTests/groups/jsonPermissions.js           |  132 +
 
- test/unitTests/permissions/conversions.js          |  477 ++
+ test/unitTests/permissions/conversions.js          |  478 ++
 
  test/unitTests/readme.md                           |    4 +
 
@@ -206,4 +206,4 @@
 
 Files: 102
 
-Total Lines of Code: 13666
+Total Lines of Code: 14400
