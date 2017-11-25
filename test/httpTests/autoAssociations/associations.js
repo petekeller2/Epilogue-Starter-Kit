@@ -37,10 +37,5 @@ if (config.environment === 'testing' || config.environment === 'staging') {
         done();
       }).timeout(0);
     }
-    it('TODO', done => {
-
-      done();
-    }).timeout(0);
-    // todo
   });
 }

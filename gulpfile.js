@@ -18,29 +18,37 @@ winston.loggers.add('gulpError', {
 });
 const gulpErrors = winston.loggers.get('gulpError');
 
-winstonConfig = utilities.setUpWinstonLogger('logs/testResults.log');
-winston.loggers.add('testResults', {
+winstonConfig = utilities.setUpWinstonLogger('logs/latestTests.log');
+
+winston.loggers.add('latestTests', {
   file: winstonConfig,
+});
+const latestTests = winston.loggers.get('latestTests');
+
+winston.loggers.add('testResults', {
+  file: {
+    filename: 'logs/testResults.log',
+  },
 });
 const testResults = winston.loggers.get('testResults');
 
-gulp.task('env-dev', function() {
+gulp.task('env-dev', function () {
   return process.env.NODE_ENV = 'development';
 });
 
-gulp.task('env-test', function() {
+gulp.task('env-test', function () {
   return process.env.NODE_ENV = 'testing';
 });
 
-gulp.task('env-staging', function() {
+gulp.task('env-staging', function () {
   return process.env.NODE_ENV = 'staging';
 });
 
-gulp.task('env-prod', function() {
+gulp.task('env-prod', function () {
   return process.env.NODE_ENV = 'production';
 });
 
-gulp.task('env-force', function() {
+gulp.task('env-force', function () {
   return process.env.FORCE = 'YES';
 });
 
@@ -86,11 +94,19 @@ gulp.task('build-all', ['build', 'pre-commit-build']);
 
 // main test task for not built code
 gulp.task('test-server', ['env-force', 'env-test', 'server-start-no-nodemon'], function () {
+  startOfTests('test');
+});
+
+gulp.task('repeat-test-server', ['env-force', 'env-test', 'server-start-no-nodemon'], function () {
   runHttpTestsOrEnd('test');
 });
 
 // main test task for built code
 gulp.task('test-staging-server', ['env-force', 'env-staging', 'serve'], function () {
+  startOfTests('staging');
+});
+
+gulp.task('repeat-test-staging-server', ['env-force', 'env-staging', 'serve'], function () {
   runHttpTestsOrEnd('staging');
 });
 
@@ -102,7 +118,7 @@ gulp.task('clear-wiki', function () {
   emptyDirExceptForGit('wiki');
 });
 
-gulp.task('stats-clear', function() {
+gulp.task('stats-clear', function () {
   fs.removeSync('./miscWikiPages/_Stats.md');
   fs.removeSync('./miscWikiPages/Stats.md');
 });
@@ -114,28 +130,28 @@ gulp.task('reset-test-config', function () {
   });
 });
 
-gulp.task('retire', function() {
+gulp.task('retire', function () {
   // Spawn Retire.js as a child process
   // You can optionally add option parameters to the second argument (array)
-  const child = spawn('retire', [], {cwd: process.cwd()});
+  const child = spawn('retire', [], { cwd: process.cwd() });
 
   child.stdout.setEncoding('utf8');
-  child.stdout.on('data', function(data) {
+  child.stdout.on('data', function (data) {
     winston.info(data);
   });
 
   child.stderr.setEncoding('utf8');
-  child.stderr.on('data', function(data) {
+  child.stderr.on('data', function (data) {
     gulpErrors.error(data);
   });
 });
 
-gulp.task('stats-clean', function() {
+gulp.task('stats-clean', function () {
   fs.removeSync('./miscWikiPages/_Stats.md');
   waitForFileWriteToFinish('./miscWikiPages/Stats.md', buildStats, 1);
 });
 
-gulp.task('new-resource', function() {
+gulp.task('new-resource', function () {
   rlInput('', buildResourceFolder, false);
 });
 
@@ -151,18 +167,18 @@ gulp.task('start-no-nodemon', function() {
  * @name preStart
  * @param {Array} npmScript
  */
-const preStart = function(npmScript) {
-  mainConfigTest().then(function(result) {
+const preStart = function (npmScript) {
+  mainConfigTest().then(function (result) {
     if (result.length === 0) {
       const child = spawn('npm', npmScript, {cwd: process.cwd()});
 
       child.stdout.setEncoding('utf8');
-      child.stdout.on('data', function(data) {
+      child.stdout.on('data', function (data) {
         console.log(data);
       });
 
       child.stderr.setEncoding('utf8');
-      child.stderr.on('data', function(data) {
+      child.stderr.on('data', function (data) {
         gulpErrors.error(data);
       });
     }
@@ -175,9 +191,9 @@ const preStart = function(npmScript) {
  * @return {Array}
  * @description Helper program for mainConfigTest. Returns list of config variables to ignore
  */
-const addToIgnoreList = function(activeList) {
+const addToIgnoreList = function (activeList) {
   const ignore = [];
-  activeList.forEach(function(activeCheck) {
+  activeList.forEach(function (activeCheck) {
     const actualCheckVariable = config[activeCheck.activeVariable];
     if (activeCheck.activeType.toLowerCase() === 'string') {
       if ((activeCheck.activeEquals === true) && (activeCheck.activeValue !== actualCheckVariable)) {
@@ -205,9 +221,9 @@ const addToIgnoreList = function(activeList) {
  * @return {string}
  * @description Helper program for mainConfigTest. Returns error message
  */
-const configTestMessage = function(configVariables, ignore) {
+const configTestMessage = function (configVariables, ignore) {
   let returnMessage = '';
-  configVariables.forEach(function(configVariableObj) {
+  configVariables.forEach(function (configVariableObj) {
     if (ignore.indexOf(configVariableObj.variable) === -1) {
       const variableSplit = configVariableObj.variable.split('.');
       let actualPlaceholderText = config;
@@ -242,9 +258,9 @@ const configTestMessage = function(configVariables, ignore) {
  * @return {Promise}
  * @description Checks to see if default values were replaced for required config variables
  */
-const mainConfigTest = function() {
-  return new Promise(function(resolve) {
-    fs.readFile('test/mainConfigTest.json', 'utf8', function(mainConfigTestErr, mainConfigTestData) {
+const mainConfigTest = function () {
+  return new Promise(function (resolve) {
+    fs.readFile('test/mainConfigTest.json', 'utf8', function (mainConfigTestErr, mainConfigTestData) {
       if (mainConfigTestErr) {
         winston.error(`Attempt to read mainConfigTest.js. ${mainConfigTestErr}`);
       }
@@ -261,7 +277,7 @@ const mainConfigTest = function() {
  * @return {function}
  * @description see: http://benalman.com/news/2012/09/partial-application-in-javascript/
  */
-const partialRight = function(fn /*, args...*/) {
+const partialRight = function (fn /*, args...*/) {
   // A reference to the Array#slice method.
   const slice = Array.prototype.slice;
   // Convert arguments object to an array, removing the first argument.
@@ -279,7 +295,7 @@ const partialRight = function(fn /*, args...*/) {
  * @param {string} cleanedResourceName
  * @param {string} fieldNameOrTypeOrEnd
  */
-const buildModelResourceFile = function(userInput, cleanedResourceName, fieldNameOrTypeOrEnd) {
+const buildModelResourceFile = function (userInput, cleanedResourceName, fieldNameOrTypeOrEnd) {
   const modelFile = getCleanedResourcePath(cleanedResourceName, 'model.js');
   if (fieldNameOrTypeOrEnd.search(/Field Name/g) !== -1) {
     buildFieldName(userInput, cleanedResourceName, modelFile);
@@ -298,7 +314,7 @@ const buildModelResourceFile = function(userInput, cleanedResourceName, fieldNam
  * @param {string} resourceName
  * @param {string} modelFile
  */
-const buildAnotherFieldOrEnd = function(userInput, resourceName, modelFile) {
+const buildAnotherFieldOrEnd = function (userInput, resourceName, modelFile) {
   const yesAnswers = ['y', 'yes', 'surewhynot'];
   const noAnswers = ['n', 'no', 'q', 'quit'];
   const userInputLowerCase = userInput.toLowerCase().trim();
@@ -331,7 +347,7 @@ const buildAnotherFieldOrEnd = function(userInput, resourceName, modelFile) {
  * @param {string} resourceName
  * @param {string} modelFile
  */
-const buildFieldType = function(userInput, resourceName, modelFile) {
+const buildFieldType = function (userInput, resourceName, modelFile) {
   const validFieldTypes = ['STRING', 'CHAR', 'TEXT', 'INTEGER', 'BIGINT', 'FLOAT', 'REAL', 'DOUBLE', 'DECIMAL', 'BOOLEAN', 'TIME', 'DATE', 'DATEONLY', 'HSTORE', 'JSON', 'JSONB', 'NOW', 'BLOB', 'RANGE', 'UUID', 'UUIDV1', 'UUIDV4', 'VIRTUAL', 'ENUM', 'ARRAY', 'GEOMETRY', 'GEOGRAPHY'];
   const validFieldTypesString = validFieldTypes.join(', ');
   const userInputUpperCase = userInput.toUpperCase().trim();
@@ -356,7 +372,7 @@ const buildFieldType = function(userInput, resourceName, modelFile) {
  * @param {string} resourceName
  * @param {string} modelFile
  */
-const buildFieldName = function(userInput, resourceName, modelFile) {
+const buildFieldName = function (userInput, resourceName, modelFile) {
   if (userInput.trim().length === 0) {
     askNextQuestionModel(resourceName, 'Field Name is required\nField Name: ', 'Field Type: ', false);
   } else {
@@ -377,10 +393,10 @@ const buildFieldName = function(userInput, resourceName, modelFile) {
  * @param {function} callback
  * @param {boolean} end
  */
-const rlInput = function(prompt, callback, end = false) {
+const rlInput = function (prompt, callback, end = false) {
   const rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout
+    output: process.stdout,
   });
   if ((prompt === '') && (end === false)) {
     setTimeout(process.stdout.write.bind(process.stdout), 500, 'Resource Name: ');
@@ -402,7 +418,7 @@ const rlInput = function(prompt, callback, end = false) {
  * @param {string} fieldNameOrTypeOrEndNext
  * @param {boolean} end
  */
-const askNextQuestionModel = function(resourceName, fieldNameOrTypeOrEnd, fieldNameOrTypeOrEndNext, end) {
+const askNextQuestionModel = function (resourceName, fieldNameOrTypeOrEnd, fieldNameOrTypeOrEndNext, end) {
   const buildModelResourceFilePartial = partialRight(buildModelResourceFile, resourceName, fieldNameOrTypeOrEndNext);
   rlInput(fieldNameOrTypeOrEnd, buildModelResourceFilePartial, end);
 };
@@ -412,7 +428,7 @@ const askNextQuestionModel = function(resourceName, fieldNameOrTypeOrEnd, fieldN
  * @param {string} resourceName
  * @return {string}
  */
-const getCleanedResourceName = function(resourceName) {
+const getCleanedResourceName = function (resourceName) {
   const resourceNameCleaned = resourceName.trim();
   return resourceNameCleaned.charAt(0).toUpperCase() + resourceNameCleaned.slice(1);
 };
@@ -423,7 +439,7 @@ const getCleanedResourceName = function(resourceName) {
  * @param {string} fileName
  * @return {string}
  */
-const getCleanedResourcePath = function(cleanedResourceName, fileName) {
+const getCleanedResourcePath = function (cleanedResourceName, fileName) {
   return `src/resources/${cleanedResourceName}/${fileName}`;
 };
 
@@ -432,7 +448,7 @@ const getCleanedResourcePath = function(cleanedResourceName, fileName) {
  * @param {string} resourceName
  * @param {string} fileName
  */
-const buildResourceFile = function(resourceName, fileName) {
+const buildResourceFile = function (resourceName, fileName) {
   return new Promise((resolve, reject) => {
     const copiedPath = getCleanedResourcePath(resourceName, fileName);
     fs.copy(`src/resourcesBuilder/template/${fileName}`, copiedPath, err => {
@@ -459,7 +475,7 @@ const buildResourceFile = function(resourceName, fileName) {
  * @name buildResourceFolder
  * @param {string} resourceName
  */
-const buildResourceFolder = function(resourceName) {
+const buildResourceFolder = function (resourceName) {
   if (resourceName.trim().length === 0) {
     rlInput('Resource Name is Required\nResource Name: ', buildResourceFolder, false);
   } else {
@@ -479,7 +495,7 @@ const buildResourceFolder = function(resourceName) {
  * @name buildNonModelResourceFiles
  * @param {string} resourceName
  */
-const buildNonModelResourceFiles = function(resourceName) {
+const buildNonModelResourceFiles = function (resourceName) {
   return new Promise((resolve, reject) => {
     fs.readdir('src/resourcesBuilder/template', function (err, files) {
       if (err) gulpErrors.error(err);
@@ -504,7 +520,7 @@ const buildNonModelResourceFiles = function(resourceName) {
             }
           });
         });
-      }, function(error) {
+      }, function (error) {
         gulpErrors.info(error);
       });
     });
@@ -515,13 +531,13 @@ const buildNonModelResourceFiles = function(resourceName) {
  * @name buildStats
  * @description Passed to waitForFileWriteToFinish
  */
-const buildStats = function() {
+const buildStats = function () {
   fs.renameSync('./miscWikiPages/Stats.md', './miscWikiPages/_Stats.md');
   fs.removeSync('./miscWikiPages/Stats.md');
   fs.ensureFileSync('./miscWikiPages/Stats.md');
-  const file = fs.readFileSync('./miscWikiPages/Stats.md').toString().split("\n");
-  file.splice(0, 0, "# Stats");
-  const newFile = file.join("\n\n");
+  const file = fs.readFileSync('./miscWikiPages/Stats.md').toString().split('\n');
+  file.splice(0, 0, '# Stats');
+  const newFile = file.join('\n\n');
 
   fs.writeFile('./miscWikiPages/Stats.md', newFile, function (err) {
     if (err) return err;
@@ -531,7 +547,7 @@ const buildStats = function() {
         const numbers = lineCopy.match(/\d+/g);
         const replacementLine = `Files: ${numbers[0]}\n\nTotal Lines of Code: ${numbers[1]}`;
         fs.appendFileSync('./miscWikiPages/Stats.md', replacementLine);
-      } else if(index === array.length - 1) {
+      } else if (index === array.length - 1) {
 
       } else {
         fs.appendFileSync('./miscWikiPages/Stats.md', line.toString() + '\n\n');
@@ -546,12 +562,12 @@ const buildStats = function() {
  * @param {string} filePath
  * @param {number} safetyCounter
  */
-const deleteFileWhenItExists = function(filePath, safetyCounter = 1) {
+const deleteFileWhenItExists = function (filePath, safetyCounter = 1) {
   if (safetyCounter > 10000) {
     gulpErrors.error('Safety counter of deleteFileWhenItExists was exceeded');
   }
   const newSafetyCounter = safetyCounter + 1;
-  fs.stat(filePath, function(err, stats) {
+  fs.stat(filePath, function (err, stats) {
     if (err) {
       if (err.errno === -2) {
         deleteFileWhenItExists(filePath, newSafetyCounter);
@@ -572,12 +588,12 @@ const deleteFileWhenItExists = function(filePath, safetyCounter = 1) {
  * @param {number} previousSize
  * @param {number} sameSizeCount
  */
-const waitForFileWriteToFinish = function(filePath, functionToRun, safetyCounter = 1, previousSize, sameSizeCount = 0) {
+const waitForFileWriteToFinish = function (filePath, functionToRun, safetyCounter = 1, previousSize, sameSizeCount = 0) {
   if (safetyCounter > 10000) {
     gulpErrors.error('Safety counter of waitForFileWriteToFinish was exceeded');
   }
   const newSafetyCounter = safetyCounter + 1;
-  fs.stat(filePath, function(err, stats) {
+  fs.stat(filePath, function (err, stats) {
     if (err) {
       if (err.errno === -2) {
         waitForFileWriteToFinish(filePath, functionToRun, newSafetyCounter);
@@ -605,7 +621,7 @@ const waitForFileWriteToFinish = function(filePath, functionToRun, safetyCounter
  * @param {string} dir
  * @description Creates a temporary folder to store .git into which gets deleted after .git is moved back to its original folder
  */
-const emptyDirExceptForGit = function(dir) {
+const emptyDirExceptForGit = function (dir) {
   const tempFolderName = makeTempDir();
   if ((tempFolderName.length > 0) && (tempFolderName !== 'Safety counter exceeded')) {
     fs.renameSync(`${dir}/.git`, `${tempFolderName}/.git`);
@@ -621,7 +637,7 @@ const emptyDirExceptForGit = function(dir) {
  * @returns {string}
  * @description Creates a unique temporary folder and returns the folder name or an error message
  */
-const makeTempDir = function(safetyCounter) {
+const makeTempDir = function (safetyCounter) {
   if (!safetyCounter) {
     safetyCounter = 1;
   }
@@ -630,7 +646,7 @@ const makeTempDir = function(safetyCounter) {
     gulpErrors.error('Safety counter of makeTempDir was exceeded');
     return 'Safety counter exceeded';
   } else if (fs.existsSync(folderName)) {
-    return makeTempDir(safetyCounter+1);
+    return makeTempDir(safetyCounter + 1);
   } else {
     fs.ensureDirSync(folderName);
     return folderName;
@@ -644,7 +660,7 @@ const makeTempDir = function(safetyCounter) {
  * @description RemoveFirstLine of file. See moka's answer https://stackoverflow.com/questions/17363206/node-js-how-to-delete-first-line-in-file/17365494
  */
 // Transform sctreamer to remove first line
-const RemoveFirstLine = function(args) {
+const RemoveFirstLine = function (args) {
   if (!(this instanceof RemoveFirstLine)) {
     return new RemoveFirstLine(args);
   }
@@ -655,7 +671,7 @@ const RemoveFirstLine = function(args) {
 
 util.inherits(RemoveFirstLine, Transform);
 
-RemoveFirstLine.prototype._transform = function(chunk, encoding, done) {
+RemoveFirstLine.prototype._transform = function (chunk, encoding, done) {
   if (this._removed) { // if already removed
     this.push(chunk); // just push through buffer
   } else {
@@ -680,7 +696,7 @@ RemoveFirstLine.prototype._transform = function(chunk, encoding, done) {
  * @param {array} arguments
  * @description Runs the moveMarkdown function and the buildCustomSideMenu function if it is enabled in wikiConfig.json
  */
-const markdownBuild = function() {
+const markdownBuild = function () {
   fs.readFile('wikiConfig.json', 'utf8', (wikiConfigErr, wikiConfigData) => {
     const wikiConfig = JSON.parse(wikiConfigData);
     if(wikiConfig.customSidebar.toUpperCase() === 'YES') {
@@ -696,7 +712,7 @@ const markdownBuild = function() {
  * @param {string} file
  * @description Removes first line from a file
  */
-const removeTitleFromMarkdown = function(file) {
+const removeTitleFromMarkdown = function (file) {
   const input = fs.createReadStream(`wiki/${file}`);
   const output = fs.createWriteStream(`wiki/_${file}`);
 
@@ -704,7 +720,7 @@ const removeTitleFromMarkdown = function(file) {
     .pipe(RemoveFirstLine()) // pipe through line remover
     .pipe(output);
 
-  output.on('finish', function() {
+  output.on('finish', function () {
     fs.rename(`wiki/_${file}`, `wiki/${file}`, doneCustom);
   });
 };
@@ -713,7 +729,7 @@ const removeTitleFromMarkdown = function(file) {
  * @name doneCustom
  * @description Function for callbacks
  */
-const doneCustom = function() {
+const doneCustom = function () {
   // console.log('function done');
 };
 
@@ -722,7 +738,7 @@ const doneCustom = function() {
  * @param {array} arguments
  * @description Runs moveMarkdown for all the markdown files to be moved
  */
-const moveAllMarkdown = function() {
+const moveAllMarkdown = function () {
   const args = Array.prototype.slice.call(arguments);
   args.forEach(function(arg) {
     moveMarkdown(arg);
@@ -736,7 +752,7 @@ const moveAllMarkdown = function() {
  * @returns {object}
  * @description Returns a file name generated from the first line of a markdown file
  */
-const newMarkdownFileName = function(file) {
+const newMarkdownFileName = function (file) {
   return new Promise(function(resolve, reject) {
     let lineNumber = 0;
     const rl = readline.createInterface({
@@ -761,7 +777,7 @@ const newMarkdownFileName = function(file) {
  * @param {string} wikiFile
  * @description Used by moveMarkdown
  */
-const createWikiFile = function(file, wikiFile) {
+const createWikiFile = function (file, wikiFile) {
   fs.copy(file, `wiki/${wikiFile}`, err => {
     if (err) return gulpErrors.error(err);
     removeTitleFromMarkdown(wikiFile);
@@ -773,7 +789,7 @@ const createWikiFile = function(file, wikiFile) {
  * @param {string} dir
  * @description Copies markdown files to the wiki directory with file names based on the first line of the file
  */
-const moveMarkdown = function(dir) {
+const moveMarkdown = function (dir) {
   let ignoredFile = false;
   let fileName = '';
   let fileNameSections = [];
@@ -786,14 +802,14 @@ const moveMarkdown = function(dir) {
       }).map(title => {
         return `${title.replace(/\s+/g, '-').toLocaleLowerCase()}.md`;
       });
-      if(Array.isArray(files) && files.length > 0) {
+      if (Array.isArray(files) && files.length > 0) {
         files.forEach(function(file) {
           fileNameSections = file.split('/');
           fileName = fileNameSections.pop().toLowerCase().trim();
-          if(file === 'miscWikiPages/Home.md') {
+          if (file === 'miscWikiPages/Home.md') {
             fileName = fileName.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
             createWikiFile(file, fileName);
-          } else if(file === 'miscWikiPages/Stats.md') {
+          } else if (file === 'miscWikiPages/Stats.md') {
             createWikiFile(file, 'Stats.md');
           } else {
             ignoredFile = false;
@@ -820,17 +836,17 @@ const moveMarkdown = function(dir) {
         });
       }
     });
-  })
+  });
 };
 
 /** @function
  * @name buildCustomSideMenu
  * @param {Array} arguments
- * @description Not finished
+ * @description Not finished. For wiki
  */
-const buildCustomSideMenu = function() {
+const buildCustomSideMenu = function () {
   const dirs = Array.prototype.slice.call(arguments);
-  if(Array.isArray(dirs) && dirs.length > 0) {
+  if (Array.isArray(dirs) && dirs.length > 0) {
     const mainSections = []; // array of arrays
     dirs.forEach(function(dir) {
       // todo
@@ -843,11 +859,11 @@ const buildCustomSideMenu = function() {
  * @param {object} testConfig - testConfig.json
  * @description Resets testConfig.json to its starting state
  */
-const resetTestConfig = function(testConfig) {
+const resetTestConfig = function (testConfig) {
   testConfig.testNumber = 0;
   testConfig.individualHttpTest = false;
   testConfig.testsCasesHaveBeenGenerated = false;
-  if(testConfig.generationConfig && testConfig.generationConfig.removePreviousGeneratedTestCases === true) {
+  if (testConfig.generationConfig && testConfig.generationConfig.removePreviousGeneratedTestCases === true) {
     testConfig.testCases = testConfig.testCases.filter(function(testCase) {
       if (testCase.generatedByTestsCasesJs !== true) {
         return testCase;
@@ -862,27 +878,37 @@ const resetTestConfig = function(testConfig) {
 };
 
 /** @function
+ * @name startOfTests
+ * @param {string} env
+ * @description Clears and moves test results
+ */
+const startOfTests = function (env) {
+  fs.truncate('./logs/previousTestResults.log', 0, function () {
+    fs.rename('./logs/testResults.log', './logs/previousTestResults.log', function (err) {
+      if (err) return gulpErrors.error(err);
+      fs.truncate('./logs/testResults.log', 0, function () {
+        runHttpTestsOrEnd(env);
+      });
+    });
+  });
+};
+
+/** @function
  * @name endOfTests
  * @description Sets the test status for the currently tests and set the environment to development
  */
-const endOfTests = function() {
-  fs.readFile('logs/latestTests.log', (err, data) => {
-    if (err) {
-      gulpErrors.error(err);
-      throw err;
-    }
+const endOfTests = function () {
+  fs.readFile('./logs/testResults.log', 'utf8', (testResultsErr, testResultsData) => {
+    if (testResultsErr) return gulpErrors.error(testResultsErr);
     let testResultOverview = '';
-    if (data.toString('utf8').search(/failing/g) !== -1) {
-      testResultOverview = `Did not pass all tests on ${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC)`;
+    if (testResultsData.toString('utf8').search(/AssertionError/g) !== -1) {
+      testResultOverview = `Not all tests passed on ${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC)`;
     } else {
       testResultOverview = `Passed all tests on ${new Date().toISOString().replace(/T/, ' ').replace(/\..+/, '')} (UTC)`;
     }
-    fs.writeFile('logs/latestTests.log', testResultOverview, function (err) {
-      if (err) return gulpErrors.error(err);
-      testResults.info(testResultOverview);
-    });
+    latestTests.info(testResultOverview);
+    process.env.NODE_ENV = 'development';
   });
-  process.env.NODE_ENV = 'development';
 };
 
 /** @function
@@ -890,7 +916,7 @@ const endOfTests = function() {
  * @param {string} env
  * @description Runs http tests until all the test cases in testConfig.json have been run
  */
-const runHttpTests = function(env) {
+const runHttpTests = function (env) {
   fs.readFile('./test/testConfig.json', 'utf8', (testConfigErr, testConfigData) => {
     const testConfig = JSON.parse(testConfigData);
     const numOfTestCasesHttp = testConfig.testCases.length;
@@ -900,9 +926,9 @@ const runHttpTests = function(env) {
       fs.writeFile('./test/testConfig.json', JSON.stringify(testConfig, null, 2), function (err) {
         if (err) return gulpErrors.error(err);
         if (env === 'test') {
-          gulp.start('test-server');
+          gulp.start('repeat-test-server');
         } else if (env === 'staging') {
-          gulp.start('test-staging-server');
+          gulp.start('repeat-test-staging-server');
         } else {
           gulpErrors.error('environment is not test or staging!');
         }
@@ -919,7 +945,7 @@ const runHttpTests = function(env) {
  * @param {string} environment
  * @description Runs http tests if they have been enabled in testConfig.json
  */
-const runHttpTestsOrEnd = function(environment) {
+const runHttpTestsOrEnd = function (environment) {
   fs.readFile('./test/testConfig.json', 'utf8', (testConfigErr, testConfigData) => {
     const testConfig = JSON.parse(testConfigData);
     if (testConfig.doHttpTests === true) {

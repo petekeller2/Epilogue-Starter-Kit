@@ -95,13 +95,13 @@ describe('(Get Resource Names) Auto associations string input', () => {
 
 describe('(Get Resource Names) Auto associations object input', () => {
   it('hasMany', done => {
-    aaReturnActual = epilogueSetup.convertAutoAssociations({hasMany: 'hello'}, true);
+    aaReturnActual = epilogueSetup.convertAutoAssociations({ hasMany: 'hello' }, true);
     aaReturnExpected = ['hello'];
     assert.deepEqual(aaReturnActual, aaReturnExpected);
     done();
   });
   it('belongsTo', done => {
-    aaReturnActual = epilogueSetup.convertAutoAssociations({belongsTo: 'hello'}, true);
+    aaReturnActual = epilogueSetup.convertAutoAssociations({ belongsTo: 'hello' }, true);
     aaReturnExpected = ['hello'];
     assert.deepEqual(aaReturnActual, aaReturnExpected);
     done();
@@ -122,19 +122,19 @@ describe('(Get Resource Names) Auto associations array input', () => {
     done();
   });
   it('one, auto association named', done => {
-    aaReturnActual = epilogueSetup.convertAutoAssociations([{belongsTo: 'hello'}], true);
+    aaReturnActual = epilogueSetup.convertAutoAssociations([{ belongsTo: 'hello' }], true);
     aaReturnExpected = ['hello'];
     assert.deepEqual(aaReturnActual, aaReturnExpected);
     done();
   });
   it('many, auto associations named', done => {
-    aaReturnActual = epilogueSetup.convertAutoAssociations([{belongsTo: 'one'}, {hasMany: 'two'}], true);
+    aaReturnActual = epilogueSetup.convertAutoAssociations([{ belongsTo: 'one' }, { hasMany: 'two' }], true);
     aaReturnExpected = ['one', 'two'];
     assert.deepEqual(aaReturnActual, aaReturnExpected);
     done();
   });
   it('many, one auto association named, the other is not', done => {
-    aaReturnActual = epilogueSetup.convertAutoAssociations([{belongsTo: 'one'}, 'two'], true);
+    aaReturnActual = epilogueSetup.convertAutoAssociations([{ belongsTo: 'one' }, 'two'], true);
     aaReturnExpected = ['one', 'two'];
     assert.deepEqual(aaReturnActual, aaReturnExpected);
     done();

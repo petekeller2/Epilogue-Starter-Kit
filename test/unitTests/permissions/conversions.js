@@ -397,79 +397,79 @@ describe('Permissions conversions for strings', () => {
 
 describe('Permissions conversions for objects', () => {
   it('full action name', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: ['list', 'create', 'read']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: ['list', 'create', 'read'] });
     permissionReturnExpected = [true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('full action name, random case', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: ['lIst', 'crEAte', 'reAd']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: ['lIst', 'crEAte', 'reAd'] });
     permissionReturnExpected = [true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('partial action name', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: ['l', 'c', 'r']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: ['l', 'c', 'r'] });
     permissionReturnExpected = [true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('partial action name, random case', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: ['l', 'C', 'R']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: ['l', 'C', 'R'] });
     permissionReturnExpected = [true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('partial action name, random case for both user type and actions', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({oWnEr: ['l', 'C', 'R']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ oWnEr: ['l', 'C', 'R'] });
     permissionReturnExpected = [true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('partial action name, many user types', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: ['l', 'c', 'r'], anyuser: ['d']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: ['l', 'c', 'r'], anyuser: ['d'] });
     permissionReturnExpected = [true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('partial and complete action name, many user types', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: ['l', 'create', 'r'], anyuser: ['d']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: ['l', 'create', 'r'], anyuser: ['d'] });
     permissionReturnExpected = [true, true, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('complete action name, many user types, blank array', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: [], anyuser: ['d']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: [], anyuser: ['d'] });
     permissionReturnExpected = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('blank array', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: []});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: [] });
     permissionReturnExpected = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('invalid action', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: ['test']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: ['test'] });
     permissionReturnExpected = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('invalid action and valid action', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: ['test', 'list']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: ['test', 'list'] });
     permissionReturnExpected = [true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('actions out of order', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: ['r', 'l']});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: ['r', 'l'] });
     permissionReturnExpected = [true, false, true, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();
   });
   it('boolean array', done => {
-    permissionReturnActual = epilogueAuth.convertPermissions({owner: [true, true, false, true, false]});
+    permissionReturnActual = epilogueAuth.convertPermissions({ owner: [true, true, false, true, false] });
     permissionReturnExpected = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false];
     assert.deepEqual(permissionReturnActual, permissionReturnExpected);
     done();

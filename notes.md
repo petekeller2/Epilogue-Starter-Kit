@@ -1,9 +1,3 @@
-**10/21/17**
+**11/24/17**
 
-Config updated
-
-Have error class and winston send emails
-
-Eslint fixes
-
-Update dependencies
+Bugs found in tests

@@ -7,9 +7,9 @@ if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')
 const config = require(`../../${srcOrBuild}/config`);
 const utilities = require(`../../${srcOrBuild}/utilities`);
 
-import fs from "fs-extra";
-import winston from "winston";
-import testConfig from "../testConfig.json";
+import fs from 'fs-extra';
+import winston from 'winston';
+import testConfig from '../testConfig.json';
 
 const winstonConfig = utilities.setUpWinstonLogger('logs/testCaseGeneration.log');
 winston.loggers.add('testCaseGeneration', {
@@ -20,14 +20,15 @@ const testCaseGeneration = winston.loggers.get('testCaseGeneration');
 export default {
   /** @function
    * @name setPermissionString
-   * @param {number} counter
+   * @param {number} originalCounter
    * @returns {string}
    * @description Used by permissionsTests
    */
-  setPermissionString(counter) {
-    let permissionStringArray = ['lcrud','lcrud','lcrud','lcrud'];
+  setPermissionString(originalCounter) {
+    const permissionStringArray = ['lcrud', 'lcrud', 'lcrud', 'lcrud'];
+    let counter = originalCounter;
     while (counter > 0) {
-      counter-=1;
+      counter -= 1;
       permissionStringArray[counter] = '-----';
     }
     permissionStringArray.reverse();
@@ -56,13 +57,13 @@ export default {
    */
   permissionsTests() {
     if (Array.isArray(testConfig.generationConfig.userIDs)) {
-      for (let i = 0; i < testConfig.generationConfig.userIDs.length; i+=1) {
+      for (let i = 0; i < testConfig.generationConfig.userIDs.length; i += 1) {
         let permissionSectionOfTestCase = [];
-        if (parseInt(testConfig.generationConfig.randomPermissionCases) > 0) {
-          for (let i3 = 0; i3 < parseInt(testConfig.generationConfig.randomPermissionCases); i3 += 1) {
+        if (parseInt(testConfig.generationConfig.randomPermissionCases, 10) > 0) {
+          for (let i3 = 0; i3 < parseInt(testConfig.generationConfig.randomPermissionCases, 10); i3 += 1) {
             permissionSectionOfTestCase = [];
-            for (let i2 = 0; i2 < testConfig.generationConfig.resources.length; i2+=1) {
-              //random bits 1048575 (20 bits max in decimal)
+            for (let i2 = 0; i2 < testConfig.generationConfig.resources.length; i2 += 1) {
+              // random bits 1048575 (20 bits max in decimal)
               permissionSectionOfTestCase.push(testConfig.generationConfig.resources[i2]);
               permissionSectionOfTestCase.push(Math.floor(Math.random() * 65535));
             }
@@ -76,7 +77,7 @@ export default {
         if (testConfig.generationConfig.defaultPermissionCases === true) {
           for (let i3 = 0; i3 < 4; i3 += 1) {
             permissionSectionOfTestCase = [];
-            for (let i2 = 0; i2 < testConfig.generationConfig.resources.length; i2+=1) {
+            for (let i2 = 0; i2 < testConfig.generationConfig.resources.length; i2 += 1) {
               permissionSectionOfTestCase.push(testConfig.generationConfig.resources[i2]);
               permissionSectionOfTestCase.push(this.setPermissionString(i3));
             }
@@ -92,17 +93,17 @@ export default {
    */
   aaTests() {
     let aaObject = {};
-    testConfig.generationConfig.autoAssociations.forEach(aa => {
+    testConfig.generationConfig.autoAssociations.forEach((aa) => {
       aaObject = {
-        aaOrAccess: "aa",
+        aaOrAccess: 'aa',
         permissions: [],
         association: {
-          parent: "User",
-          aa: aa,
-          child: "Todo"
+          parent: 'User',
+          aa,
+          child: 'Todo',
         },
-        userID: "",
-        generatedByTestsCasesJs: true
+        userID: '',
+        generatedByTestsCasesJs: true,
       };
       testConfig.testCases.push(aaObject);
     });
@@ -119,8 +120,8 @@ export default {
       }
 
       // remove at the beginning as well in case the previous attempt at running the tests failed
-      if(testConfig.generationConfig.removePreviousGeneratedTestCases === true) {
-        testConfig.testCases = testConfig.testCases.filter(testCase => {
+      if (testConfig.generationConfig.removePreviousGeneratedTestCases === true) {
+        testConfig.testCases = testConfig.testCases.filter((testCase) => {
           if (testCase.generatedByTestsCasesJs !== true) {
             return testCase;
           }
@@ -137,8 +138,8 @@ export default {
         }
       }
 
-      if ((testConfig.generationConfig.guestUser === true) && !(testConfig.generationConfig.userIDs.includes(""))) {
-        testConfig.generationConfig.userIDs.push("");
+      if ((testConfig.generationConfig.guestUser === true) && !(testConfig.generationConfig.userIDs.includes(''))) {
+        testConfig.generationConfig.userIDs.push('');
       }
 
       if (!(Array.isArray(testConfig.generationConfig.resources))) {
@@ -149,10 +150,10 @@ export default {
       // this.aaTests(); // todo: uncomment this after the tests are created
 
       testConfig.testsCasesHaveBeenGenerated = true;
-      fs.writeFile('./test/testConfig.json', JSON.stringify(testConfig, null, 2), function (err) {
+      fs.writeFile('./test/testConfig.json', JSON.stringify(testConfig, null, 2), (err) => {
         if (err) return testCaseGeneration.error(err);
         resolve('test cases inserted');
       });
     });
-  }
-}
+  },
+};

@@ -266,11 +266,13 @@ export default {
             req.user.id = testConfig.testCases[testConfig.testNumber - 1].userID;
           }
 
-          if (isGroup === true) {
-            currentUserOwnsResource = await this.isOwnerOfGroupResourceCheck(req, actionsList, resource, i);
-            memberOfGroup = await this.isMemberOfGroupCheck(req, actionsList, resource, i, awaitedGroupXrefModel);
-          } else {
-            currentUserOwnsResource = await this.isOwnerOfRegularResourceCheck(req, cleanedEndpointsArray, actionsList, resource, i);
+          if (req && req.user && req.user.id && (req.user.id !== '')) {
+            if (isGroup === true) {
+              currentUserOwnsResource = await this.isOwnerOfGroupResourceCheck(req, actionsList, resource, i);
+              memberOfGroup = await this.isMemberOfGroupCheck(req, actionsList, resource, i, awaitedGroupXrefModel);
+            } else {
+              currentUserOwnsResource = await this.isOwnerOfRegularResourceCheck(req, cleanedEndpointsArray, actionsList, resource, i);
+            }
           }
 
           if ((permissions[i] === true) && (currentUserOwnsResource === true)) {

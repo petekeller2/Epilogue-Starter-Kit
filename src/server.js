@@ -65,11 +65,12 @@ export default {
             });
             const testsLog = winston.loggers.get('testsLog');
 
-            winstonConfig = utilities.setUpWinstonLogger('logs/latestTests.log');
-            winston.loggers.add('latestTestsLog', {
-              file: winstonConfig,
+            winston.loggers.add('testResultsLog', {
+              file: {
+                filename: 'logs/testResults.log',
+              },
             });
-            const latestTestsLog = winston.loggers.get('latestTestsLog');
+            const testResultsLog = winston.loggers.get('testResultsLog');
 
             if (testConfig.testsCasesHaveBeenGenerated !== true) {
               testCases.generateTestCases().then((generateTestCasesMessage) => {
@@ -92,11 +93,13 @@ export default {
 
                 runTests.stdout.on('data', (data) => {
                   testsLog.info(data.toString('utf8'));
-                  latestTestsLog.info(data.toString('utf8'));
+                  testResultsLog.info(data.toString('utf8'));
                 });
 
                 runTests.stderr.on('data', (data) => {
                   winston.info(`stderr: \n ${data}`);
+                  testsLog.info(data.toString('utf8'));
+                  testResultsLog.info(data.toString('utf8'));
                 });
 
                 runTests.on('close', (code) => {
