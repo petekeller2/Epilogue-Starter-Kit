@@ -3,6 +3,7 @@ import epilogue from 'epilogue';
 import merge from 'deepmerge';
 import utilities from './utilities';
 import Resources from './resources';
+import config from './config';
 import testConfig from '../test/testConfig.json';
 
 export default {
@@ -63,7 +64,11 @@ export default {
       modelNames.push(tempResource[0]);
       return tempResource;
     });
-    utilities.throwErrorConditionally(hasUser, 'The User resource is required!');
+    let userErrorMessage = config.messages.userResourceNotFound;
+    if (config.environment === 'development' || config.environment === 'testing') {
+      userErrorMessage = config.messages.userResourceNotFoundDev;
+    }
+    utilities.throwErrorConditionally(hasUser, userErrorMessage);
 
     // the next step (see 'build all models for next step' above)
     let autoAssociationsConverted;

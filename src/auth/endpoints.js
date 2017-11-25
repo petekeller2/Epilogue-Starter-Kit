@@ -33,11 +33,12 @@ export default {
       if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf(authMethod) !== -1)) {
         const passportSession = utilities.yesTrueNoFalse(config.passportSession);
         const failureRedirect = config.authFailureRedirect;
-        const authSuccessRedirect = config.authSuccessRedirect;
+        const authSuccessRedirect = { config };
         const authOptionsObj = { failureRedirect };
         let passportAuthenticate = '';
         if (authMethod !== 'twitter') {
-          const scope = config.authMethods[authMethod].scope;
+          const authMethodObj = config.authMethods[authMethod];
+          const scope = { authMethodObj };
           passportAuthenticate = passport.authenticate(authMethod, { scope, session: passportSession });
           authOptionsObj.session = passportSession;
         } else {

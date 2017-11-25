@@ -81,8 +81,10 @@ const config = {
     defaultMessage: process.env.MESSAGES_DEFAULT_MESSAGE || 'Default Message',
     authFailure: process.env.MESSAGES_AUTH_FAILURE || 'Auth Failure!',
     getUserDataTestError: process.env.MESSAGES_GET_USER_DATA_TEST_ERROR || 'No user data found',
-    loggedOutScreenSuccess: process.env.MESSAGES_LOGGED_OUT_SCREEN_SUCCESS || 'still logged in!',
-    loggedOutScreenError: process.env.MESSAGES_LOGGED_OUT_SCREEN_ERROR || 'logged out',
+    loggedOutScreenSuccess: process.env.MESSAGES_LOGGED_OUT_SCREEN_SUCCESS || 'logged out',
+    loggedOutScreenError: process.env.MESSAGES_LOGGED_OUT_SCREEN_ERROR || 'still logged in!',
+    userResourceNotFound: process.env.USER_RESOURCE_NOT_FOUND || 'Something is wrong with the server',
+    userResourceNotFoundDev: process.env.USER_RESOURCE_NOT_FOUND || 'The User resource is required!',
   },
 };
 module.exports = config;

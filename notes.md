@@ -1,9 +1,7 @@
 **11/25/17**
 
-Update libraries
+Eslint fixes
 
-Function for updating group name
+Config default value fixes
 
-Update by set when updating
-
-Code moved to permissions conversions file
+More config messages

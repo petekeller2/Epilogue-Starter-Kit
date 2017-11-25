@@ -160,7 +160,11 @@ export default {
             const id = this.getId(req, profile);
             const awaitedResourcesFromSetup = await resourcesFromSetup;
             const userResource = awaitedResourcesFromSetup.get('User')[2];
-            utilities.throwErrorConditionally(userResource, 'The User resource was not found during an auth attempt!');
+            let userErrorMessage = config.messages.userResourceNotFound;
+            if (config.environment === 'development' || config.environment === 'testing') {
+              userErrorMessage = config.messages.userResourceNotFoundDev;
+            }
+            utilities.throwErrorConditionally(userResource, userErrorMessage);
             const foundUser = await userResource.findOne({
               attributes: ['id', 'username', 'emailAddress', 'profilePicture'],
               where: { id },
