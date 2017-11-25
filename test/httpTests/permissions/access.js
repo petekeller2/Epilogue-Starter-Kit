@@ -6,7 +6,7 @@ if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')
 }
 const config = require(`../../../${srcOrBuild}/config`);
 const utilities = require(`../../../${srcOrBuild}/utilities`);
-const epilogueAuth = require(`../../../${srcOrBuild}/auth/epilogueAuth`).default;
+const permissionConversions = require(`../../../${srcOrBuild}/auth/permissionConversions`).default;
 
 import assert from 'assert';
 import request from 'request';
@@ -18,7 +18,7 @@ if (config.environment === 'testing' || config.environment === 'staging') {
   const testPermissionsArray = testConfig.testCases[testConfig.testNumber - 1].permissions;
   let shouldBe = true;
   let testPermissionsForResource = testPermissionsArray[testPermissionsArray.indexOf('Todo') + 1];
-  let testPermissions = epilogueAuth.convertPermissions(testPermissionsForResource);
+  let testPermissions = permissionConversions.convertPermissions(testPermissionsForResource);
   describe(`Todo (${testPermissionsForResource}) (${testConfig.testCases[testConfig.testNumber - 1].userID})`, () => {
     it('list', done => {
       const options = utilities.createRequestOptions('todos');
@@ -194,7 +194,7 @@ if (config.environment === 'testing' || config.environment === 'staging') {
   });
   //------------------------------------------------------------------------------------------
   testPermissionsForResource = testPermissionsArray[testPermissionsArray.indexOf('Neighborhood') + 1];
-  testPermissions = epilogueAuth.convertPermissions(testPermissionsForResource);
+  testPermissions = permissionConversions.convertPermissions(testPermissionsForResource);
   let matchesCityShouldBe = false;
   let matchesTownShouldBe = false;
   describe(`Neighborhood (${testPermissionsForResource}) (${testConfig.testCases[testConfig.testNumber - 1].userID})`, () => {
@@ -281,15 +281,15 @@ if (config.environment === 'testing' || config.environment === 'staging') {
       );
     }).timeout(0);
     it('read', done => {
-
+      // TODO
       done();
     }).timeout(0);
     it('update', done => {
-
+      // TODO
       done();
     }).timeout(0);
     it('destroy', done => {
-
+      // TODO
       done();
     }).timeout(0);
   });

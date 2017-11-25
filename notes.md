@@ -1,3 +1,9 @@
-**11/24/17**
+**11/25/17**
 
-Bugs found in tests
+Update libraries
+
+Function for updating group name
+
+Update by set when updating
+
+Code moved to permissions conversions file

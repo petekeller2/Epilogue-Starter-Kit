@@ -25,13 +25,6 @@ winston.loggers.add('latestTests', {
 });
 const latestTests = winston.loggers.get('latestTests');
 
-winston.loggers.add('testResults', {
-  file: {
-    filename: 'logs/testResults.log',
-  },
-});
-const testResults = winston.loggers.get('testResults');
-
 gulp.task('env-dev', function () {
   return process.env.NODE_ENV = 'development';
 });
@@ -879,15 +872,16 @@ const resetTestConfig = function (testConfig) {
 
 /** @function
  * @name startOfTests
- * @param {string} env
- * @description Clears and moves test results
+ * @param {string} env - test or staging
+ * @description Clears and moves test results. Starts tests.
  */
 const startOfTests = function (env) {
+  const envCleaned = env.toLocaleLowerCase().trim();
   fs.truncate('./logs/previousTestResults.log', 0, function () {
     fs.rename('./logs/testResults.log', './logs/previousTestResults.log', function (err) {
       if (err) return gulpErrors.error(err);
       fs.truncate('./logs/testResults.log', 0, function () {
-        runHttpTestsOrEnd(env);
+        runHttpTestsOrEnd(envCleaned);
       });
     });
   });

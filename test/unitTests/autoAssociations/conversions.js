@@ -7,7 +7,8 @@ if (process.env.NODE_ENV === 'staging' || process.env.NODE_ENV === 'production')
 const epilogueSetup = require(`../../../${srcOrBuild}/epilogueSetup`).default;
 import assert from 'assert';
 
-let aaReturnActual, aaReturnExpected;
+let aaReturnActual;
+let aaReturnExpected;
 
 describe('There should be no auto associations for', () => {
   it('an empty string', done => {

@@ -1,6 +1,6 @@
 // @flow
 import fs from 'fs-extra';
-import epilogueAuth from './epilogueAuth';
+import permissionConversions from './permissionConversions';
 import utilities from '../utilities';
 
 export default {
@@ -56,7 +56,7 @@ export default {
    */
   getDbGroupPermissions(sequelize: {}, resourceName: string, groupResourceName: string, groupName: string, groupId: string): Promise {
     let queryString = 'SELECT permission FROM "GroupPermission"';
-    queryString += ` where "resource" = '${resourceName}' and "groupResourceName" = ${groupResourceName}`;
+    queryString += ` where "resource" = '${resourceName}' and "groupResourceName" = '${groupResourceName}'`;
     if ((typeof groupName === 'string') && (groupName.length > 0)) {
       queryString += ` and "groupName" = '${groupName}'`;
     }
@@ -87,7 +87,7 @@ export default {
    * @param {string} resourceName
    * @param {number} permissionsIndex
    * @return {boolean}
-   * @description Main function
+   * @description Main function. Used in epilogueAuth.js
    */
   async accessCheck(testUserId: any, req, sequelize: {}, resourceName: {}, permissionsIndex: number): boolean {
     let tempGroupPermissions;
@@ -107,7 +107,7 @@ export default {
       error => utilities.winstonWrapper(`accessCheck error: ${error}`),
     );
     // eslint-disable-next-line
-    const convertedPermissionsArray = await Promise.all(combinedUnconvertedPermissions.map(async unconvertedPermissions => epilogueAuth.convertPermissions(unconvertedPermissions)));
+    const convertedPermissionsArray = await Promise.all(combinedUnconvertedPermissions.map(async unconvertedPermissions => permissionConversions.convertPermissions(unconvertedPermissions)));
     return convertedPermissionsArray.reduce(this.combinePermissions, [])[permissionsIndex];
   },
   /** @function

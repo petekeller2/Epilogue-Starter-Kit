@@ -1,7 +1,7 @@
 {
-  "testNumber": 0,
+  "testNumber": 10,
   "generateTestCases": true,
-  "testsCasesHaveBeenGenerated": false,
+  "testsCasesHaveBeenGenerated": true,
   "generationConfig": {
     "userIDs": [
       "12345",
@@ -27,7 +27,7 @@
     "overwriteTestCases": false,
     "removePreviousGeneratedTestCases": true
   },
-  "individualHttpTest": false,
+  "individualHttpTest": true,
   "doHttpTests": true,
   "testCases": [
     {
@@ -82,6 +82,398 @@
       ],
       "association": {},
       "userID": "abc123"
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        35970,
+        "User",
+        39742,
+        "Neighborhood",
+        57408
+      ],
+      "userID": "12345",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        26888,
+        "User",
+        45257,
+        "Neighborhood",
+        64531
+      ],
+      "userID": "12345",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        25838,
+        "User",
+        36446,
+        "Neighborhood",
+        33740
+      ],
+      "userID": "12345",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|lcrud|lcrud",
+        "User",
+        "lcrud|lcrud|lcrud|lcrud",
+        "Neighborhood",
+        "lcrud|lcrud|lcrud|lcrud"
+      ],
+      "userID": "12345",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|lcrud|-----",
+        "User",
+        "lcrud|lcrud|lcrud|-----",
+        "Neighborhood",
+        "lcrud|lcrud|lcrud|-----"
+      ],
+      "userID": "12345",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|-----|-----",
+        "User",
+        "lcrud|lcrud|-----|-----",
+        "Neighborhood",
+        "lcrud|lcrud|-----|-----"
+      ],
+      "userID": "12345",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|-----|-----|-----",
+        "User",
+        "lcrud|-----|-----|-----",
+        "Neighborhood",
+        "lcrud|-----|-----|-----"
+      ],
+      "userID": "12345",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        37454,
+        "User",
+        23811,
+        "Neighborhood",
+        27207
+      ],
+      "userID": "testing",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        51165,
+        "User",
+        26946,
+        "Neighborhood",
+        25376
+      ],
+      "userID": "testing",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        1645,
+        "User",
+        31163,
+        "Neighborhood",
+        51135
+      ],
+      "userID": "testing",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|lcrud|lcrud",
+        "User",
+        "lcrud|lcrud|lcrud|lcrud",
+        "Neighborhood",
+        "lcrud|lcrud|lcrud|lcrud"
+      ],
+      "userID": "testing",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|lcrud|-----",
+        "User",
+        "lcrud|lcrud|lcrud|-----",
+        "Neighborhood",
+        "lcrud|lcrud|lcrud|-----"
+      ],
+      "userID": "testing",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|-----|-----",
+        "User",
+        "lcrud|lcrud|-----|-----",
+        "Neighborhood",
+        "lcrud|lcrud|-----|-----"
+      ],
+      "userID": "testing",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|-----|-----|-----",
+        "User",
+        "lcrud|-----|-----|-----",
+        "Neighborhood",
+        "lcrud|-----|-----|-----"
+      ],
+      "userID": "testing",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        41007,
+        "User",
+        41982,
+        "Neighborhood",
+        17391
+      ],
+      "userID": "abc123",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        62535,
+        "User",
+        13532,
+        "Neighborhood",
+        32542
+      ],
+      "userID": "abc123",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        44122,
+        "User",
+        48215,
+        "Neighborhood",
+        1358
+      ],
+      "userID": "abc123",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|lcrud|lcrud",
+        "User",
+        "lcrud|lcrud|lcrud|lcrud",
+        "Neighborhood",
+        "lcrud|lcrud|lcrud|lcrud"
+      ],
+      "userID": "abc123",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|lcrud|-----",
+        "User",
+        "lcrud|lcrud|lcrud|-----",
+        "Neighborhood",
+        "lcrud|lcrud|lcrud|-----"
+      ],
+      "userID": "abc123",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|-----|-----",
+        "User",
+        "lcrud|lcrud|-----|-----",
+        "Neighborhood",
+        "lcrud|lcrud|-----|-----"
+      ],
+      "userID": "abc123",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|-----|-----|-----",
+        "User",
+        "lcrud|-----|-----|-----",
+        "Neighborhood",
+        "lcrud|-----|-----|-----"
+      ],
+      "userID": "abc123",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        59915,
+        "User",
+        14204,
+        "Neighborhood",
+        21494
+      ],
+      "userID": "",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        14038,
+        "User",
+        17530,
+        "Neighborhood",
+        55723
+      ],
+      "userID": "",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "random",
+      "permissions": [
+        "Todo",
+        45515,
+        "User",
+        12915,
+        "Neighborhood",
+        60073
+      ],
+      "userID": "",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|lcrud|lcrud",
+        "User",
+        "lcrud|lcrud|lcrud|lcrud",
+        "Neighborhood",
+        "lcrud|lcrud|lcrud|lcrud"
+      ],
+      "userID": "",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|lcrud|-----",
+        "User",
+        "lcrud|lcrud|lcrud|-----",
+        "Neighborhood",
+        "lcrud|lcrud|lcrud|-----"
+      ],
+      "userID": "",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|lcrud|-----|-----",
+        "User",
+        "lcrud|lcrud|-----|-----",
+        "Neighborhood",
+        "lcrud|lcrud|-----|-----"
+      ],
+      "userID": "",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
+    },
+    {
+      "___comment": "default",
+      "permissions": [
+        "Todo",
+        "lcrud|-----|-----|-----",
+        "User",
+        "lcrud|-----|-----|-----",
+        "Neighborhood",
+        "lcrud|-----|-----|-----"
+      ],
+      "userID": "",
+      "aaOrAccess": "access",
+      "generatedByTestsCasesJs": true
     }
   ]
 }

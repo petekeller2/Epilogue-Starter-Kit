@@ -1,6 +1,7 @@
 // @flow
 import merge from 'deepmerge';
 import epilogueAuth from './epilogueAuth';
+import permissionConversions from './permissionConversions';
 import utilities from '../utilities';
 import config from '../config';
 
@@ -32,7 +33,7 @@ export default {
    * @description Helper function that returns a user's id conditionally. Note that if guest is returned, a guest user must exist
    */
   returnUserId(req: {}, guestIfNoUser: boolean): {} {
-    if (((req || {}).body) && ((req || {}).user || {}).id) {
+    if ((((req || {}).body) && ((req || {}).user || {}).id) && req.user.id.length > 0) {
       return req.user.id;
     } else if (guestIfNoUser === true) {
       return 'guest';
@@ -64,7 +65,7 @@ export default {
       // eslint-disable-next-line
       authMilestone[actionsList[i]].write.before = ((req, res, context) => new Promise(async (resolve) => {
         const userId = this.returnUserId(req, false);
-        const permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
+        const permissions = permissionConversions.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
         const isAdminResult = await this.isAdmin(userId, sequelize, false);
         if ((isAdminResult === true) || (this.adminsOnly(permissions) === false)) {
           if (isGroup === true) {
@@ -134,7 +135,7 @@ export default {
       authMilestone[actionsList[i]].fetch = {};
       // eslint-disable-next-line
       authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async(resolve) => {
-        const permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
+        const permissions = permissionConversions.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
         const groupCheck = Boolean(isGroup && (permissions[5] === false));
         if (((permissions[0] === true) || (isGroup && (permissions[5] === true))) && permissions[10] === false && permissions[15] === false) {
           if ((((req || {}).user || {}).id)) {
@@ -251,7 +252,7 @@ export default {
    * @description Returns a possibly modified version of totalAuthMilestone.
    */
   readGroup(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel, isHttpTest, validTestNumber, permissionsInput) {
-    const permissions = epilogueAuth.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
+    const permissions = permissionConversions.convertRealOrTestPermissions(permissionsInput, name, isHttpTest, validTestNumber);
     const permissionsBool = Boolean((permissions[7] === true) && (permissions[12] === false) && (permissions[12] === false));
     if ((actionsList[i] === 'read') && (isGroup === true) && (permissionsBool)) {
       const authMilestone = {};
@@ -290,6 +291,61 @@ export default {
     return totalAuthMilestone;
   },
   /** @function
+   * @name updateGroupName
+   * @param {object} totalAuthMilestone
+   * @param {Array} actionsList
+   * @param {number} i - actionsList index
+   * @param {*} aa
+   * @param {string} name
+   * @param {Array} userAAs
+   * @param {boolean} isGroup
+   * @param {object} awaitedGroupXrefModel
+   * @param {object} sequelize
+   * @return {object}
+   * @description Returns a possibly modified version of totalAuthMilestone. TODO: add UserGroupXref to awaitedResourcesFromSetup map
+   */
+  updateGroupName(totalAuthMilestone, actionsList, i, aa, name, userAAs, isGroup, awaitedGroupXrefModel, sequelize): {} {
+    if ((actionsList[i] === 'update') && (name === 'UserGroupXref')) {
+      const authMilestone = {};
+      authMilestone[actionsList[i]] = {};
+      authMilestone[actionsList[i]].fetch = {};
+      // eslint-disable-next-line
+      authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async (resolve) => {
+        if ((((req || {}).body || {}).groupID) && (((req || {}).user || {}).id) && (((req || {}).body || {}).groupName)) {
+          const findObj = {
+            where: {
+              groupID: req.body.groupID,
+              UserId: req.user.id,
+            },
+          };
+          const findResults = await awaitedGroupXrefModel.findOne(findObj);
+          if (findResults && findResults.UserId === req.user.id) {
+            const updateObj = {
+              where: {
+                groupID: req.body.groupID,
+              },
+            };
+            return awaitedGroupXrefModel.update({
+              groupName: req.body.groupName,
+            }, updateObj)
+              .then(() => {
+                let queryString = 'UPDATE permission "GroupPermission"';
+                queryString += `  set "groupName" = '${req.body.groupName}' where "groupID" = '${req.body.groupID}'`;
+                return sequelize.query(queryString, { type: sequelize.QueryTypes.UPDATE })
+                  .then(() => resolve(context.continue), error => utilities.winstonWrapper(`Update group name error: ${error}`));
+              });
+          } else {
+            resolve(context.continue);
+          }
+        } else {
+          resolve(context.continue);
+        }
+      }));
+      return merge(authMilestone, totalAuthMilestone);
+    }
+    return totalAuthMilestone;
+  },
+  /** @function
    * @name updateGroup
    * @param {object} totalAuthMilestone
    * @param {Array} actionsList
@@ -297,8 +353,8 @@ export default {
    * @param {*} aa
    * @param {string} name
    * @param {Array} userAAs
-   * @param {object} awaitedGroupXrefModel
    * @param {boolean} isGroup
+   * @param {object} awaitedGroupXrefModel
    * @return {object}
    * @description Returns a possibly modified version of totalAuthMilestone.
    */
@@ -319,14 +375,18 @@ export default {
           };
           const findResults = await awaitedGroupXrefModel.findOne(findObj);
           if (findResults && findResults.UserId === req.user.id) {
-            const { id, groupID, groupName, groupResourceName } = req.body;
+            const {
+              id, groupID, groupName, groupResourceName,
+            } = req.body;
             const updateObj = {
               where: {
                 groupID: req.body.id,
                 groupResourceName: name,
               },
             };
-            return awaitedGroupXrefModel.update({ id, groupID, groupName, groupResourceName }, updateObj)
+            return awaitedGroupXrefModel.update({
+              id, groupID, groupName, groupResourceName,
+            }, updateObj)
               .then(() => resolve(context.continue), error => utilities.winstonWrapper(`Delete group milestone error: ${error}`));
           } else {
             resolve(context.continue);
@@ -418,12 +478,12 @@ export default {
    * @description Returns a possibly modified version of totalAuthMilestone. Adds updatedBy to body
    */
   updateAsLoggedInUser(totalAuthMilestone: {}, actionsList: [], i: number): {} {
-    if ((actionsList[i] === 'update')) {
+    if (actionsList[i] === 'update') {
       const authMilestone = {};
       authMilestone[actionsList[i]] = {};
-      authMilestone[actionsList[i]].update = {};
+      authMilestone[actionsList[i]].fetch = {};
       // eslint-disable-next-line
-      authMilestone[actionsList[i]].update.before = ((req, res, context) => new Promise(async (resolve) => {
+      authMilestone[actionsList[i]].fetch.before = ((req, res, context) => new Promise(async (resolve) => {
         req.body.updatedBy = this.returnUserId(req, false);
         resolve(context.continue);
       }));
