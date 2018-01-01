@@ -11,10 +11,7 @@ Epilogue resources and milestones.
 
 # Getting Started
 
-Put your credentials into src/config.js. Run `gulp test-staging-server` and `gulp test-server` to see 
-if Epilogue Starter Kit is working properly locally.
-
-If everything is working, you can start by adding or editing 
+Put your credentials into src/config.js. After that, you can start by adding or editing 
 resources in the resources folder. To learn more about resources 
 in Epilogue Starter Kit, [read this.](https://github.com/petekeller2/epilogue-starter-kit/wiki/Resources) 
 You should read Epilogue's documentation as well to fully understand resources 

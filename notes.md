@@ -1,7 +1,7 @@
 **11/25/17**
 
-Eslint fixes
+gitignore updated
 
-Config default value fixes
+Main readme updated
 
-More config messages
+Libraries updated
