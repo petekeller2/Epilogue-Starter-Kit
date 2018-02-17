@@ -1,7 +1,5 @@
-**11/25/17**
+**02/17/18**
 
-gitignore updated
-
-Main readme updated
+Using wiki-builder
 
 Libraries updated

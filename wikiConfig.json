@@ -1,17 +1,9 @@
 {
-  "customSidebar": "NO",
-  "mainSections": ["resources", "groups", "auth", "testing"],
-  "sectionFiles": [
-    ["milestones", "epilogueSetup"],
-    [],
-    ["passport", "permissions"]
-  ],
-  "sectionFolders": [
-    ["src/resources"],
-    [],
-    ["src/auth"],
-    ["tests"]
-  ],
-  "filesToIgnore": ["todo.md", "todos.md", "placeholder.md", "notes.md", "note.md", "changelog.md"],
-  "titlesToIgnore": ["Miscellaneous Wiki Pages", "Custom Code", "Directory Structure Of Src"]
+  "wikiDirPath": "./wiki/",
+  "projectDirPath": "./",
+  "ignoreMdFiles": ["todo.md", "todos.md", "placeholder.md", "notes.md", "note.md", "changelog.md"],
+  "ignoreMdTitles": ["Miscellaneous Wiki Pages", "Custom Code", "Directory Structure Of Src", "Epilogue Starter Kit"],
+  "ignoreDirs": [],
+  "statsEnabled": true,
+  "useGitignore": false
 }

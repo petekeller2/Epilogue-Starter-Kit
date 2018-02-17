@@ -3,7 +3,8 @@
 The subdirectories of the resources directory (src/resources and build/resources) contain the pieces that will be 
 used to create Epilogue resources. Custom resource 
 specific files should be added to its corresponding resource's 
-resources folder.
+resources folder. The User resource is a special resource. 
+The Todo and Neighborhood resources are just examples.
 
 ```javascript
 // An example resource's index.js
