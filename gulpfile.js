@@ -2,11 +2,8 @@ const gulp = require('gulp');
 const shell = require('gulp-shell');
 const fs = require('fs-extra');
 const winston = require('winston');
-const glob = require('glob');
 const readline = require('readline');
 const spawn = require('child_process').spawn;
-const Transform = require('stream').Transform;
-const util = require('util');
 const pluralize = require('pluralize');
 const config = require('./src/config');
 const utilities = require('./src/utilities');
@@ -67,8 +64,6 @@ gulp.task('test-groups', shell.task('npm run test-groups'));
 
 gulp.task('test-failing', shell.task('npm run test-failing'));
 
-gulp.task('append-stats', shell.task('git diff --stat `git hash-object -t tree /dev/null` > miscWikiPages/Stats.md'));
-
 gulp.task('generate-changelog', shell.task('github_changelog_generator'));
 
 gulp.task('build-dup-report', shell.task('jscpd'));
@@ -77,11 +72,9 @@ gulp.task('serve', ['build', 'server-serve']);
 
 gulp.task('travis-test', ['test-permissions', 'test-autoAssociations']);
 
-gulp.task('build-stats', ['stats-clear', 'append-stats', 'stats-clean']);
-
 gulp.task('server-test-all-ignore-config', ['server-http-test', 'unit-test']);
 
-gulp.task('pre-commit-build', ['build-dup-report', 'generate-changelog', 'build-wiki']);
+gulp.task('pre-commit-build', ['build-dup-report', 'generate-changelog']);
 
 gulp.task('build-all', ['build', 'pre-commit-build']);
 
@@ -101,19 +94,6 @@ gulp.task('test-staging-server', ['env-force', 'env-staging', 'serve'], function
 
 gulp.task('repeat-test-staging-server', ['env-force', 'env-staging', 'serve'], function () {
   runHttpTestsOrEnd('staging');
-});
-
-gulp.task('build-wiki', ['clear-wiki', 'build-stats'], function () {
-  markdownBuild('src', 'test');
-});
-
-gulp.task('clear-wiki', function () {
-  emptyDirExceptForGit('wiki');
-});
-
-gulp.task('stats-clear', function () {
-  fs.removeSync('./miscWikiPages/_Stats.md');
-  fs.removeSync('./miscWikiPages/Stats.md');
 });
 
 gulp.task('reset-test-config', function () {
@@ -137,11 +117,6 @@ gulp.task('retire', function () {
   child.stderr.on('data', function (data) {
     gulpErrors.error(data);
   });
-});
-
-gulp.task('stats-clean', function () {
-  fs.removeSync('./miscWikiPages/_Stats.md');
-  waitForFileWriteToFinish('./miscWikiPages/Stats.md', buildStats, 1);
 });
 
 gulp.task('new-resource', function () {
@@ -518,333 +493,6 @@ const buildNonModelResourceFiles = function (resourceName) {
       });
     });
   });
-};
-
-/** @function
- * @name buildStats
- * @description Passed to waitForFileWriteToFinish
- */
-const buildStats = function () {
-  fs.renameSync('./miscWikiPages/Stats.md', './miscWikiPages/_Stats.md');
-  fs.removeSync('./miscWikiPages/Stats.md');
-  fs.ensureFileSync('./miscWikiPages/Stats.md');
-  const file = fs.readFileSync('./miscWikiPages/Stats.md').toString().split('\n');
-  file.splice(0, 0, '# Stats');
-  const newFile = file.join('\n\n');
-
-  fs.writeFile('./miscWikiPages/Stats.md', newFile, function (err) {
-    if (err) return err;
-    fs.readFileSync('./miscWikiPages/_Stats.md').toString().split('\n').forEach(function (line, index, array) {
-      if (index === array.length - 2) {
-        const lineCopy = line.toString();
-        const numbers = lineCopy.match(/\d+/g);
-        const replacementLine = `Files: ${numbers[0]}\n\nTotal Lines of Code: ${numbers[1]}`;
-        fs.appendFileSync('./miscWikiPages/Stats.md', replacementLine);
-      } else if (index === array.length - 1) {
-
-      } else {
-        fs.appendFileSync('./miscWikiPages/Stats.md', line.toString() + '\n\n');
-      }
-    });
-    deleteFileWhenItExists('./miscWikiPages/_Stats.md', 1);
-  });
-};
-
-/** @function
- * @name deleteFileWhenItExists
- * @param {string} filePath
- * @param {number} safetyCounter
- */
-const deleteFileWhenItExists = function (filePath, safetyCounter = 1) {
-  if (safetyCounter > 10000) {
-    gulpErrors.error('Safety counter of deleteFileWhenItExists was exceeded');
-  }
-  const newSafetyCounter = safetyCounter + 1;
-  fs.stat(filePath, function (err, stats) {
-    if (err) {
-      if (err.errno === -2) {
-        deleteFileWhenItExists(filePath, newSafetyCounter);
-      } else {
-        gulpErrors.error('Unhandled error: ', err);
-      }
-    } else if (stats.isFile()) {
-      fs.removeSync(filePath);
-    }
-  });
-};
-
-/** @function
- * @name waitForFileWriteToFinish
- * @param {string} filePath
- * @param {function} functionToRun
- * @param {number} safetyCounter
- * @param {number} previousSize
- * @param {number} sameSizeCount
- */
-const waitForFileWriteToFinish = function (filePath, functionToRun, safetyCounter = 1, previousSize, sameSizeCount = 0) {
-  if (safetyCounter > 10000) {
-    gulpErrors.error('Safety counter of waitForFileWriteToFinish was exceeded');
-  }
-  const newSafetyCounter = safetyCounter + 1;
-  fs.stat(filePath, function (err, stats) {
-    if (err) {
-      if (err.errno === -2) {
-        waitForFileWriteToFinish(filePath, functionToRun, newSafetyCounter);
-      } else {
-        gulpErrors.error('Unhandled error: ', err);
-      }
-    } else if (stats.isFile()) {
-      let sameSizeCountCopy = sameSizeCount;
-      if ((stats.size > 0) && stats.size && previousSize && (stats.size === previousSize)) {
-        sameSizeCountCopy += 1;
-      }
-      if (sameSizeCountCopy > 25) {
-        functionToRun();
-      } else {
-        waitForFileWriteToFinish(filePath, functionToRun, newSafetyCounter, stats.size, sameSizeCountCopy);
-      }
-    } else {
-      gulpErrors.error('Not a file', stats);
-    }
-  });
-};
-
-/** @function
- * @name emptyDirExceptForGit
- * @param {string} dir
- * @description Creates a temporary folder to store .git into which gets deleted after .git is moved back to its original folder
- */
-const emptyDirExceptForGit = function (dir) {
-  const tempFolderName = makeTempDir();
-  if ((tempFolderName.length > 0) && (tempFolderName !== 'Safety counter exceeded')) {
-    fs.renameSync(`${dir}/.git`, `${tempFolderName}/.git`);
-    fs.emptyDirSync(dir);
-    fs.renameSync(`${tempFolderName}/.git`, `${dir}/.git`);
-    fs.removeSync(tempFolderName);
-  }
-};
-
-/** @function
- * @name makeTempDir
- * @param {number} safetyCounter
- * @returns {string}
- * @description Creates a unique temporary folder and returns the folder name or an error message
- */
-const makeTempDir = function (safetyCounter) {
-  if (!safetyCounter) {
-    safetyCounter = 1;
-  }
-  const folderName = `temp_${+ new Date()}_${Math.random() * (99999 - 10000) + 10000}`;
-  if (safetyCounter >= 20) {
-    gulpErrors.error('Safety counter of makeTempDir was exceeded');
-    return 'Safety counter exceeded';
-  } else if (fs.existsSync(folderName)) {
-    return makeTempDir(safetyCounter + 1);
-  } else {
-    fs.ensureDirSync(folderName);
-    return folderName;
-  }
-};
-
-/** @function
- * @name RemoveFirstLine
- * @param args
- * @author moka (Max M)
- * @description RemoveFirstLine of file. See moka's answer https://stackoverflow.com/questions/17363206/node-js-how-to-delete-first-line-in-file/17365494
- */
-// Transform sctreamer to remove first line
-const RemoveFirstLine = function (args) {
-  if (!(this instanceof RemoveFirstLine)) {
-    return new RemoveFirstLine(args);
-  }
-  Transform.call(this, args);
-  this._buff = '';
-  this._removed = false;
-};
-
-util.inherits(RemoveFirstLine, Transform);
-
-RemoveFirstLine.prototype._transform = function (chunk, encoding, done) {
-  if (this._removed) { // if already removed
-    this.push(chunk); // just push through buffer
-  } else {
-    // collect string into buffer
-    this._buff += chunk.toString();
-
-    // check if string has newline symbol
-    if (this._buff.indexOf('\n') !== -1) {
-      // push to stream skipping first line
-      this.push(this._buff.slice(this._buff.indexOf('\n') + 2));
-      // clear string buffer
-      this._buff = null;
-      // mark as removed
-      this._removed = true;
-    }
-  }
-  done();
-};
-
-/** @function
- * @name markdownBuild
- * @param {array} arguments
- * @description Runs the moveMarkdown function and the buildCustomSideMenu function if it is enabled in wikiConfig.json
- */
-const markdownBuild = function () {
-  fs.readFile('wikiConfig.json', 'utf8', (wikiConfigErr, wikiConfigData) => {
-    const wikiConfig = JSON.parse(wikiConfigData);
-    if(wikiConfig.customSidebar.toUpperCase() === 'YES') {
-      buildCustomSideMenu(arguments);
-    }
-  });
-
-  moveAllMarkdown.apply(this, arguments);
-};
-
-/** @function
- * @name removeTitleFromMarkdown
- * @param {string} file
- * @description Removes first line from a file
- */
-const removeTitleFromMarkdown = function (file) {
-  const input = fs.createReadStream(`wiki/${file}`);
-  const output = fs.createWriteStream(`wiki/_${file}`);
-
-  input
-    .pipe(RemoveFirstLine()) // pipe through line remover
-    .pipe(output);
-
-  output.on('finish', function () {
-    fs.rename(`wiki/_${file}`, `wiki/${file}`, doneCustom);
-  });
-};
-
-/** @function
- * @name doneCustom
- * @description Function for callbacks
- */
-const doneCustom = function () {
-  // console.log('function done');
-};
-
-/** @function
- * @name moveAllMarkdown
- * @param {array} arguments
- * @description Runs moveMarkdown for all the markdown files to be moved
- */
-const moveAllMarkdown = function () {
-  const args = Array.prototype.slice.call(arguments);
-  args.forEach(function(arg) {
-    moveMarkdown(arg);
-  });
-  moveMarkdown('miscWikiPages');
-};
-
-/** @function
- * @name newMarkdownFileName
- * @param {string} file
- * @returns {object}
- * @description Returns a file name generated from the first line of a markdown file
- */
-const newMarkdownFileName = function (file) {
-  return new Promise(function(resolve, reject) {
-    let lineNumber = 0;
-    const rl = readline.createInterface({
-      input: fs.createReadStream(file),
-    });
-    rl.on('line', function (line) {
-      if (lineNumber === 0) {
-        resolve(line.replace(/^#+/g, '').split(' ').filter(i => {
-          return i !== '';
-        }).map(i => {
-          return i[0].toUpperCase() + i.substr(1).toLowerCase();
-        }).join('-') + '.md');
-      }
-      lineNumber += 1;
-    });
-  });
-};
-
-/** @function
- * @name createWikiFile
- * @param {string} file
- * @param {string} wikiFile
- * @description Used by moveMarkdown
- */
-const createWikiFile = function (file, wikiFile) {
-  fs.copy(file, `wiki/${wikiFile}`, err => {
-    if (err) return gulpErrors.error(err);
-    removeTitleFromMarkdown(wikiFile);
-  });
-};
-
-/** @function
- * @name moveMarkdown
- * @param {string} dir
- * @description Copies markdown files to the wiki directory with file names based on the first line of the file
- */
-const moveMarkdown = function (dir) {
-  let ignoredFile = false;
-  let fileName = '';
-  let fileNameSections = [];
-  const usedFileNames = [];
-  glob(`${dir}/**/*.md`, function (er, files) {
-    fs.readFile('wikiConfig.json', 'utf8', (wikiConfigErr, wikiConfigData) => {
-      const wikiConfig = JSON.parse(wikiConfigData);
-      const titlesToIgnoreArray = wikiConfig.titlesToIgnore.filter(title => {
-        return (typeof title === 'string');
-      }).map(title => {
-        return `${title.replace(/\s+/g, '-').toLocaleLowerCase()}.md`;
-      });
-      if (Array.isArray(files) && files.length > 0) {
-        files.forEach(function(file) {
-          fileNameSections = file.split('/');
-          fileName = fileNameSections.pop().toLowerCase().trim();
-          if (file === 'miscWikiPages/Home.md') {
-            fileName = fileName.replace(/(?:^|\s)\S/g, function(a) { return a.toUpperCase(); });
-            createWikiFile(file, fileName);
-          } else if (file === 'miscWikiPages/Stats.md') {
-            createWikiFile(file, 'Stats.md');
-          } else {
-            ignoredFile = false;
-            if (Array.isArray(wikiConfig.filesToIgnore) && wikiConfig.filesToIgnore.length > 0) {
-              if (wikiConfig.filesToIgnore.indexOf(fileName) >= 0) {
-                ignoredFile = true;
-              }
-            }
-            if (ignoredFile === false) {
-              newMarkdownFileName(file).then(function (newFileName) {
-                // console.log('newFileName', newFileName);
-                if (titlesToIgnoreArray.indexOf(newFileName.toLocaleLowerCase()) < 0) {
-                  if (usedFileNames.indexOf(newFileName) >= 0) {
-                    newFileName = `${newFileName} (${fileNameSections.pop()})`;
-                  }
-                  usedFileNames.push(newFileName);
-                  createWikiFile(file, newFileName);
-                }
-              }, function(error) {
-                gulpErrors.info(error);
-              });
-            }
-          }
-        });
-      }
-    });
-  });
-};
-
-/** @function
- * @name buildCustomSideMenu
- * @param {Array} arguments
- * @description Not finished. For wiki
- */
-const buildCustomSideMenu = function () {
-  const dirs = Array.prototype.slice.call(arguments);
-  if (Array.isArray(dirs) && dirs.length > 0) {
-    const mainSections = []; // array of arrays
-    dirs.forEach(function(dir) {
-      // todo
-    });
-  }
 };
 
 /** @function

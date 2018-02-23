@@ -1,5 +1,5 @@
-**02/17/18**
+**02/22/18**
 
-Using wiki-builder
+Updated wiki
 
-Libraries updated
+Removed unused code in gulpfile.js

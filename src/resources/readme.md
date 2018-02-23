@@ -159,6 +159,8 @@ There will be the following permissions for these City groups:
 | NYC | l----\|lcrud\|-crud\|----- |
 | LA | l----\|lcr--\|-crud\|-----  |
 
-## Creating New Resources
+## Creating and Deleting Resources
 
-Use `gulp new-resource`
+Use `gulp new-resource` to create new resources. To delete 
+a resource, delete its directory in resources/ and update 
+resources/index.js

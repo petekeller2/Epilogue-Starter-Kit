@@ -5,5 +5,5 @@
   "ignoreMdTitles": ["Miscellaneous Wiki Pages", "Custom Code", "Directory Structure Of Src", "Epilogue Starter Kit"],
   "ignoreDirs": [],
   "statsEnabled": true,
-  "useGitignore": false
+  "useGitignore": true
 }
