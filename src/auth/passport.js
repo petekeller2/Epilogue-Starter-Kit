@@ -165,10 +165,13 @@ export default {
               userErrorMessage = config.messages.userResourceNotFoundDev;
             }
             utilities.throwErrorConditionally(userResource, userErrorMessage);
-            const foundUser = await userResource.findOne({
+            let foundUser = await userResource.findOne({
               attributes: ['id', 'username', 'emailAddress', 'profilePicture'],
               where: { id },
             });
+            if (!id) {
+              foundUser = false;
+            }
             if (foundUser) {
               if (foundUser.id && foundUser.username && foundUser.emailAddress && foundUser.profilePicture) {
                 done(null, this.buildUserObj(foundUser, false));

@@ -6,4 +6,7 @@ You can run HTTP tests directly through `server-http-test`,
 HTTP tests can be run indirectly through `gulp test-staging-server` 
 and `gulp test-server`.
 
+Note that HTTP tests will uses information found in the main
+configuration file (`src/config.js`).
+
 Run `gulp reset-test-config` if tests hang.

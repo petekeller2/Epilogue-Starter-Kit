@@ -1,5 +1,7 @@
-**02/22/18**
+**03/03/18**
 
 Updated wiki
 
-Removed unused code in gulpfile.js
+Bug fixes
+
+Refactored server.js

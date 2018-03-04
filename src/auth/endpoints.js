@@ -33,12 +33,12 @@ export default {
       if (!(Array.isArray(config.authOptionsDisabled) && config.authOptionsDisabled.indexOf(authMethod) !== -1)) {
         const passportSession = utilities.yesTrueNoFalse(config.passportSession);
         const failureRedirect = config.authFailureRedirect;
-        const authSuccessRedirect = { config };
+        const { authSuccessRedirect } = config;
         const authOptionsObj = { failureRedirect };
         let passportAuthenticate = '';
         if (authMethod !== 'twitter') {
           const authMethodObj = config.authMethods[authMethod];
-          const scope = { authMethodObj };
+          const { scope } = authMethodObj;
           passportAuthenticate = passport.authenticate(authMethod, { scope, session: passportSession });
           authOptionsObj.session = passportSession;
         } else {
@@ -101,9 +101,9 @@ export default {
         '/loggedOutScreen',
         (req, res) => {
           if (req.user) {
-            res.end(config.messages.loggedOutScreenSuccess);
-          } else {
             res.end(config.messages.loggedOutScreenError);
+          } else {
+            res.end(config.messages.loggedOutScreenSuccess);
           }
         },
       );

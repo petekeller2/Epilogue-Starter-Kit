@@ -45,7 +45,7 @@ export default {
    * @param {map} resources - created in epilogueSetup.js
    * @param {object} groupXrefModel - created in epilogueSetup.js
    * @return {object}
-   * @description Starts the application. Runs http tests depending on the testConfig.json configuration
+   * @description Starts the application. Runs http tests depending on the testConfig.json configuration. Used in app.js
    */
   serve(database: {}, server: {}, resources: Map, groupXrefModel: {}): {} {
     let force = false;
@@ -56,65 +56,73 @@ export default {
       .sync({ force })
       .then(() => {
         server.listen(config.port, () => {
-          // const host = server.address().address,
           const { port } = server.address();
           if (config.environment === 'testing' || config.environment === 'staging') {
-            const winstonConfig = utilities.setUpWinstonLogger('logs/tests.log');
-            winston.loggers.add('testsLog', {
-              file: winstonConfig,
-            });
-            const testsLog = winston.loggers.get('testsLog');
-
-            winston.loggers.add('testResultsLog', {
-              file: {
-                filename: 'logs/testResults.log',
-              },
-            });
-            const testResultsLog = winston.loggers.get('testResultsLog');
-
-            if (testConfig.testsCasesHaveBeenGenerated !== true) {
-              testCases.generateTestCases().then((generateTestCasesMessage) => {
-                winston.info('generateTestCasesMessage', generateTestCasesMessage);
-              }, error => winston.info(`Test case generation error: ${error}`));
-            }
-
-            testData.basicTestData(resources, groupXrefModel).then((val) => {
-              if (val === true) {
-                let runTests;
-                if (testConfig.individualHttpTest === true) {
-                  if (testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'aa') {
-                    runTests = childProcess.spawn('gulp', ['server-http-just-aa-test']);
-                  } else if (testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'access') {
-                    runTests = childProcess.spawn('gulp', ['server-http-just-access-test']);
-                  }
-                } else {
-                  runTests = childProcess.spawn('gulp', ['server-test']);
-                }
-
-                runTests.stdout.on('data', (data) => {
-                  testsLog.info(data.toString('utf8'));
-                  testResultsLog.info(data.toString('utf8'));
-                });
-
-                runTests.stderr.on('data', (data) => {
-                  winston.info(`stderr: \n ${data}`);
-                  testsLog.info(data.toString('utf8'));
-                  testResultsLog.info(data.toString('utf8'));
-                });
-
-                runTests.on('close', (code) => {
-                  if (config.tests && utilities.yesTrueNoFalse(config.tests.exitOnFinishingTests)) {
-                    winston.info(`child process exited with code ${code}`);
-                    process.exit();
-                  } else {
-                    winston.info('tests done and server is still running');
-                  }
-                });
-              }
-            }, error => winston.info(`basic test data error: ${error}`));
+            this.httpTests(resources, groupXrefModel);
           }
           winston.info(`listening on port: ${port}`);
         });
       }, error => winston.info(`Server Error: ${error}`));
+  },
+  /** @function
+   * @name httpTests
+   * @param {map} resources - created in epilogueSetup.js
+   * @param {object} groupXrefModel - created in epilogueSetup.js
+   * @description Runs http tests. Used by serve
+   */
+  httpTests(resources: Map, groupXrefModel: {}) {
+    const winstonConfig = utilities.setUpWinstonLogger('logs/tests.log');
+    winston.loggers.add('testsLog', {
+      file: winstonConfig,
+    });
+    const testsLog = winston.loggers.get('testsLog');
+
+    winston.loggers.add('testResultsLog', {
+      file: {
+        filename: 'logs/testResults.log',
+      },
+    });
+    const testResultsLog = winston.loggers.get('testResultsLog');
+
+    if (testConfig.testsCasesHaveBeenGenerated !== true) {
+      testCases.generateTestCases().then((generateTestCasesMessage) => {
+        winston.info('generateTestCasesMessage', generateTestCasesMessage);
+      }, error => winston.info(`Test case generation error: ${error}`));
+    }
+
+    testData.basicTestData(resources, groupXrefModel).then((val) => {
+      if (val === true) {
+        let runTests;
+        if (testConfig.individualHttpTest === true) {
+          if (testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'aa') {
+            runTests = childProcess.spawn('gulp', ['server-http-just-aa-test']);
+          } else if (testConfig.testCases[testConfig.testNumber - 1].aaOrAccess === 'access') {
+            runTests = childProcess.spawn('gulp', ['server-http-just-access-test']);
+          }
+        } else {
+          runTests = childProcess.spawn('gulp', ['unit-test']);
+        }
+
+        runTests.stdout.on('data', (data) => {
+          testsLog.info(data.toString('utf8'));
+          testResultsLog.info(data.toString('utf8'));
+        });
+
+        runTests.stderr.on('data', (data) => {
+          winston.info(`stderr: \n ${data}`);
+          testsLog.info(data.toString('utf8'));
+          testResultsLog.info(data.toString('utf8'));
+        });
+
+        runTests.on('close', (code) => {
+          if (config.tests && utilities.yesTrueNoFalse(config.tests.exitOnFinishingTests)) {
+            winston.info(`child process exited with code ${code}`);
+            process.exit();
+          } else {
+            winston.info('tests done and server is still running');
+          }
+        });
+      }
+    }, error => winston.info(`basic test data error: ${error}`));
   },
 };
