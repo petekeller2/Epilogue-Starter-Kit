@@ -3,7 +3,7 @@
 The subdirectories of the resources directory (src/resources and build/resources) contain the pieces that will be 
 used to create Epilogue resources. Custom resource 
 specific files should be added to its corresponding resource's 
-resources folder. The User resource is a special resource. 
+resources folder. The User resource is a special resource.
 The Todo and Neighborhood resources are just examples.
 
 ```javascript
@@ -22,13 +22,20 @@ const exportArray = ['Todo', permissions, model, endpoints, extension, autoAssoc
 export default exportArray;
 ```
 
+## Models
+
+Models are normal sequelize models. They are defined in the
+model.js files found in a resource's resource folder. The default
+fields that get added to the models are defined in
+src/resourcesBuilder/modelFields.js.
+
 ## Milestones
 
 By default, milestones will be generated for a resource in 
 epilogueAuth.js for handling user access to resources and 
 non-standard effects of their operations (For example: Owning 
 an instance of a resources as a group or user after creating 
-it). The milestones.js code in resource folders is for resource specific milestone code. 
+it). The milestones.js code in a resource folder is for resource specific milestone code.
 This custom milestone code will be merged with the built
 in milestones when the resources' milestones are add to the 
 resources.
@@ -90,11 +97,12 @@ false => []
 
 ## Permissions
 
-Permissions are used to determine what operations are 
-available for certain users. The operation are the Epilogue 
-resource operations (List, Create, Read, Update and Delete). 
-The types of users are owners of the resource (the user who 
-created the resource), members of a group resource, any non-guest 
+The term operations used here means Epilogue resource
+operations (List, Create, Read, Update and Delete).
+Permissions are used to determine what operations are
+available for certain users. The types of users are the
+following: owners of the resource (usually the user who created
+the resource), members of a group resource, any non-guest
 users and all users. Permissions are similar to auto 
 associations in that there are multiple formats that can be 
 used to set them up for a resource.
@@ -102,11 +110,15 @@ used to set them up for a resource.
 #### Format
 
 * String, array, number or object.
-* The preferred format is the string with | separating user 
-type sections and - disallowing operations format.
-* For numbers, the list and read bit are the same. This was 
-done to make hexadecimal format more readable. Decimal, octal 
-and binary format are also valid.
+* 4 bytes. In left to right order: owner, group, non-guest, all.
+* 5 bits for each byte. In left to right order: list, create, read, update, destroy.
+* 2 special bits (See the Admins and Groups subsections).
+* The preferred format is string with | separating user
+type bytes, letters (l, c, r, u or d) enabling operations
+and - disallowing operations (See the 5th example).
+* For number format, the list and read bits are the same. This was
+done to make hexadecimal permissions more readable. Decimal, octal
+and binary are also valid.
 
 **Examples:**
 
@@ -161,6 +173,6 @@ There will be the following permissions for these City groups:
 
 ## Creating and Deleting Resources
 
-Use `gulp new-resource` to create new resources. To delete 
+Use the command `gulp new-resource` to create new resources. To delete
 a resource, delete its directory in resources/ and update 
 resources/index.js

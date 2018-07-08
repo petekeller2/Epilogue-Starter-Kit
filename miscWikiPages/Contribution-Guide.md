@@ -3,7 +3,7 @@
 For wiki contributions, try to keep markdown files out of 
 the miscWikiPages folder. This folder is for wiki files that 
 don't belong to a folder in the code. Build the wiki with 
-`gulp build-wiki`. To update the wiki, you must push to the 
+`npm run wiki-build`. To update the wiki, you must push to the
 wiki repo.
 
 
