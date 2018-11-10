@@ -19,4 +19,4 @@ in Epilogue Starter Kit, [read this.](https://github.com/petekeller2/epilogue-st
 You should read Epilogue's documentation as well to fully understand resources 
 and milestones.
 
-Start using `gulp start` or `gulp serve` for the built version.
+Start the server by running `gulp start` (`gulp serve` for the build version).
