@@ -1,3 +1,5 @@
+⚠️ No longer maintained
+
 # Epilogue Starter Kit
 
 [![Build Status](https://travis-ci.org/petekeller2/Epilogue-Starter-Kit.svg?branch=master)](https://travis-ci.org/petekeller2/Epilogue-Starter-Kit) 
@@ -6,7 +8,7 @@
 
 A starter kit using an Express implementation of Epilogue. It handles
 generic functionality like authentication and authorization 
-as well as potentially repetitive tasks like setting up 
+as well as repetitive tasks like setting up 
 Epilogue resources and milestones.
 
 # Getting Started
