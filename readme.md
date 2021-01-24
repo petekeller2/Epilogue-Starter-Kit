@@ -1,9 +1,9 @@
-⚠️ No longer maintained
+## ⚠️ No longer maintained ⚠️
 
 # Epilogue Starter Kit
 
-[![Build Status](https://travis-ci.org/petekeller2/Epilogue-Starter-Kit.svg?branch=master)](https://travis-ci.org/petekeller2/Epilogue-Starter-Kit) 
-[![Dependency Status](https://david-dm.org/petekeller2/Epilogue-Starter-Kit.svg)](https://david-dm.org/petekeller2/Epilogue-Starter-Kit) 
+[![Build Status](https://api.travis-ci.com/petekeller2/Epilogue-Starter-Kit.svg?branch=master)](https://travis-ci.com/petekeller2/Epilogue-Starter-Kit) 
+[![Dependency Status](https://status.david-dm.org/gh/petekeller2/Epilogue-Starter-Kit.svg)](https://david-dm.org/petekeller2/Epilogue-Starter-Kit) 
 [![license](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/petekeller2/epilogue-starter-kit/LICENSE)
 
 A starter kit using an Express implementation of Epilogue. It handles
